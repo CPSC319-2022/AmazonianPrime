@@ -5,11 +5,9 @@ function App() {
   const [greeting, setGreeting] = useState();
   
   useEffect(() => {
-    fetch('api/hello')
+    fetch('http://127.0.0.1:8080/api/hello')
       .then(res => res.json())
-      .then(greeting => {
-        console.log(greeting)
-        setGreeting(greeting.message)})
+      .then(greeting => setGreeting(greeting.message))
   }, [setGreeting]);
   
   return (
