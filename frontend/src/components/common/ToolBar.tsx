@@ -5,9 +5,11 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import logo from "./logo.svg";
 import "./ToolBar.scss";
 import useSticky from "./useSticky";
+import { useNavigate } from "react-router-dom";
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
+  const navigate = useNavigate();
   const classes = sticky ? "landing-page__sticky-toolbar toolbar" : "toolbar";
 
   return (
@@ -17,7 +19,7 @@ function ToolBar() {
         <Grid container>
           <Grid item xs={2}>
             <span className="toolbar__logo">
-              <img src={logo} height="50" alt="Instagram Icon" />
+              <img src={logo} height="50" alt="Instagram Icon" onClick={() => navigate(`/`)} />
             </span>
           </Grid>
           <Grid

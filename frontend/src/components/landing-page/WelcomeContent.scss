@@ -5,21 +5,39 @@
     height: 100%;
     background-repeat: no-repeat;
     background-position-x: 0px;
-    background-position-y: 25%;
+    background-position-y: 30%;
     background-size: cover;
     display: flex;
     align-items: center;
 }
 
+.welcome-content__messages-background {
+    background-color: rgba(37, 45, 60, 0.5);
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .welcome-content__messages {
-    margin: auto;
     display:flex;
     flex-direction: column;
     color: white;
-    text-shadow: 2px 2px 5px $primary-color;
-    font-size: 1.75em;
+    font-size: 25px;
     .welcome-content__main-message {
-        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 50px;
+    }
+
+    p {
+        color:$secondary-color;
+
+        display: inline;
     }
 
     .welcome-content__button {
