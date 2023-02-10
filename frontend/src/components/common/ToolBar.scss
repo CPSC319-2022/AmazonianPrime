@@ -6,7 +6,9 @@
 }
 
 .toolbar__logo {
-    font-size: 1.3em;
+    img:hover {
+        cursor: pointer;
+    }
 }
 .toolbar__buttons {
     margin: 0;
