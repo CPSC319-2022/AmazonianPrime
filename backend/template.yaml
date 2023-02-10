@@ -70,33 +70,54 @@ Resources:
         DefaultRootObject: index.html
   FrontendBucket:
     Type: AWS::S3::Bucket
-  HelloWorldFunction:
+  ListingsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello-world/
+      CodeUri: listings/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
+        Listings:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/hello # Ensure api is proxied with /api/*
+            Path: /api/listings # Ensure api is proxied with /api/*
+            Method: get
+  UserFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: user/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        User:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user # Ensure api is proxied with /api/*
             Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  Website:
-    Value: !GetAtt CloudFrontDistribution.DomainName
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  ListingsApi:
+    Description: "API Gateway endpoint URL for Prod stage for Listings function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listings/"
+  ListingsFunction:
+    Description: "Listings Lambda Function ARN"
+    Value: !GetAtt ListingsFunction.Arn
+  ListingsFunctionIamRole:
+    Description: "Implicit IAM Role created for Listings function"
+    Value: !GetAtt ListingsFunctionRole.Arn
+  UserApi:
+    Description: "API Gateway endpoint URL for Prod stage for User function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/user/"
+  UserFunction:
+    Description: "User Lambda Function ARN"
+    Value: !GetAtt UserFunction.Arn
+  UserFunctionIamRole:
+    Description: "Implicit IAM Role created for User function"
+    Value: !GetAtt UserFunctionRole.Arn
