@@ -12,20 +12,6 @@ interface ListingRowProps {
 }
 
 const ListingRow: React.FC<ListingRowProps> = ({ title, listings }) => {
-  const [selected, setSelected] = React.useState<any[]>([]);
-
-  const isItemSelected = (id: string) => !!selected.find((el) => el === id);
-
-  const handleClick = (id: number) => () => {
-    const itemSelected = isItemSelected(id.toString());
-
-    setSelected((currentSelected) =>
-      itemSelected
-        ? currentSelected.filter((el) => el !== id)
-        : currentSelected.concat(id)
-    );
-  };
-
   return (
     <div className="listing-row">
       <h2 className="listing-row__title">{title}</h2>
@@ -35,8 +21,8 @@ const ListingRow: React.FC<ListingRowProps> = ({ title, listings }) => {
         LeftArrow={LeftArrow}
         RightArrow={RightArrow}
       >
-        {listings.map((listing, index) => (
-          <ListingPreview listing={listing} key={index} onClick={handleClick(index)} />
+        {listings.map((listing) => (
+          <ListingPreview listing={listing} key={listing.id} />
         ))}
       </ScrollMenu>
     </div>

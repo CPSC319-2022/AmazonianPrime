@@ -20,8 +20,6 @@ function LandingPage() {
 
   return (
     <div>
-      <Banner />
-      <ToolBar />
       <div className="landing-page__welcome-content">
         <WelcomeContent />
       </div>

@@ -1,31 +1,8 @@
-@import '../../variables';
-
-.listing-row {
-    margin: 1em;
-    display: flex;
-    flex-direction: column;
+.listing-preview__cost {
+    font-weight: 700;
+    font-size: 1.1em;
 }
 
-.listing-row__title {
-    margin: 0;
-    font-size: 1.25em;
-}
-
-.listing-row__list {
-    &::-webkit-scrollbar {
-        background: transparent; /* make scrollbar transparent */
-        -webkit-appearance: none;
-        width: 0;
-        height: 0;
-      }
-}
-
-.listing-row__button-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    .listing-row__button{
-        height: 1.5em;
-      }
+.listing-preview:hover {
+    cursor: pointer;
 }

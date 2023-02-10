@@ -35,46 +35,76 @@ exports.lambdaHandler = async (event, context) => {
             },
             'body': JSON.stringify([
                 {
+                    id: "da95cf19-91de-4eca-8a95-18eb4ce42bce",
                     image: base64_encode('./images/monstera.PNG'),
                     listingName: "Healthy Monstera",
                     cost: "20",
                     condition: "Good - New",
-                    description: "Selling this very healthy monstera"
+                    description: "Selling this very healthy monstera",
+                    user: {
+                        firstName: "Phil",
+                        lastName: "Dunphy"
+                    }
                 },
                 {
+                    id: "aa95cf19-91de-4eca-8a95-18eb4ce42bce",
                     image: base64_encode('./images/arm-chair.PNG'),
                     listingName: "MCM Arm Chair",
                     cost: "40",
                     condition: "Good - New",
-                    description: "Great condition."
+                    description: "Great condition.",
+                    user: {
+                        firstName: "Claire",
+                        lastName: "Dunphy"
+                    }
                 },
                 {
+                    id: "fa95cf19-91de-4eca-8a95-18eb4ce42bce",
                     image: base64_encode('./images/dress.PNG'),
                     listingName: "Prom Dress",
                     cost: "60",
                     condition: "Used - Good",
-                    description: "Great condition."
+                    description: "Great condition.",
+                    user: {
+                        firstName: "Hailey",
+                        lastName: "Dunphy"
+                    }
                 },
                 {
+                    id: "da95cf19-91de-4eca-8a95-18ea4ce42bce",
                     image: base64_encode('./images/shoes.PNG'),
                     listingName: "New Balance Shoes",
                     cost: "40",
                     condition: "Good - New",
-                    description: "Great condition."
+                    description: "Great condition.",
+                    user: {
+                        firstName: "Luke",
+                        lastName: "Dunphy"
+                    }
                 },
                 {
+                    id: "da95cf19-91de-4eca-8a95-18eb4ce42bcd",
                     image: base64_encode('./images/sweater.PNG'),
                     listingName: "Comfortable Sweater",
                     cost: "10",
                     condition: "Good - New",
-                    description: "Great condition."
+                    description: "Great condition.",
+                    user: {
+                        firstName: "Alex",
+                        lastName: "Dunphy"
+                    }
                 },
                 {
+                    id: "da95cf19-91de-4eca-8a95-18eb4ce42bcb",
                     image: base64_encode('./images/tree.PNG'),
                     listingName: "Tall Coffee Tree",
                     cost: "30",
                     condition: "Good - New",
-                    description: "Great condition."
+                    description: "Great condition.",
+                    user: {
+                        firstName: "Jeff",
+                        lastName: "Bezos"
+                    }
                 }
             ])
         }
