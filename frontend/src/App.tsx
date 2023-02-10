@@ -1,18 +1,23 @@
+import {
+  useRoutes,
+} from "react-router-dom";
+import LandingPage from "./components/landing-page/LandingPage";
+import { ThemeProvider } from '@mui/material/styles';
+import Theme from "./ThemeOverrides";
 
-import { useEffect, useState } from 'react';
+const App = () => {
+  const routes = useRoutes([
+    { path: "/", element: <LandingPage/> }
+  ]);
+  return routes;
+};
 
-function App() {
-  const [greeting, setGreeting] = useState();
-  
-  useEffect(() => {
-    fetch('http://127.0.0.1:8080/api/hello')
-      .then(res => res.json())
-      .then(greeting => setGreeting(greeting.message))
-  }, [setGreeting]);
-  
+const AppWrapper = () => {
   return (
-    <div>Greeting: {greeting}</div>
+    <ThemeProvider theme={Theme}>
+    <App />
+  </ThemeProvider>
   );
-} 
+};
 
-export default App;
+export default AppWrapper;

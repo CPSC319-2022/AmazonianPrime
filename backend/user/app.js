@@ -1,6 +1,3 @@
-// const axios = require('axios')
-// const url = 'http://checkip.amazonaws.com/';
-let response;
 
 /**
  *
@@ -19,13 +16,23 @@ exports.lambdaHandler = async (event, context) => {
         response = {
             'statusCode': 200,
             headers: {
+                // CORS: https://stackoverflow.com/questions/67065130/how-to-enable-cors-with-aws-sam
                 "Access-Control-Allow-Headers" : "Content-Type",
                 "Access-Control-Allow-Origin": "*", // Allow from anywhere 
                 "Access-Control-Allow-Methods": "GET" // Allow only GET request 
             },
             'body': JSON.stringify({
-                message: 'hello world',
-                // location: ret.data.trim()
+                user: {
+                    firstName: "John",
+                    lastName: "Darwin",
+                    address: {
+                        city: "Vancouver",
+                        province: "BC",
+                        streetAddress: "2366 Main Mall",
+                        postalCode: "V6T 1Z4"
+                        // 2366 Main Mall, Vancouver, BC V6T 1Z4
+                    }
+                }
             })
         }
     } catch (err) {
