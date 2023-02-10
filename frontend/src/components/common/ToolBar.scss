@@ -16,3 +16,11 @@
         font-size: 1.1em;
     }
 }
+
+.landing-page__sticky-toolbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 9999;
+}

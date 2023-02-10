@@ -4,10 +4,15 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import logo from "./logo.svg";
 import "./ToolBar.scss";
+import useSticky from "./useSticky";
 
 function ToolBar() {
+  const { sticky, stickyRef } = useSticky();
+  const classes = sticky ? "landing-page__sticky-toolbar toolbar" : "toolbar";
+
   return (
-    <div className="toolbar">
+    <>
+    <div ref={stickyRef } className={classes}>
       <div className="toolbar__content">
         <Grid container>
           <Grid item xs={2}>
@@ -59,6 +64,14 @@ function ToolBar() {
         </Grid>
       </div>
     </div>
+    {sticky && (
+        <div
+          style={{
+            height: `${stickyRef.current?.clientHeight}px`
+          }}
+        />
+      )}
+    </>
   );
 }
 
