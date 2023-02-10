@@ -1,0 +1,31 @@
+@import '../../variables';
+
+.welcome-content {
+    background-image: url("../../images/frog.jpg");
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position-x: 0px;
+    background-position-y: 25%;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+}
+
+.welcome-content__messages {
+    margin: auto;
+    display:flex;
+    flex-direction: column;
+    color: white;
+    text-shadow: 2px 2px 5px $primary-color;
+    font-size: 1.75em;
+    .welcome-content__main-message {
+        font-size: 1.2em;
+    }
+
+    .welcome-content__button {
+        margin-top: 15px;
+        align-self: flex-start;
+        font-size: 0.65em;
+        padding: 0 5px;
+    }
+}

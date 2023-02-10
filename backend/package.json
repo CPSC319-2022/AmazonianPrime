@@ -1,0 +1,9 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend for Anmazonian Prime",
+  "license": "MIT",
+  "scripts": {
+    "dev:start": "sam build && sam local start-api -p 8080"
+  }
+}
