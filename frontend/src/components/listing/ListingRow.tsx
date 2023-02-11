@@ -1,10 +1,10 @@
-import React from "react";
-import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
-import "./ListingRow.scss";
-import { IconButton } from "@mui/material";
-import ListingPreview from "./ListingPreview";
+import React from 'react';
+import { ScrollMenu, VisibilityContext } from 'react-horizontal-scrolling-menu';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import './ListingRow.scss';
+import { IconButton } from '@mui/material';
+import ListingPreview from './ListingPreview';
 
 interface ListingRowProps {
   title: string;
@@ -16,11 +16,7 @@ const ListingRow: React.FC<ListingRowProps> = ({ title, listings }) => {
     <div className="listing-row">
       <h2 className="listing-row__title">{title}</h2>
 
-      <ScrollMenu
-        scrollContainerClassName="listing-row__list"
-        LeftArrow={LeftArrow}
-        RightArrow={RightArrow}
-      >
+      <ScrollMenu scrollContainerClassName="listing-row__list" LeftArrow={LeftArrow} RightArrow={RightArrow}>
         {listings.map((listing, index) => (
           <ListingPreview listing={listing} key={index} />
         ))}
@@ -30,8 +26,7 @@ const ListingRow: React.FC<ListingRowProps> = ({ title, listings }) => {
 };
 
 function LeftArrow() {
-  const { isFirstItemVisible, scrollPrev } =
-    React.useContext(VisibilityContext);
+  const { isFirstItemVisible, scrollPrev } = React.useContext(VisibilityContext);
 
   return (
     <div className="listing-row__button-container">

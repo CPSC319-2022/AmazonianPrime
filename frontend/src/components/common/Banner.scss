@@ -1,21 +1,21 @@
 @import '../../variables';
 
 .banner {
-    background-color: $primary-color;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    color: white;
-    padding: 0.5em 0.5em;
-    font-size: 0.75em;
+  background-color: $primary-color;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: white;
+  padding: 0.5em 0.5em;
+  font-size: 0.75em;
 }
 
 .banner__content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .banner__welcome-message {
-    margin-left: auto;
+  margin-left: auto;
 }

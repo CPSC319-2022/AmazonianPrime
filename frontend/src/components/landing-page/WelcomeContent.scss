@@ -1,49 +1,49 @@
 @import '../../variables';
 
 .welcome-content {
-    background-image: url("../../images/frog.jpg");
-    height: 100%;
-    background-repeat: no-repeat;
-    background-position-x: 0px;
-    background-position-y: 30%;
-    background-size: cover;
-    display: flex;
-    align-items: center;
+  background-image: url('../../images/frog.jpg');
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position-x: 0px;
+  background-position-y: 30%;
+  background-size: cover;
+  display: flex;
+  align-items: center;
 }
 
 .welcome-content__messages-background {
-    background-color: rgba(37, 45, 60, 0.5);
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  background-color: rgba(37, 45, 60, 0.5);
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .welcome-content__messages {
-    display:flex;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  font-size: 25px;
+  .welcome-content__main-message {
+    font-weight: 600;
+    display: flex;
     flex-direction: column;
-    color: white;
-    font-size: 25px;
-    .welcome-content__main-message {
-        font-weight: 600;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        font-size: 50px;
-    }
+    align-items: flex-start;
+    font-size: 50px;
+  }
 
-    p {
-        color:$secondary-color;
+  p {
+    color: $secondary-color;
 
-        display: inline;
-    }
+    display: inline;
+  }
 
-    .welcome-content__button {
-        margin-top: 15px;
-        align-self: flex-start;
-        font-size: 0.65em;
-        padding: 0 5px;
-    }
+  .welcome-content__button {
+    margin-top: 15px;
+    align-self: flex-start;
+    font-size: 0.65em;
+    padding: 0 5px;
+  }
 }

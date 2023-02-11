@@ -1,8 +1,8 @@
-import ListingRow from "../listing/ListingRow";
-import "./LandingPage.scss";
-import WelcomeContent from "./WelcomeContent";
-import { useState, useEffect } from "react";
-import { useAppDispatch } from "../../redux/store";
+import ListingRow from '../listing/ListingRow';
+import './LandingPage.scss';
+import WelcomeContent from './WelcomeContent';
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '../../redux/store';
 
 function LandingPage() {
   // TODO: fix type
@@ -11,10 +11,10 @@ function LandingPage() {
 
   // TODO: add to redux RTK
   useEffect(() => {
-    fetch("api/listings")
+    fetch('api/listings')
       .then((res) => res.json())
-      .then((listings) => {
-        setListings(listings);
+      .then((data) => {
+        setListings(data);
       });
   }, []);
 
@@ -25,11 +25,8 @@ function LandingPage() {
       </div>
       {listings && (
         <>
-          <ListingRow
-            title={"Recently Added"}
-            listings={[...listings, ...listings, ...listings]}
-          />
-          <ListingRow title={"Amazon Exclusives"} listings={listings} />
+          <ListingRow title={'Recently Added'} listings={[...listings, ...listings, ...listings]} />
+          <ListingRow title={'Amazon Exclusives'} listings={listings} />
         </>
       )}
     </div>

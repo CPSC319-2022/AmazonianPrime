@@ -1,17 +1,17 @@
-import { Route, useParams, Routes } from "react-router-dom";
-import LandingPage from "./components/landing-page/LandingPage";
-import { ThemeProvider } from "@mui/material/styles";
-import Theme from "./ThemeOverrides";
-import { useAppDispatch } from "./redux/store";
-import NavBar from "./components/common/NavBar";
-import { useEffect } from "react";
-import { useGetUserQuery } from "./redux/api/user";
-import { setUser } from "./redux/reducers/userSlice";
+import { Route, useParams, Routes } from 'react-router-dom';
+import LandingPage from './components/landing-page/LandingPage';
+import { ThemeProvider } from '@mui/material/styles';
+import Theme from './ThemeOverrides';
+import { useAppDispatch } from './redux/store';
+import NavBar from './components/common/NavBar';
+import { useEffect } from 'react';
+import { useGetUserQuery } from './redux/api/user';
+import { setUser } from './redux/reducers/userSlice';
 
 // TODO: move this
 function ProductDetailsPage() {
   const { listingId } = useParams();
-  console.log(listingId);
+  // console.log(listingId);
 
   return <div></div>;
 }

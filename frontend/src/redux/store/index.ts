@@ -1,7 +1,7 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import userReducer from "../reducers/userSlice";
-import { userApi } from "../api/user";
+import { configureStore } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import userReducer from '../reducers/userSlice';
+import { userApi } from '../api/user';
 
 const store = configureStore({
   reducer: {
@@ -9,8 +9,7 @@ const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
   },
 
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

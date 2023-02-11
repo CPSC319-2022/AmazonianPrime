@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { User } from "../../types/user";
+import { createSlice } from '@reduxjs/toolkit';
+import { User } from '../../types/user';
 
 export interface UserState {
   value: User | null;
@@ -13,8 +13,8 @@ interface SliceReducers {
   [x: string]: (state: UserState, action: Action) => void;
 }
 
-export const user = createSlice<UserState, SliceReducers, "userSlice">({
-  name: "userSlice",
+export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
+  name: 'userSlice',
   initialState: {
     value: null,
   },

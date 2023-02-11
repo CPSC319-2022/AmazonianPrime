@@ -1,28 +1,28 @@
 .toolbar__content {
-    margin: 0.35em 0.5em;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  margin: 0.35em 0.5em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .toolbar__logo {
-    img:hover {
-        cursor: pointer;
-    }
+  img:hover {
+    cursor: pointer;
+  }
 }
 .toolbar__buttons {
-    margin: 0;
+  margin: 0;
 
-    .toolbar__button {
-        margin: 0 0.25em;
-        font-size: 1.1em;
-    }
+  .toolbar__button {
+    margin: 0 0.25em;
+    font-size: 1.1em;
+  }
 }
 
 .landing-page__sticky-toolbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: white;
-    z-index: 9999;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 9999;
 }
