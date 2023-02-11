@@ -121,3 +121,5 @@ Outputs:
   UserFunctionIamRole:
     Description: "Implicit IAM Role created for User function"
     Value: !GetAtt UserFunctionRole.Arn
+  Website:
+    Value: !GetAtt CloudFrontDistribution.DomainName
