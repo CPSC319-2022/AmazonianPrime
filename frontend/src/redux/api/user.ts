@@ -3,10 +3,10 @@ import { User } from "../../types/user";
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `http://127.0.0.1:8080/api` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `api` }),
   endpoints: (builder) => ({
     getUser: builder.query<User, void>({
-      query: () => "/user",
+      query: () => "user",
     }),
   }),
 });
