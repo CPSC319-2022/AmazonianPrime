@@ -40,7 +40,7 @@ function ToolBar() {
           </Grid>
           <Grid
             item
-            xs={4}
+            xs={5}
             container
             direction="row"
             justifyContent="center"
@@ -50,7 +50,7 @@ function ToolBar() {
           </Grid>
           <Grid
             item
-            xs={3}
+            xs={2}
             container
             direction="row"
             justifyContent="flex-end"

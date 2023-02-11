@@ -21,7 +21,7 @@ function Banner() {
   return (
     <div className="banner">
       <span className="banner__content">
-        <PinDropIcon />
+        <PinDropIcon sx={{fontSize: 17, marginRight: "0.5em"}}/>
         {address}
       </span>
       <span className="banner__welcome-message">

@@ -21,8 +21,8 @@ const ListingRow: React.FC<ListingRowProps> = ({ title, listings }) => {
         LeftArrow={LeftArrow}
         RightArrow={RightArrow}
       >
-        {listings.map((listing) => (
-          <ListingPreview listing={listing} key={listing.id} />
+        {listings.map((listing, index) => (
+          <ListingPreview listing={listing} key={index} />
         ))}
       </ScrollMenu>
     </div>
