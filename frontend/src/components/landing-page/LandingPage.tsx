@@ -25,7 +25,7 @@ function LandingPage() {
       </div>
       {listings && (
         <>
-          <ListingRow title={"Recently Added"} listings={listings} />
+          <ListingRow title={"Recently Added"} listings={[...listings, ...listings, ...listings]} />
           <ListingRow title={"Amazon Exclusives"} listings={listings} />
         </>
       )}
