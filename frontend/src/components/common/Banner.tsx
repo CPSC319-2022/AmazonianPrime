@@ -1,31 +1,19 @@
-import { useState, useEffect } from "react";
 import PinDropIcon from "@mui/icons-material/PinDrop";
 import "./Banner.scss";
+import { useAppSelector } from "../../redux/store";
 
 function Banner() {
-  // todo change type
-  const [user, setUser] = useState<any>();
-  const [address, setAddress] = useState<string>();
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8080/api/user")
-      .then((res) => res.json())
-      .then((res) => {
-        const address = res.user.address;
-        setUser(res.user);
-        setAddress(
-          `${address.streetAddress}, ${address.city}, ${address.province} ${address.postalCode}`
-        );
-      });
-  }, [setUser]);
+  const user = useAppSelector((state) => state.user.value);
+  if (!user) return null;
+  const { address } = user;
   return (
     <div className="banner">
       <span className="banner__content">
-        <PinDropIcon sx={{fontSize: 17, marginRight: "0.5em"}}/>
-        {address}
+        <PinDropIcon sx={{ fontSize: 17, marginRight: "0.5em" }} />
+        {`${address.streetAddress}, ${address.city}, ${address.province} ${address.postalCode}`}
       </span>
       <span className="banner__welcome-message">
-        Welcome, {user?.firstName}!
+        Welcome, {user.firstName}!
       </span>
     </div>
   );
