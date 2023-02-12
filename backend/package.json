@@ -5,5 +5,11 @@
   "license": "MIT",
   "scripts": {
     "dev:start": "sam build && sam local start-api -p 8080"
+  },
+  "dependencies": {
+    "@types/node": "^18.13.0",
+    "amazonian-prime-types": "^1.0.0",
+    "esbuild": "^0.17.7",
+    "typescript": "^4.9.5"
   }
 }

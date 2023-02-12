@@ -1,3 +1,4 @@
+import { User } from 'amazonian-prime-types';
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -10,7 +11,8 @@
  * @returns {Object} object - API Gateway Lambda Proxy Output Format
  *
  */
-exports.lambdaHandler = async (event, context) => {
+export const lambdaHandler = async (event: any, context: any) => {
+  let response;
   try {
     response = {
       statusCode: 200,
@@ -30,7 +32,7 @@ exports.lambdaHandler = async (event, context) => {
           postalCode: "V6T 1Z4",
           // 2366 Main Mall, Vancouver, BC V6T 1Z4
         },
-      }),
+      } as User),
     };
   } catch (err) {
     console.log(err);

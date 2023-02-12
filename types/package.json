@@ -1,0 +1,17 @@
+{
+  "name": "amazonian-prime-types",
+  "version": "1.0.0",
+  "description": "types for Anmazonian Prime",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "version": "git add -A src",
+    "lint": "echo lint",
+    "test": "echo test",
+    "prepare": "yarn build",
+    "prepublishOnly": "echo prepublish",
+    "postversion": "git push && git push --tags"
+  }
+}

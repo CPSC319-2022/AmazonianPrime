@@ -17,6 +17,7 @@
     "@types/node-sass": "^4.11.3",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "amazonian-prime-types": "^1.0.0",
     "node-sass": "^8.0.0",
     "prettier": "^2.8.4",
     "react": "^18.2.0",

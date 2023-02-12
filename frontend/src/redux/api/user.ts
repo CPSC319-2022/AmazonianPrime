@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { User } from '../../types/user';
+import { User } from 'amazonian-prime-types';
 
 export const userApi = createApi({
   reducerPath: 'userApi',

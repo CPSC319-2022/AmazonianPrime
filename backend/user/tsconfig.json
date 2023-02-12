@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "sourceMap": true,
+      "outDir": "dist",
+      "strict": true,
+      "lib": ["esnext", "dom"],
+      "target": "es6",
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "baseUrl": "src",
+      "typeRoots": [
+        "./node_modules/@types"
+    ]
+    },
+    "ts-node": {
+      "require": ["tsconfig-paths/register"]
+    }
+  }
