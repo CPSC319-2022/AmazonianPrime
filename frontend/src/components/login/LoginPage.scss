@@ -1,0 +1,16 @@
+@import '../../variables';
+
+.login-page {
+  background-image: url('../../images/parrot.jpg');
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-position-x: 0px;
+  background-position-y: 30%;
+  background-size: cover;
+}
+
+.login-page__content {
+  background-color: rgba(37, 45, 60, 0.3);
+  height: 100%;
+  color: white;
+}
