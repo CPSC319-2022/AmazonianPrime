@@ -35,6 +35,7 @@ exports.lambdaHandler = async (event, context) => {
             },
             'body': JSON.stringify([
                 {
+                    // IMPORTANT: we need this id component
                     id: "da95cf19-91de-4eca-8a95-18eb4ce42bce",
                     image: base64_encode('./images/monstera.PNG'),
                     listingName: "Healthy Monstera",

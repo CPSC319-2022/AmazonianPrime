@@ -7,14 +7,7 @@ import NavBar from './components/common/NavBar';
 import { useEffect } from 'react';
 import { useGetUserQuery } from './redux/api/user';
 import { setUser } from './redux/reducers/userSlice';
-
-// TODO: move this
-function ProductDetailsPage() {
-  const { listingId } = useParams();
-  // console.log(listingId);
-
-  return <div></div>;
-}
+import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
 
 const AppWrapper = () => {
   const dispatch = useAppDispatch();
