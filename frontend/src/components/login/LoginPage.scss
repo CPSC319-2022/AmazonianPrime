@@ -9,8 +9,39 @@
   background-size: cover;
 }
 
-.login-page__content {
-  background-color: rgba(37, 45, 60, 0.3);
-  height: 100%;
+.login-page__contents{
+  font-weight: 600;
   color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  white-space: nowrap;
+}
+
+.login-page__messages {
+  padding-top: 15vh;
+  padding-right: 15vh;
+  padding-bottom: 15vh;
+}
+
+.login-page__welcome-message {
+  font-size: 48px;
+  padding-bottom: 30px;
+}
+
+.login-page__mission-statement {
+  font-size: 36px;
+
+  p {
+    color: $secondary-color;
+
+    display: inline;
+  }
+}
+
+.login-page__login-prompts {
+  padding-right: 30vh;
+  padding-top: 35.5vh;
+  justify-self: center;
+  font-size: 40px;
 }
