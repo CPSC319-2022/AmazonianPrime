@@ -11,9 +11,9 @@ export const listingsApi = createApi({
       query: () => 'listings?posted=021123',
     }),
     // TODO new api??
-    getListingById: builder.query<Listing, void>({
+    getListingById: builder.query<Listing, string>({
       // TODO implement this in BE
-      query: () => 'listing/da95cf19-91de-4eca-8a95-18eb4ce42bce',
+      query: (listingId: string) => `listing/${listingId}`,
     }),
   }),
 });
