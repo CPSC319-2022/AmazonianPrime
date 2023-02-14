@@ -1,22 +1,20 @@
 import ListingRow from '../listing/ListingRow';
 import './LandingPage.scss';
 import WelcomeContent from './WelcomeContent';
-import { useState, useEffect } from 'react';
-import { useAppDispatch } from '../../redux/store';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useGetRecentListingsQuery } from '../../redux/api/listings';
+import { setRecentListings } from '../../redux/reducers/listingsSlice';
 
 function LandingPage() {
-  // TODO: fix type
-  const [listings, setListings] = useState<any[]>();
+  const listings = useAppSelector((state) => state.listings.recentListings);
   const dispatch = useAppDispatch();
-
-  // TODO: add to redux RTK
+  const { data } = useGetRecentListingsQuery();
   useEffect(() => {
-    fetch('api/listings')
-      .then((res) => res.json())
-      .then((data) => {
-        setListings(data);
-      });
-  }, []);
+    if (data) {
+      dispatch(setRecentListings(data));
+    }
+  }, [data]);
 
   return (
     <div>

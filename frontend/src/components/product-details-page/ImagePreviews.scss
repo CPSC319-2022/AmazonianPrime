@@ -1,0 +1,34 @@
+@import '../../variables';
+
+.image-preview {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+}
+.image-preview__previews {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-preview__preview-item-active,
+.image-preview__preview-item-inactive {
+  margin-bottom: 10px;
+  overflow: hidden;
+  :hover {
+    cursor: pointer;
+  }
+  img {
+    object-fit: cover;
+
+    transform: scale(2);
+  }
+}
+
+.image-preview__preview-item-active {
+  outline: 3px solid $secondary-color;
+}
+
+.image-preview__active-item {
+  object-fit: cover;
+  margin-left: 15px;
+}

@@ -1,0 +1,9 @@
+@import '../../variables';
+
+.product-details-page {
+  padding: 1em;
+}
+.product-details-page__previews {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,16 +1,15 @@
 import React from 'react';
-import { VisibilityContext } from 'react-horizontal-scrolling-menu';
 import { useNavigate } from 'react-router-dom';
+import { ListingPreview as ListingPreviewType } from '../../types/listingPreview';
 import './ListingPreview.scss';
 
 interface ListingPreviewProps {
-  // TODO: add type
-  listing: any;
+  listing: ListingPreviewType;
 }
 
 const ListingPreview: React.FC<ListingPreviewProps> = ({ listing }) => {
   const navigate = useNavigate();
-  const { image, listingName, cost, condition, description, user, id } = listing;
+  const { imagePreview, listingName, cost, user, id } = listing;
 
   return (
     <div
@@ -24,7 +23,7 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({ listing }) => {
       className="listing-preview"
     >
       <div>
-        <img src={`data:image/jpeg;base64,${image}`} height="250px" />
+        <img className="listing-preview__image" src={`data:image/jpeg;base64,${imagePreview}`} height="250px" />
         <span className="listing-preview__cost">${cost}</span>
         <div>{listingName}</div>
         <div>

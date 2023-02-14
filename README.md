@@ -4,4 +4,4 @@
 In order to get started, run the following commands:
 `cd backend && yarn dev:start`
 In a new terminal:
-`cd frontend && yarn start`
+`cd frontend && yarn start` (be sure to run `yarn` in `./frontend` before)
