@@ -1,4 +1,4 @@
-import { Route, useParams, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import LandingPage from './components/landing-page/LandingPage';
 import { ThemeProvider } from '@mui/material/styles';
 import Theme from './ThemeOverrides';

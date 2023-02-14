@@ -1,11 +1,9 @@
 import { User } from './user';
 
-export interface Listing {
+export interface ListingPreview {
   id: string;
-  images: string[];
+  imagePreview: string;
   listingName: string;
   cost: string;
-  condition: string;
-  description: string;
   user: User;
 }

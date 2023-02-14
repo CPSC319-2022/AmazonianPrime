@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Listing } from '../../types/listing';
+import { ListingPreview } from '../../types/listingPreview';
 
 export interface ListingsState {
-  recentListings: Listing[] | [];
-  searchResults: Listing[] | [];
+  recentListings: ListingPreview[] | [];
+  searchResults: ListingPreview[] | [];
+  listingDetails: Listing | null;
 }
 
 interface Action {
@@ -19,16 +21,22 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
   initialState: {
     recentListings: [],
     searchResults: [],
+    listingDetails: null,
   },
   reducers: {
     setRecentListings: (state: ListingsState, action: Action) => {
       if (action?.payload) {
-        state.recentListings = action.payload as Listing[];
+        state.recentListings = action.payload as ListingPreview[];
+      }
+    },
+    setListingDetails: (state: ListingsState, action: Action) => {
+      if (action?.payload) {
+        state.listingDetails = action.payload as Listing;
       }
     },
   },
 });
 
-export const { setRecentListings } = listings.actions;
+export const { setRecentListings, setListingDetails } = listings.actions;
 
 export default listings.reducer;

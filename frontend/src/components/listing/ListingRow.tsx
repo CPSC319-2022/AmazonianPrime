@@ -5,10 +5,11 @@ import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import './ListingRow.scss';
 import { IconButton } from '@mui/material';
 import ListingPreview from './ListingPreview';
+import { ListingPreview as ListingPreviewType } from '../../types/listingPreview';
 
 interface ListingRowProps {
   title: string;
-  listings: any[];
+  listings: ListingPreviewType[];
 }
 
 const ListingRow: React.FC<ListingRowProps> = ({ title, listings }) => {

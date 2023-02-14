@@ -1,14 +1,33 @@
 import './ProductDetailsPage.scss';
-import { useAppSelector } from '../../redux/store';
-import { useParams } from 'react-router-dom';
+import { useAppDispatch } from '../../redux/store';
+import { useEffect } from 'react';
+import { useGetListingByIdQuery } from '../../redux/api/listings';
+import { setListingDetails } from '../../redux/reducers/listingsSlice';
+import { Grid } from '@mui/material';
+import ImagePreviews from './ImagePreviews';
+import ProductDetails from './ProductDetails';
 
 function ProductDetailsPage() {
-  const listings = useAppSelector((state) => state.listings.recentListings);
-  const { listingId } = useParams<{ listingId: string }>();
+  const dispatch = useAppDispatch();
+  const { data } = useGetListingByIdQuery();
+  useEffect(() => {
+    if (data) {
+      dispatch(setListingDetails(data));
+    }
+  }, [data]);
 
-  // TODO: if listingDetails is null, we should call proper API to retry
-  const listingDetails = listings.filter((listing) => listing.id === listingId)[0];
-  return <div className="listing-row">{JSON.stringify(listingDetails)}</div>;
+  return (
+    <Grid container className="product-details-page">
+      <Grid item xs={6}>
+        <div className="product-details-page__previews">
+          <ImagePreviews />
+        </div>
+      </Grid>
+      <Grid item xs={6}>
+        <ProductDetails />
+      </Grid>
+    </Grid>
+  );
 }
 
 export default ProductDetailsPage;
