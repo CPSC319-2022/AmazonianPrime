@@ -84,6 +84,20 @@ Resources:
           Properties:
             Path: /api/listings # Ensure api is proxied with /api/*
             Method: get
+  ListingFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: listing/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/listing/{listingid} # Ensure api is proxied with /api/*
+            Method: get
   UserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -121,5 +135,14 @@ Outputs:
   UserFunctionIamRole:
     Description: "Implicit IAM Role created for User function"
     Value: !GetAtt UserFunctionRole.Arn
+  ListingApi:
+    Description: "API Gateway endpoint URL for Prod stage for Listings function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listing/:listingid"
+  ListingFunction:
+    Description: "Listing Lambda Function ARN"
+    Value: !GetAtt ListingFunction.Arn
+  ListingFunctionIamRole:
+    Description: "Implicit IAM Role created for Listing function"
+    Value: !GetAtt ListingFunctionRole.Arn
   Website:
     Value: !GetAtt CloudFrontDistribution.DomainName
