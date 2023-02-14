@@ -6,9 +6,12 @@ import logo from './logo.svg';
 import './ToolBar.scss';
 import useSticky from './useSticky';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import ListingModal from '../common/ListingModal'
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
+  const [ listingModal, setListingModal ] = useState<boolean>(false);
   const navigate = useNavigate();
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
 
@@ -25,7 +28,7 @@ function ToolBar() {
             <Grid item xs={3} container direction="row" justifyContent="center" alignItems="center">
               <div className="toolbar__buttons">
                 <Button className="toolbar__button">Categories</Button>
-                <Button color="secondary" className="toolbar__button">
+                <Button color="secondary" className="toolbar__button" onClick= {() => setListingModal(!listingModal)}>
                   Sell
                 </Button>
                 <Button className="toolbar__button">Orders</Button>
@@ -52,6 +55,7 @@ function ToolBar() {
           }}
         />
       )}
+      {listingModal && (<ListingModal/>)}
     </>
   );
 }
