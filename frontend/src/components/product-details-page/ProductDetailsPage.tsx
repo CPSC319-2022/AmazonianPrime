@@ -17,7 +17,7 @@ function ProductDetailsPage() {
   }, [data]);
 
   return (
-    <Grid container className="product-details-page">
+    <Grid container className="product-details-page" spacing={10}>
       <Grid item xs={6}>
         <div className="product-details-page__previews">
           <ImagePreviews />
