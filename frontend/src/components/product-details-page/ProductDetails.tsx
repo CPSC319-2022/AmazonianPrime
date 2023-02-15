@@ -8,7 +8,6 @@ import Description from './Description';
 function ProductDetails() {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   const user = useAppSelector((state) => state.user.value);
-
   return (
     <div className="product-details">
       <h1 id="product-name">{listing?.listingName}</h1>

@@ -2,10 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import userReducer from '../reducers/userSlice';
 import listingsReducer from '../reducers/listingsSlice';
-<<<<<<< HEAD
-=======
 import sellerModalReducer from '../reducers/sellerModalSlice'
->>>>>>> main
 import { userApi } from '../api/user';
 import { listingsApi } from '../api/listings';
 

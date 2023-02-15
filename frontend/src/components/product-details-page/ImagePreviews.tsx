@@ -3,19 +3,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useEffect, useState } from 'react';
 import { useGetListingByIdQuery } from '../../redux/api/listings';
 import { setListingDetails } from '../../redux/reducers/listingsSlice';
-<<<<<<< HEAD
-
-function ImagePreviews() {
-  const dispatch = useAppDispatch();
-  const { data } = useGetListingByIdQuery();
-=======
 import { useParams } from 'react-router';
 
 function ImagePreviews() {
   const dispatch = useAppDispatch();
   const { listingId } = useParams();
   const { data } = useGetListingByIdQuery(listingId || '');
->>>>>>> main
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   useEffect(() => {

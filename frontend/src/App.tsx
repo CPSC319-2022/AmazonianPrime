@@ -8,10 +8,7 @@ import NavBar from './components/common/NavBar';
 import { useEffect } from 'react';
 import { useGetUserQuery } from './redux/api/user';
 import { setUser } from './redux/reducers/userSlice';
-<<<<<<< HEAD
-=======
 import LoginPage from './components/login/LoginPage';
->>>>>>> main
 import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
 
 const AppWrapper = () => {
