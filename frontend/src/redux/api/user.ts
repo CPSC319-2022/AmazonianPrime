@@ -3,7 +3,7 @@ import { User } from '../../types/user';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `api` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
   endpoints: (builder) => ({
     getUser: builder.query<User, void>({
       query: () => 'user',

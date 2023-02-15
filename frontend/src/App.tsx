@@ -1,4 +1,4 @@
-import { Route, useParams, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import LandingPage from './components/landing-page/LandingPage';
 import { ThemeProvider } from '@mui/material/styles';
 import Theme from './ThemeOverrides';
@@ -9,14 +9,7 @@ import { useEffect } from 'react';
 import { useGetUserQuery } from './redux/api/user';
 import { setUser } from './redux/reducers/userSlice';
 import LoginPage from './components/login/LoginPage';
-
-// TODO: move this
-function ProductDetailsPage() {
-  const { listingId } = useParams();
-  // console.log(listingId);
-
-  return <div></div>;
-}
+import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
 
 const AppWrapper = () => {
   const dispatch = useAppDispatch();

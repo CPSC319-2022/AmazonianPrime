@@ -6,3 +6,7 @@
 .listing-preview:hover {
   cursor: pointer;
 }
+
+.listing-preview__image {
+  object-fit: cover;
+}
