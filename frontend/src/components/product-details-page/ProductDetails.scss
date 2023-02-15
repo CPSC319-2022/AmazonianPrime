@@ -1,4 +1,76 @@
 @import '../../variables';
 
-.product-details {
+#product-name{
+  display: flex;
+  margin-left: auto;
+  margin-top: 0;
+  margin-bottom: 5;
+}
+
+#product-cost{
+    font-size: xx-large;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#listed-time{
+    font-size: small;
+    font-style: italic;
+    color: grey;
+    position: relative;
+    margin-top: 20;
+    margin-bottom: 0;
+}
+
+#shipping-option{
+    font-size: small;
+}
+
+.product-details{
+    margin-top: 10;
+    margin-bottom: 0;
+}
+
+#condition{
+    margin-bottom: 0;
+    color: grey;
+}
+
+#condition-val{
+    margin-bottom: 0;
+}
+
+#size{
+    margin-bottom: 0;
+    color: grey;
+}
+
+#size-val{
+    margin-bottom: 0;
+}
+
+#brand{
+    margin-bottom: 0;
+    color: grey;
+}
+
+#brand-val{
+    margin-bottom: 0;
+}
+
+#colour{
+    margin-bottom: 0;
+    color: grey;
+}
+
+#colour-val{
+    margin-bottom: 0;
+}
+
+#quantity{
+    color: grey;
+}
+
+#report-button{
+    color: grey;
 }
