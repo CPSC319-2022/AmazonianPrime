@@ -1,0 +1,29 @@
+@import '../../variables';
+
+.buyer-registration-page {
+  background-image: url('../../images/parrot.jpg');
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-position-x: 0px;
+  background-position-y: 30%;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.banner {
+  margin-bottom: auto;
+  justify-self: start;
+}
+
+.buyer-registration-page__contents {
+  margin-bottom: auto;
+  font-weight: 600;
+  background-color: rgba(37, 45, 60, 0.4);
+  color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  white-space: nowrap;
+}
