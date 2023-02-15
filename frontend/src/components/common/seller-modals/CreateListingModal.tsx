@@ -9,6 +9,7 @@ import {
   Stack,
   MenuItem,
   Select,
+  InputLabel,
 } from '@mui/material';
 import './CreateListingModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
@@ -31,19 +32,24 @@ function SellerModal() {
   return (
     <div>
       <Dialog open={isCreateListingModalOpen} onClose={() => handleListingClose()} fullWidth maxWidth="lg">
-        <DialogTitle>Create New Listing</DialogTitle>
+        <DialogTitle>Create A New Listing</DialogTitle>
         <DialogContent>
           <DialogContentText paddingBottom={4}>Add your product details!</DialogContentText>
           <Stack spacing={4}>
-            <TextField required id="filled-required" label="Listing Name" defaultValue="" variant="filled" />
+            <TextField required id="filled-required" label="Listing Title" defaultValue="" variant="filled" />
             <TextField required id="filled-required" label="Cost" defaultValue="" variant="filled" />
             <TextField required id="filled-required" label="Quantity" defaultValue="" variant="filled" />
-            <Select name="condition">
+            <Select name="condition" label="Condition">
               <MenuItem value={0}>New</MenuItem>
               <MenuItem value={1}>Used - Like New</MenuItem>
               <MenuItem value={2}>Used - Good</MenuItem>
               <MenuItem value={3}>Used - Fair</MenuItem>
               <MenuItem value={4}>Fair</MenuItem>
+            </Select>
+            <Select name="shipping" label="Shipping">
+              <MenuItem value={0}>Pick-Up Only</MenuItem>
+              <MenuItem value={1}>Ships Within Canada</MenuItem>
+              <MenuItem value={2}>Ships Internationally</MenuItem>
             </Select>
             <TextField
               required
@@ -72,7 +78,7 @@ function SellerModal() {
               variant="contained"
               onClick={() => handleSubmit()}
             >
-              Post Listing
+              List This Item
             </Button>
           </div>
         </DialogActions>
