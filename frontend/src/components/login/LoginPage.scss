@@ -10,7 +10,10 @@
 }
 
 .login-page__contents{
+  margin-top: 10vh;
+  margin-bottom: 10vh;
   font-weight: 600;
+  background-color: rgba(37, 45, 60, 0.4);
   color: white;
   display: flex;
   flex-direction: row;
@@ -19,9 +22,9 @@
 }
 
 .login-page__messages {
-  padding-top: 15vh;
+  padding-top: 5vh;
   padding-right: 15vh;
-  padding-bottom: 15vh;
+  padding-bottom: 5vh;
 }
 
 .login-page__welcome-message {
@@ -41,7 +44,7 @@
 
 .login-page__login-prompts {
   padding-right: 25vh;
-  padding-top: 35.5vh;
+  padding-top: 25.5vh;
   font-size: 40px;
   display: flex;
   flex-direction: column;
