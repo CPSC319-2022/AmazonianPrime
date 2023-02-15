@@ -7,11 +7,18 @@
   background-position-x: 0px;
   background-position-y: 30%;
   background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.banner {
+  margin-bottom: auto;
+  justify-self: start;
 }
 
 .login-page__contents{
-  margin-top: 10vh;
-  margin-bottom: 10vh;
+  margin-bottom: auto;
   font-weight: 600;
   background-color: rgba(37, 45, 60, 0.4);
   color: white;
@@ -43,9 +50,10 @@
 }
 
 .login-page__login-prompts {
-  padding-right: 25vh;
-  padding-top: 25.5vh;
   font-size: 40px;
+  padding-right: 25vh;
+  margin-top: auto;
+  margin-bottom: auto;
   display: flex;
   flex-direction: column;
 
