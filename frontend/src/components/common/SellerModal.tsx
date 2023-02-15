@@ -3,11 +3,10 @@ import RegisterSellerModal from './seller-modals/RegisterSellerModal';
 import './SellerModal.scss';
 
 function SellerModal() {
-
   return (
     <div>
-      <RegisterSellerModal/>
-      <CreateListingModal/>
+      <RegisterSellerModal />
+      <CreateListingModal />
     </div>
   );
 }
