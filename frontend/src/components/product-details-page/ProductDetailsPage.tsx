@@ -11,7 +11,7 @@ import { useParams } from 'react-router';
 function ProductDetailsPage() {
   const dispatch = useAppDispatch();
   const { listingId } = useParams();
-  const { data, isLoading } = useGetListingByIdQuery(listingId || "");
+  const { data, isLoading } = useGetListingByIdQuery(listingId || '');
   useEffect(() => {
     if (data) {
       dispatch(setListingDetails(data));

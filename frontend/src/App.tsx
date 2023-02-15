@@ -3,7 +3,7 @@ import LandingPage from './components/landing-page/LandingPage';
 import { ThemeProvider } from '@mui/material/styles';
 import Theme from './ThemeOverrides';
 import { useAppDispatch, useAppSelector } from './redux/store';
-import { useLocation } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 import NavBar from './components/common/NavBar';
 import { useEffect } from 'react';
 import { useGetUserQuery } from './redux/api/user';
@@ -17,7 +17,7 @@ const AppWrapper = () => {
   // TODO: remove this... this is temp work, but we should use logic to see if
   // user is logged in or not.
   const location = useLocation();
-  const isOnLoginPage = location.pathname.includes("/login");
+  const isOnLoginPage = location.pathname.includes('/login');
   // end TODO
   const { data } = useGetUserQuery();
   useEffect(() => {

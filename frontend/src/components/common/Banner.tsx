@@ -1,20 +1,21 @@
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import './Banner.scss';
-import { useLocation } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../redux/store';
 
 function Banner() {
   const user = useAppSelector((state) => state.user.value);
-  const isOnLoginPage = useLocation().pathname.includes("/login");
+  const isOnLoginPage = useLocation().pathname.includes('/login');
 
-  if (isOnLoginPage) return (
-    <div className="banner">
-      <span className="banner__content">Amazonian Prime</span>
-    </div>
-  )
-  
+  if (isOnLoginPage)
+    return (
+      <div className="banner">
+        <span className="banner__content">Amazonian Prime</span>
+      </div>
+    );
+
   if (!user) {
-    return null
+    return null;
   }
 
   const { address } = user;
