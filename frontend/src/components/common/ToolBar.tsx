@@ -6,12 +6,17 @@ import logo from './logo.svg';
 import './ToolBar.scss';
 import useSticky from './useSticky';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import SellerModal from './SellerModal';
+import { useDispatch } from 'react-redux';
+import { toggleModal } from '../../redux/reducers/sellerModalSlice';
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
-  const [sellerModalActive, setSellerModalActive] = useState<boolean>(false);
+  const dispatch = useDispatch()
+
+  function handleOpenSellerModal() {
+    dispatch(toggleModal(true))
+  }
   const navigate = useNavigate();
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
 
@@ -31,7 +36,7 @@ function ToolBar() {
                 <Button
                   color="secondary"
                   className="toolbar__button"
-                  onClick={() => setSellerModalActive(!sellerModalActive)}
+                  onClick={() => handleOpenSellerModal()}
                 >
                   Sell
                 </Button>
@@ -59,7 +64,7 @@ function ToolBar() {
           }}
         />
       )}
-      {<SellerModal open={sellerModalActive} handleClose={setSellerModalActive} />}
+      <SellerModal/>
     </>
   );
 }

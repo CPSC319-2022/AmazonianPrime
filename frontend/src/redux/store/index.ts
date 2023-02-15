@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import userReducer from '../reducers/userSlice';
 import listingsReducer from '../reducers/listingsSlice';
+import sellerModalReducer from '../reducers/sellerModalSlice'
 import { userApi } from '../api/user';
 import { listingsApi } from '../api/listings';
 
@@ -9,6 +10,7 @@ const store = configureStore({
   reducer: {
     // user
     user: userReducer,
+    sellerModal: sellerModalReducer,
     [userApi.reducerPath]: userApi.reducer,
     // listings
     listings: listingsReducer,

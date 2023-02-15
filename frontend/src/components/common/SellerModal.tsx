@@ -8,16 +8,22 @@ import {
   TextField,
   Stack,
 } from '@mui/material';
+import './SellerModal.scss';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from "../../redux/store/index"
+import { toggleModal } from '../../redux/reducers/sellerModalSlice';
 
-interface ChildProps {
-  open: boolean;
-  handleClose: React.Dispatch<React.SetStateAction<boolean>>;
-}
+function SellerModal() {
+  const isSellerModalOpen = useSelector((state: RootState) => state.sellerModal.isSellerModalOpen);
+  const dispatch = useDispatch()
 
-function SellerModal({ open, handleClose }: ChildProps) {
+  function handleClose() {
+    dispatch(toggleModal(false))
+  }
+
   return (
     <div>
-      <Dialog open={open} onClose={() => handleClose(false)}>
+      <Dialog open={isSellerModalOpen} onClose={() => handleClose()}>
         <DialogTitle>Seller Registration</DialogTitle>
         <DialogContent>
           <DialogContentText paddingBottom={4}>
@@ -36,12 +42,11 @@ function SellerModal({ open, handleClose }: ChildProps) {
             />
           </Stack>
         </DialogContent>
-        <DialogActions style={{ paddingRight: 25, paddingBottom: 20 }}>
-          <Button onClick={() => handleClose(false)}>Cancel</Button>
-          <Button color="secondary" variant="contained" onClick={() => handleClose(false)}>
-            {' '}
-            Save{' '}
-          </Button>
+        <DialogActions>
+          <div className= "seller-modal__button-container">
+          <Button onClick={() => handleClose()}>Cancel</Button>
+          <Button className= "seller-modal__save-button" color="secondary" variant="contained" onClick={() => handleClose()}>Save</Button>
+          </div>
         </DialogActions>
       </Dialog>
     </div>
