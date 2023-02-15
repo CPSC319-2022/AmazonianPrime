@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { useGetUserQuery } from './redux/api/user';
 import { setUser } from './redux/reducers/userSlice';
 import LoginPage from './components/login/LoginPage';
+import BuyerRegistration from './components/login/BuyerRegistration';
 import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
 
 const AppWrapper = () => {
@@ -34,6 +35,7 @@ const AppWrapper = () => {
       {!isOnLoginPage && <NavBar />}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/login/signup" element={<BuyerRegistration />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/listing/:listingId" element={<ProductDetailsPage />} />
       </Routes>
