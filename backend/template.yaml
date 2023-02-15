@@ -127,20 +127,34 @@ Resources:
           Properties:
             Path: /api/listing/{listingid} # Ensure api is proxied with /api/*
             Method: get
-  UserFunction:
+  LoginFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: functions/user/
+      CodeUri: functions/login/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
         - x86_64
       Events:
-        User:
+        Login:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/user # Ensure api is proxied with /api/*
+            Path: /api/login/{gmail} # Ensure api is proxied with /api/*
             Method: get
+  SignUpFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/signup/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        SignUp:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/signup # Ensure api is proxied with /api/*
+            Method: get # TODO: change this to PUT
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -155,15 +169,15 @@ Outputs:
   ListingsFunctionIamRole:
     Description: "Implicit IAM Role created for Listings function"
     Value: !GetAtt ListingsFunctionRole.Arn
-  UserApi:
-    Description: "API Gateway endpoint URL for Prod stage for User function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/user/"
-  UserFunction:
-    Description: "User Lambda Function ARN"
-    Value: !GetAtt UserFunction.Arn
-  UserFunctionIamRole:
-    Description: "Implicit IAM Role created for User function"
-    Value: !GetAtt UserFunctionRole.Arn
+  SignUpApi:
+    Description: "API Gateway endpoint URL for Prod stage for SignUp function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/signup/"
+  SignUpFunction:
+    Description: "SignUp Lambda Function ARN"
+    Value: !GetAtt SignUpFunction.Arn
+  SignUpFunctionIamRole:
+    Description: "Implicit IAM Role created for SignUp function"
+    Value: !GetAtt SignUpFunctionRole.Arn
   ListingApi:
     Description: "API Gateway endpoint URL for Prod stage for Listings function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listing/:listingid"
@@ -173,5 +187,14 @@ Outputs:
   ListingFunctionIamRole:
     Description: "Implicit IAM Role created for Listing function"
     Value: !GetAtt ListingFunctionRole.Arn
+  LoginApi:
+    Description: "API Gateway endpoint URL for Prod stage for Login function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/login/:gmail"
+  LoginFunction:
+    Description: "Login Lambda Function ARN"
+    Value: !GetAtt LoginFunction.Arn
+  LoginFunctionIamRole:
+    Description: "Implicit IAM Role created for Login function"
+    Value: !GetAtt :oginFunctionRole.Arn
   Website:
     Value: !GetAtt CloudFrontDistribution.DomainName

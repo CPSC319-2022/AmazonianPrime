@@ -1,20 +1,25 @@
-import React from 'react';
-import { ScrollMenu, VisibilityContext } from 'react-horizontal-scrolling-menu';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import './LoginPage.scss';
 import Banner from '../common/Banner';
-
-import { useNavigate } from 'react-router-dom';
-
 import { Button } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { blue } from '@mui/material/colors';
+import { useLazyLoginQuery } from '../../redux/api/user';
+import BuyerRegistration from './BuyerRegistration';
+import { setUser } from '../../redux/reducers/userSlice';
+import { useAppDispatch } from '../../redux/store';
 
 function LoginPage() {
-  const navigate = useNavigate();
-  function openRegistrationPage() {
-    navigate(`/login/signup`);
+  const dispatch = useAppDispatch();
+  const [triggerGetQuery, result, lastPromiseInfo] = useLazyLoginQuery();
+  function signIn() {
+    triggerGetQuery('examplegmail');
+  }
+  if (result.data) {
+    dispatch(setUser(result.data));
+  }
+
+  if (!result.data && typeof (lastPromiseInfo.lastArg as any) !== 'symbol') {
+    return <BuyerRegistration />;
   }
   return (
     <div className="login-page">
@@ -49,7 +54,7 @@ function LoginPage() {
             variant="contained"
             startIcon={<GoogleIcon sx={{ color: blue[400] }} />}
             className="login-page__sign-in"
-            onClick={() => openRegistrationPage()}
+            onClick={() => signIn()}
           >
             Sign in with Google
           </Button>
