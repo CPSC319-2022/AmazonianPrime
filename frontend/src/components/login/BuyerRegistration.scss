@@ -12,18 +12,37 @@
   justify-content: center;
 }
 
-.buyer-registration-page__contents {
+.buyer-registration-page__box {
   margin-bottom: auto;
   margin-left: auto;
   margin-right: auto;
-  width: 95%;
+  width: auto;
   height: 85%;
   border-radius: 10px;
-  font-weight: 600;
   background-color: white;
-  color: black;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
   white-space: nowrap;
+  color: black;
+}
+
+.buyer-registration-page__box-contents {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 20px;
+}
+
+.buyer-registration-page__welcome {
+  font-weight: 600;
+  font-size: 48px;
+}
+
+.buyer-registration-page__prompt {
+  padding-top: 15px;
+  padding-right: 30px;
+  font-weight: 400;
+  font-size: 24px;
+
+  p {
+    color: $secondary-color;
+    display: inline;
+  }
 }
