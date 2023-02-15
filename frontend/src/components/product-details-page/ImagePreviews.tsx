@@ -8,7 +8,7 @@ import { useParams } from 'react-router';
 function ImagePreviews() {
   const dispatch = useAppDispatch();
   const { listingId } = useParams();
-  const { data } = useGetListingByIdQuery(listingId || "");
+  const { data } = useGetListingByIdQuery(listingId || '');
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   useEffect(() => {

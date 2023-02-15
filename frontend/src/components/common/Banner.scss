@@ -3,10 +3,11 @@
 .banner {
   background-color: $primary-color;
   display: flex;
+  height: 34px;
   flex-direction: row;
   align-items: center;
   color: white;
-  padding: 0.5em 0.5em;
+  padding: 0.5em 1.5em;
   font-size: 0.75em;
 }
 
