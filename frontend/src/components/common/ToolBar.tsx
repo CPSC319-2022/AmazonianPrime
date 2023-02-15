@@ -12,10 +12,10 @@ import { toggleModal } from '../../redux/reducers/sellerModalSlice';
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   function handleOpenSellerModal() {
-    dispatch(toggleModal(true))
+    dispatch(toggleModal(true));
   }
   const navigate = useNavigate();
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
@@ -33,11 +33,7 @@ function ToolBar() {
             <Grid item xs={3} container direction="row" justifyContent="center" alignItems="center">
               <div className="toolbar__buttons">
                 <Button className="toolbar__button">Categories</Button>
-                <Button
-                  color="secondary"
-                  className="toolbar__button"
-                  onClick={() => handleOpenSellerModal()}
-                >
+                <Button color="secondary" className="toolbar__button" onClick={() => handleOpenSellerModal()}>
                   Sell
                 </Button>
                 <Button className="toolbar__button">Orders</Button>
@@ -64,7 +60,7 @@ function ToolBar() {
           }}
         />
       )}
-      <SellerModal/>
+      <SellerModal />
     </>
   );
 }

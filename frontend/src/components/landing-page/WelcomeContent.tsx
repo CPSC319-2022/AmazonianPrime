@@ -9,7 +9,7 @@ function WelcomeContent() {
   const dispatch = useDispatch();
 
   function handleOpenSellerModal() {
-    dispatch(toggleModal(true))
+    dispatch(toggleModal(true));
   }
 
   return (
@@ -22,7 +22,12 @@ function WelcomeContent() {
             </span>
           </div>
           <span>Welcome {user?.firstName}, to Your Office-Powered Marketplace. </span>
-          <Button color="secondary" variant="contained" className="welcome-content__button" onClick = {() => handleOpenSellerModal()}>
+          <Button
+            color="secondary"
+            variant="contained"
+            className="welcome-content__button"
+            onClick={() => handleOpenSellerModal()}
+          >
             Sell Now
           </Button>
         </div>

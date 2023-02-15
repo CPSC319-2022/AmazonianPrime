@@ -10,15 +10,15 @@ import {
 } from '@mui/material';
 import './SellerModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from "../../redux/store/index"
+import { RootState } from '../../redux/store/index';
 import { toggleModal } from '../../redux/reducers/sellerModalSlice';
 
 function SellerModal() {
   const isSellerModalOpen = useSelector((state: RootState) => state.sellerModal.isSellerModalOpen);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   function handleClose() {
-    dispatch(toggleModal(false))
+    dispatch(toggleModal(false));
   }
 
   return (
@@ -43,9 +43,16 @@ function SellerModal() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <div className= "seller-modal__button-container">
-          <Button onClick={() => handleClose()}>Cancel</Button>
-          <Button className= "seller-modal__save-button" color="secondary" variant="contained" onClick={() => handleClose()}>Save</Button>
+          <div className="seller-modal__button-container">
+            <Button onClick={() => handleClose()}>Cancel</Button>
+            <Button
+              className="seller-modal__save-button"
+              color="secondary"
+              variant="contained"
+              onClick={() => handleClose()}
+            >
+              Save
+            </Button>
           </div>
         </DialogActions>
       </Dialog>
