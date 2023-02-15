@@ -30,7 +30,7 @@ function SellerModal() {
 
   return (
     <div>
-      <Dialog open={isCreateListingModalOpen} onClose={() => handleListingClose()}>
+      <Dialog open={isCreateListingModalOpen} onClose={() => handleListingClose()} fullWidth maxWidth="lg">
         <DialogTitle>Create New Listing</DialogTitle>
         <DialogContent>
           <DialogContentText paddingBottom={4}>Add your product details!</DialogContentText>
@@ -39,8 +39,11 @@ function SellerModal() {
             <TextField required id="filled-required" label="Cost" defaultValue="" variant="filled" />
             <TextField required id="filled-required" label="Quantity" defaultValue="" variant="filled" />
             <Select name="condition">
-              <MenuItem value={0}>Used</MenuItem>
-              <MenuItem value={1}>New</MenuItem>
+              <MenuItem value={0}>New</MenuItem>
+              <MenuItem value={1}>Used - Like New</MenuItem>
+              <MenuItem value={2}>Used - Good</MenuItem>
+              <MenuItem value={3}>Used - Fair</MenuItem>
+              <MenuItem value={4}>Fair</MenuItem>
             </Select>
             <TextField
               required
