@@ -4,11 +4,18 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import './LoginPage.scss';
 import Banner from '../common/Banner';
+
+import { useNavigate } from 'react-router-dom';
+
 import { Button } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { blue } from '@mui/material/colors';
 
 function LoginPage() {
+  const navigate = useNavigate();
+  function openRegistrationPage() {
+    navigate(`/login/signup`);
+  }
   return (
     <div className="login-page">
       <Banner />
@@ -42,6 +49,7 @@ function LoginPage() {
             variant="contained"
             startIcon={<GoogleIcon sx={{ color: blue[400] }} />}
             className="login-page__sign-in"
+            onClick={() => openRegistrationPage()}
           >
             Sign in with Google
           </Button>
