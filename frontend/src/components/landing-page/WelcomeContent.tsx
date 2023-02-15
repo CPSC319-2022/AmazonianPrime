@@ -2,14 +2,14 @@ import { Button } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
 import './WelcomeContent.scss';
 import { useDispatch } from 'react-redux';
-import { modifyRegisterUserModalVisibility } from '../../redux/reducers/sellerModalSlice';
+import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 
 function WelcomeContent() {
   const user = useAppSelector((state) => state.user.value);
   const dispatch = useDispatch();
 
   function handleOpenSellerModal() {
-    dispatch(modifyRegisterUserModalVisibility(true));
+    dispatch(modifyCreateListingModalVisibility(true));
   }
 
   return (

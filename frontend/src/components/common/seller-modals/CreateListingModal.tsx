@@ -9,7 +9,6 @@ import {
   Stack,
   MenuItem,
   Select,
-  InputLabel,
 } from '@mui/material';
 import './CreateListingModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
