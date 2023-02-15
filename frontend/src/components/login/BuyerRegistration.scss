@@ -18,16 +18,27 @@
   margin-right: auto;
   width: auto;
   height: 85%;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: white;
   white-space: nowrap;
   color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .buyer-registration-page__button {
+    margin-top: auto;
+    align-self: flex-end;
+    margin-right: 30px;
+    margin-bottom: 20px;
+  }
 }
 
 .buyer-registration-page__box-contents {
   padding-left: 30px;
   padding-right: 30px;
   padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .buyer-registration-page__welcome {
@@ -38,6 +49,7 @@
 .buyer-registration-page__prompt {
   padding-top: 15px;
   padding-right: 30px;
+  padding-bottom: 15px;
   font-weight: 400;
   font-size: 24px;
 
