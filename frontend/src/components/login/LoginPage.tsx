@@ -12,10 +12,10 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { blue } from '@mui/material/colors';
 
 function LoginPage() {
-    const navigate = useNavigate();
-    function openRegistrationPage() {
-        navigate(`/login/signup`);
-    }
+  const navigate = useNavigate();
+  function openRegistrationPage() {
+    navigate(`/login/signup`);
+  }
   return (
     <div className="login-page">
       <Banner />
