@@ -5,10 +5,26 @@ export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
   endpoints: (builder) => ({
-    getUser: builder.query<User, void>({
-      query: () => 'user',
+    login: builder.query<User, string>({
+      query: (gmail: string) => `login/${gmail}`,
+    }),
+    // TODO: change this to PUT
+    signup: builder.query<User, void>({
+      query: () => 'signup',
+    }),
+    deleteItinerary: builder.mutation<{ success: boolean; id: string }, string>({
+      query(id) {
+        return {
+          url: `/${id}`,
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
     }),
   }),
 });
 
-export const { useGetUserQuery } = userApi;
+export const { useLoginQuery, useLazyLoginQuery, useSignupQuery, useLazySignupQuery } = userApi;

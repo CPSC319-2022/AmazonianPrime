@@ -4,12 +4,22 @@ import Banner from '../common/Banner';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Grid } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
+import { useLazySignupQuery } from '../../redux/api/user';
+import { setUser } from '../../redux/reducers/userSlice';
+import { useAppDispatch } from '../../redux/store';
 
 function BuyerRegistration() {
-  const navigate = useNavigate();
-  function openHomePage() {
-    navigate(`/`);
+  const dispatch = useAppDispatch();
+  const [triggerGetQuery, result] = useLazySignupQuery();
+
+  if (result.data) {
+    dispatch(setUser(result.data));
   }
+
+  function register() {
+    triggerGetQuery();
+  }
+
   return (
     <div className="buyer-registration-page">
       <Banner />
@@ -44,7 +54,7 @@ function BuyerRegistration() {
           variant="contained"
           className="buyer-registration-page__button"
           endIcon={<TrendingFlatIcon />}
-          onClick={() => openHomePage()}
+          onClick={() => register()}
         >
           Start Shopping
         </Button>
