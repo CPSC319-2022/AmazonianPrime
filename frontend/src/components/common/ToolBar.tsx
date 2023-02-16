@@ -8,7 +8,7 @@ import useSticky from './useSticky';
 import { useNavigate } from 'react-router-dom';
 import SellerModal from './SellerModal';
 import { useDispatch } from 'react-redux';
-import { toggleModal } from '../../redux/reducers/sellerModalSlice';
+import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useAppSelector } from '../../redux/store';
 
 function ToolBar() {
@@ -16,7 +16,7 @@ function ToolBar() {
   const dispatch = useDispatch();
 
   function handleOpenSellerModal() {
-    dispatch(toggleModal(true));
+    dispatch(modifyCreateListingModalVisibility(true));
   }
   const navigate = useNavigate();
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';

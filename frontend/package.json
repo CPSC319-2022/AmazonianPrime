@@ -38,7 +38,8 @@
     "start": "react-scripts start",
     "build": "yarn verify && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "watch": "react-scripts start --watchAll=true"
   },
   "eslintConfig": {
     "extends": [
