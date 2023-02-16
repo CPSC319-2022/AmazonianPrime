@@ -2,7 +2,7 @@
 
 .buyer-registration-page {
   background-image: url('../../images/forest.jpg');
-  height: 100vh;
+  height: calc(100vh - $banner-height);
   background-repeat: no-repeat;
   background-position-x: 0px;
   background-position-y: 30%;
@@ -15,7 +15,7 @@
 .buyer-registration-page__box {
   margin: auto;
   width: auto;
-  height: 85%;
+  height: 75%;
   border-radius: 5px;
   background-color: white;
   white-space: nowrap;

@@ -23,7 +23,6 @@ function LoginPage() {
   }
   return (
     <div className="login-page">
-      <Banner />
       <div className="login-page__contents">
         <div className="login-page__messages">
           <div className="login-page__welcome-message">

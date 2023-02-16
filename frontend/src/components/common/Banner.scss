@@ -3,15 +3,22 @@
 .banner {
   background-color: $primary-color;
   display: flex;
-  height: 34px;
+  height: $banner-height;
   flex-direction: row;
   align-items: center;
   color: white;
-  padding: 0.5em 1.5em;
   font-size: 0.75em;
 }
 
 .banner__content {
+  display: flex;
+  padding: 0.5em 1.5em;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.banner__address {
   display: flex;
   flex-direction: row;
   align-items: center;

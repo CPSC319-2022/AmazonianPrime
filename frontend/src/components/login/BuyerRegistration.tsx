@@ -22,7 +22,6 @@ function BuyerRegistration() {
 
   return (
     <div className="buyer-registration-page">
-      <Banner />
       <div className="buyer-registration-page__box">
         <div className="buyer-registration-page__box-contents">
           <div className="buyer-registration-page__welcome">

@@ -3,10 +3,10 @@ import ToolBar from './ToolBar';
 
 function NavBar() {
   return (
-    <div>
+    <>
       <Banner />
       <ToolBar />
-    </div>
+    </>
   );
 }
 

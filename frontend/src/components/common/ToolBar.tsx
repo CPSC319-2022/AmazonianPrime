@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import SellerModal from './SellerModal';
 import { useDispatch } from 'react-redux';
 import { toggleModal } from '../../redux/reducers/sellerModalSlice';
+import { useAppSelector } from '../../redux/store';
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
@@ -20,6 +21,8 @@ function ToolBar() {
   const navigate = useNavigate();
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
 
+  const user = useAppSelector((state) => state.user.value);
+  if (!user) return null;
   return (
     <>
       <div ref={stickyRef} className={classes}>
