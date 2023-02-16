@@ -1,0 +1,58 @@
+@import '../../variables';
+
+.buyer-registration-page {
+  background-image: url('../../images/forest.jpg');
+  height: calc(100vh - $banner-height);
+  background-repeat: no-repeat;
+  background-position-x: 0px;
+  background-position-y: 30%;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.buyer-registration-page__box {
+  margin: auto;
+  width: auto;
+  height: 75%;
+  border-radius: 5px;
+  background-color: white;
+  white-space: nowrap;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .buyer-registration-page__button {
+    margin-top: auto;
+    align-self: flex-end;
+    margin-right: 30px;
+    margin-bottom: 20px;
+  }
+}
+
+.buyer-registration-page__box-contents {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.buyer-registration-page__welcome {
+  font-weight: 600;
+  font-size: 48px;
+}
+
+.buyer-registration-page__prompt {
+  padding-top: 15px;
+  padding-right: 30px;
+  padding-bottom: 15px;
+  font-weight: 400;
+  font-size: 24px;
+
+  p {
+    color: $secondary-color;
+    display: inline;
+  }
+}

@@ -11,6 +11,7 @@
  *
  */
 exports.lambdaHandler = async (event, context) => {
+  // TODO: do some logic, and add the user in DB
   try {
     response = {
       statusCode: 200,

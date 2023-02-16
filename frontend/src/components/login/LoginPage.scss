@@ -2,7 +2,7 @@
 
 .login-page {
   background-image: url('../../images/forest.jpg');
-  height: 100vh;
+  height: calc(100vh - $banner-height);
   background-repeat: no-repeat;
   background-position-x: 0px;
   background-position-y: 30%;
@@ -12,14 +12,10 @@
   justify-content: center;
 }
 
-.banner {
-  margin-bottom: auto;
-  justify-self: start;
-}
-
 .login-page__contents {
   margin-bottom: auto;
   font-weight: 600;
+  height: 100%;
   background-color: rgba(37, 45, 60, 0.4);
   color: white;
   display: flex;
@@ -29,9 +25,9 @@
 }
 
 .login-page__messages {
-  padding-top: 5vh;
+  margin-top: auto;
   padding-right: 15vh;
-  padding-bottom: 5vh;
+  margin-bottom: auto;
 }
 
 .login-page__welcome-message {
