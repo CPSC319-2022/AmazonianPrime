@@ -1,44 +1,63 @@
 import './ProductDetails.scss';
+import React from 'react';
 import { useAppSelector } from '../../redux/store';
 import { Button, Grid } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import Details from './Details';
-import Description from './Description';
+import { Listing } from '../../types/listing';
 
-function ProductDetails() {
+interface ListingPreviewProps {
+  listing: Listing;
+}
+
+function ProductDetails () {
   const listing = useAppSelector((state) => state.listings.listingDetails);
-  const user = useAppSelector((state) => state.user.value);
+  if (!listing) {
+    return null;
+  }
+  const { listingName, cost, condition, user, id } = listing;
+
   return (
     <div className="product-details">
-      <h1 id="product-name">{listing?.listingName}</h1>
-      <div id="seller-name" >{user?.firstName}&nbsp;{user?.lastName.charAt(0)}. </div>
+      <h1 className="product-name">{listingName}</h1>
+      <div>
+        {user.firstName}&nbsp;{user.lastName.charAt(0)}.{' '}
+      </div> 
       <br></br>
       <Grid container rowSpacing={0}>
         <Grid item xs={2}>
-          <p id="product-cost"><b>${listing?.cost}</b></p>
+          <p className="product-cost">
+            <b>${cost}</b>
+          </p>
         </Grid>
         <Grid item xs={10}>
-          <p id="listed-time">Listed 1 hour ago</p>
+          <p className="listed-time">Listed 1 hour ago</p>
         </Grid>
         <Grid item xs={0.5}>
-          <p><LocalShippingIcon/></p>
+          <p>
+            <LocalShippingIcon />
+          </p>
         </Grid>
-        <Grid item xs={11.5}>
-          <p id="shipping-option">Offers shipping to desk and home</p>
+        <Grid item xs={11.5} marginTop={1}>
+          <p className="shipping-option">Offers shipping to desk and home</p>
         </Grid>
-         <div className="buy-buttons">
-          <Button variant="contained" color="secondary" className="to-cart-button"><b>Add to Cart</b></Button>
-          &nbsp;
-          &nbsp;
-          <Button variant="contained" color="secondary" className="buy-now-button"><b>Buy Now</b></Button>
+        <div>
+          <Button variant="contained" color="secondary">
+            <b>Add to Cart</b>
+          </Button>
+          <Button variant="contained" color="secondary" sx={{ml: 3}}>
+            <b>Buy Now</b>
+          </Button>
         </div>
       </Grid>
-     
-      <Details/>
-      <Description{...user}/>
-
+ <Details />
+      <div>
+        <h3>Description</h3>
+        <div>{listing.description}</div>
+      </div>
     </div>
   );
+
 }
 
 export default ProductDetails;

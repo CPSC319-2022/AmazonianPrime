@@ -18,7 +18,7 @@ function ProductDetailsPage() {
     }
   }, [data]);
 
-  if (isLoading) {
+  if (isLoading || !data) {
     // TODO: add loading
     return null;
   }
