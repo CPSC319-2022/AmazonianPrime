@@ -43,7 +43,7 @@ function CategoriesButton() {
         </MenuItem>
         {categories.map((category: string) => (
           <>
-            <Divider sx={{ my: 0.5 }} className="categories-button__divider" />
+            <Divider className="categories-button__divider" />
             <MenuItem className="categories-button__menu-item" onClick={handleClose} disableRipple>
               {category}
             </MenuItem>
