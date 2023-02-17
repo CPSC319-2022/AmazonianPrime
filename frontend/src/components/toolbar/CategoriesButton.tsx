@@ -34,7 +34,11 @@ function CategoriesButton() {
         Categories
       </Button>
       <Menu className="categories-button__menu" anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem className="categories-button__menu-item categories-button__all-categories-text" onClick={handleClose} disableRipple>
+        <MenuItem
+          className="categories-button__menu-item categories-button__all-categories-text"
+          onClick={handleClose}
+          disableRipple
+        >
           All Categories
         </MenuItem>
         {categories.map((category: string) => (
