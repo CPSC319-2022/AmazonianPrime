@@ -195,6 +195,6 @@ Outputs:
     Value: !GetAtt LoginFunction.Arn
   LoginFunctionIamRole:
     Description: "Implicit IAM Role created for Login function"
-    Value: !GetAtt :oginFunctionRole.Arn
+    Value: !GetAtt LoginFunctionRole.Arn
   Website:
     Value: !GetAtt CloudFrontDistribution.DomainName
