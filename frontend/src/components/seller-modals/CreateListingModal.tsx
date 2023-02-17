@@ -12,10 +12,10 @@ import {
 } from '@mui/material';
 import './CreateListingModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../../redux/store/index';
-import { modifyCreateListingModalVisibility } from '../../../redux/reducers/sellerModalSlice';
+import { RootState } from '../../redux/store/index';
+import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 
-function SellerModal() {
+function CreateListingModal() {
   const isCreateListingModalOpen = useSelector((state: RootState) => state.sellerModal.isCreateListingModalOpen);
   const dispatch = useDispatch();
 
@@ -86,4 +86,4 @@ function SellerModal() {
   );
 }
 
-export default SellerModal;
+export default CreateListingModal;

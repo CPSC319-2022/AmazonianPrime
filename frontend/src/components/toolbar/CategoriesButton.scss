@@ -1,0 +1,24 @@
+.categories-button {
+  margin: 0 0.25em;
+  font-size: 1.1em;
+}
+
+.categories-button__menu {
+  .categories-button__all-categories-text {
+    font-weight: 700;
+    opacity: 1;
+    font-size: 18px;
+  }
+  
+  .categories-button__divider {
+    margin: 0 9px;
+  }
+
+  .categories-button__menu-item {
+    background-color: transparent;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

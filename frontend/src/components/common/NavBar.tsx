@@ -1,5 +1,5 @@
+import ToolBar from '../toolbar/ToolBar';
 import Banner from './Banner';
-import ToolBar from './ToolBar';
 
 function NavBar() {
   return (
