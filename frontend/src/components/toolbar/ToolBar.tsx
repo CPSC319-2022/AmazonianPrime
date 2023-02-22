@@ -2,14 +2,15 @@ import { Button, Grid, IconButton } from '@mui/material';
 import SearchBar from './SearchBar';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import logo from './logo.svg';
+import logo from '../common/logo.svg';
 import './ToolBar.scss';
-import useSticky from './useSticky';
 import { useNavigate } from 'react-router-dom';
-import SellerModal from './SellerModal';
 import { useDispatch } from 'react-redux';
 import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useAppSelector } from '../../redux/store';
+import SellerModal from '../seller-modals/SellerModal';
+import useSticky from '../common/useSticky';
+import CategoriesButton from './CategoriesButton';
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
@@ -35,7 +36,7 @@ function ToolBar() {
             </Grid>
             <Grid item xs={3} container direction="row" justifyContent="center" alignItems="center">
               <div className="toolbar__buttons">
-                <Button className="toolbar__button">Categories</Button>
+                <CategoriesButton />
                 <Button color="secondary" className="toolbar__button" onClick={() => handleOpenSellerModal()}>
                   Sell
                 </Button>

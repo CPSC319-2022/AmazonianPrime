@@ -10,10 +10,10 @@ import {
 } from '@mui/material';
 import './RegisterSellerModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../../redux/store/index';
-import { modifyRegisterUserModalVisibility, modifyIsSellerRegistered } from '../../../redux/reducers/sellerModalSlice';
+import { RootState } from '../../redux/store/index';
+import { modifyRegisterUserModalVisibility, modifyIsSellerRegistered } from '../../redux/reducers/sellerModalSlice';
 
-function SellerModal() {
+function RegisterSellerModal() {
   const isSellerModalOpen = useSelector((state: RootState) => state.sellerModal.isSellerModalOpen);
   const isSellerRegistered = useSelector((state: RootState) => state.sellerModal.isSellerRegistered);
   const dispatch = useDispatch();
@@ -62,4 +62,4 @@ function SellerModal() {
   );
 }
 
-export default SellerModal;
+export default RegisterSellerModal;

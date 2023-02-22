@@ -21,7 +21,7 @@ export const sellerModalSlice = createSlice({
     },
     modifyIsSellerRegistered: (state, action: PayloadAction<boolean>) => {
       state.isSellerRegistered = action.payload;
-      if(action.payload) {
+      if (action.payload) {
         state.isCreateListingModalOpen = action.payload;
       }
     },
