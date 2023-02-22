@@ -1,18 +1,15 @@
 import { Grid, Select, MenuItem } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
-import { Listing } from '../../types/listing';
-import { ListingPreview } from '../../types/listingPreview';
 
 function Details() {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   if (!listing) {
     return null;
   }
-  const { listingName, cost, condition, user, id } = listing;
   const getDetailsRow = (category: string ,value: string) => (
     <>
     <Grid item xs={3}>
-        <p className="category">{category}</p>
+        <p className="grey">{category}</p>
     </Grid>
     <Grid item xs={9}>
         <p  className="category-value" >{value}</p>
@@ -21,8 +18,8 @@ function Details() {
   )
   return (
     <div>
-      <h3 className="product-details">Details</h3>
-      <Grid container rowSpacing={0} fontSize="small">
+      <div className="small-header">Details</div>
+      <Grid container rowSpacing={0} className="small-font">
         {
           getDetailsRow("Condition", listing.condition)
         }
@@ -36,10 +33,10 @@ function Details() {
           getDetailsRow("Colour", "N/A")
         }
         <Grid item xs={3}>
-          <p className="category">Quantity</p>
+          <p className="grey">Quantity</p>
         </Grid>
         <Grid item xs={9} marginTop={1}>
-          <Select className="select" defaultValue={1} size="small" >
+          <Select className="select" defaultValue={1} size="small" style={{backgroundColor: '#e0e0e0'}}>
             <MenuItem value="1">1</MenuItem>
             <MenuItem value="2">2</MenuItem>
           </Select>

@@ -3,35 +3,70 @@
 .product-name {
   display: flex;
   margin-left: auto;
+  font-weight: 550;
+  font-size: 35px;
   margin-top: 0;
-  margin-bottom: 5;
+  margin-bottom: 0;
 }
 
 .product-cost {
-  font-size: xx-large;
+  font-weight: 500;
+  font-size: 20px;
   margin-top: 0;
   margin-bottom: 0;
 }
 
 .listed-time {
-  font-size: small;
-  font-style: italic;
+  font-size: 11px;
   color: grey;
   position: relative;
-  margin-top: 20;
+  margin-top: 7px;
   margin-bottom: 0;
 }
 
-.shipping-option {
-  font-size: small;
+.circle {
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  border-radius: 50%;
+  font-size: 17px;
+  font-weight: 450;
+  color: #1b2a5a;
+  text-align: center;
+  background: #a5d8f3
 }
 
-.product-details {
-  margin-top: 10;
+.shipping-icon {
+  margin-bottom: 0;
+  color: grey;
+}
+
+.user-name {
+  font-size: 14px;
+}
+
+.user-department {
+  font-size: 10px;
+  color: red;
+}
+
+.buttons {
+  margin-top: -10px;
+}
+
+.small-header {
+  font-weight: 500;
+  font-size: 20px;
+  margin-top: 10px;
   margin-bottom: 0;
 }
 
-.category {
+.small-font {
+  font-size: 13px;
+}
+
+.grey {
+  font-weight: 450;
   margin-bottom: 0;
   color: grey;
 }
@@ -42,5 +77,10 @@
 
 .select {
   width: 60px;
-  height: 30px;
+  height: 20px;
+}
+
+.description {
+  font-weight: 450;
+  margin-top: 10px;
 }
