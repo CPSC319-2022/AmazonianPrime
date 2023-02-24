@@ -14,7 +14,7 @@
 
 .buyer-registration-page__box {
   margin: auto;
-  width: 840px;
+  width: 880px;
   height: auto;
   border-radius: 5px;
   background-color: white;
@@ -49,17 +49,12 @@
   padding-right: 30px;
   padding-bottom: 20px;
   font-weight: 400;
-  font-size: 18px;
+  font-size: 20px;
 
   p {
     color: $secondary-color;
     display: inline;
   }
-}
-
-.buyer-registration-page__forms {
-  padding-left: 80px;
-  padding-right: 80px;
 }
 
 .buyer-registration-page__payment-prompt {
@@ -80,5 +75,5 @@
 
 .buyer-registration-page__billing-grid {
   padding-top: 10px;
-  padding-bottom: 30px;
+  padding-bottom: 20px;
 }
