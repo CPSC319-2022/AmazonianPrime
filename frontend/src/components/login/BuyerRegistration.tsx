@@ -33,20 +33,56 @@ function BuyerRegistration() {
               please give us some more information about yourself.
             </span>
           </div>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField fullWidth required label="First Name" defaultValue="" variant="filled" />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth required label="User Name" defaultValue="" variant="filled" />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth required label="Department" defaultValue="" variant="filled" />
-            </Grid>
-          </Grid>
+          <div className="buyer-registration-page__forms">
+            <div className="buyer-registration-page__payment-prompt">
+              <span>
+                Payment Details
+              </span>
+            </div>
+            <div className="buyer-registration-page__payment-grid">
+              <Grid container spacing={1.5}>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="First Name" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="Card Number" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField fullWidth required label="CVC" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField fullWidth required label="MM / YY" defaultValue="" variant="filled" />
+                </Grid>
+              </Grid>
+            </div>
+            <div className="buyer-registration-page__billing-prompt">
+              <span>
+                Billing Address
+              </span>
+            </div>
+            <div className="buyer-registration-page__billing-grid">
+              <Grid container spacing={1.5}>
+                <Grid item xs={12}>
+                  <TextField fullWidth required label="Street Address" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="City" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="Province" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="Postal Code" defaultValue="" variant="filled" />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField fullWidth required label="Country" defaultValue="" variant="filled" />
+                </Grid>
+              </Grid>
+            </div>
+          </div>
         </div>
         <Button
           color="secondary"

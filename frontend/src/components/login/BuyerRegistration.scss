@@ -2,7 +2,7 @@
 
 .buyer-registration-page {
   background-image: url('../../images/forest.jpg');
-  height: calc(100vh - $banner-height);
+  height: auto;
   background-repeat: no-repeat;
   background-position-x: 0px;
   background-position-y: 30%;
@@ -14,8 +14,8 @@
 
 .buyer-registration-page__box {
   margin: auto;
-  width: auto;
-  height: 75%;
+  width: 840px;
+  height: auto;
   border-radius: 5px;
   background-color: white;
   white-space: nowrap;
@@ -41,18 +41,44 @@
 
 .buyer-registration-page__welcome {
   font-weight: 600;
-  font-size: 48px;
+  font-size: 34px;
 }
 
 .buyer-registration-page__prompt {
   padding-top: 15px;
   padding-right: 30px;
-  padding-bottom: 15px;
+  padding-bottom: 20px;
   font-weight: 400;
-  font-size: 24px;
+  font-size: 18px;
 
   p {
     color: $secondary-color;
     display: inline;
   }
+}
+
+.buyer-registration-page__forms {
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+.buyer-registration-page__payment-prompt {
+  padding-top: 20px;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.buyer-registration-page__payment-grid {
+  padding-top: 10px;
+}
+
+.buyer-registration-page__billing-prompt {
+  padding-top: 20px;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.buyer-registration-page__billing-grid {
+  padding-top: 10px;
+  padding-bottom: 30px;
 }
