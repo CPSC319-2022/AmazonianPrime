@@ -115,15 +115,31 @@ function BuyerRegistration() {
             )}
           </div>
         </div>
-        <Button
-          color="secondary"
-          variant="contained"
-          className="buyer-registration-page__button"
-          endIcon={<TrendingFlatIcon />}
-          onClick={() => register()}
-        >
-          Start Shopping
-        </Button>
+        <div className="buyer-registration-page__action-buttons">
+          <Grid container spacing={0}>
+            <Grid item xs={5.3}>
+              <Button
+                color="primary"
+                variant="outlined"
+                className="buyer-registration-page__skip-button"
+                onClick={() => register()}
+              >
+                Skip this step
+              </Button>
+            </Grid>
+            <Grid item xs={1}>
+              <Button
+                color="secondary"
+                variant="contained"
+                className="buyer-registration-page__continue-button"
+                endIcon={<TrendingFlatIcon />}
+                onClick={() => register()}
+              >
+                Start shopping
+              </Button>
+            </Grid>
+          </Grid>
+        </div>
       </div>
     </div>
   );

@@ -27,11 +27,17 @@
   flex-direction: column;
   justify-content: space-between;
 
-  .buyer-registration-page__button {
+  .buyer-registration-page__action-buttons {
     margin-top: auto;
     align-self: flex-end;
-    margin-right: 30px;
+    display: flex;
+    flex-direction: row;
+    margin-right: 40px;
     margin-bottom: 20px;
+
+    .buyer-registration-page__skip-button {
+      padding: 6px;
+    }
   }
 }
 
