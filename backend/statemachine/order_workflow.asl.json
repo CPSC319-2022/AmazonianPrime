@@ -5,17 +5,30 @@
     "Check Cart Items": {
       "Type": "Task",
       "Resource": "${CartCheckerFunctionArn}",
-      "Retry": [
+      "Next": "Simulate Payment"
+    },
+    "Simulate Payment": {
+      "Type": "Task",
+      "Resource": "${PaymentSimulationFunctionArn}",
+      "Next": "Payment Approved?"
+    },
+    "Payment Approved?": {
+      "Type": "Choice",
+      "Choices": [
         {
-          "ErrorEquals": [
-            "States.TaskFailed"
-          ],
-          "IntervalSeconds": 15,
-          "MaxAttempts": 5,
-          "BackoffRate": 1.5
+          "Variable": "$.payment_status",
+          "StringMatches": "Approved",
+          "Next": "Checkout Success"
         }
       ],
-      "End": true
+      "Default": "Checkout Fail"
+    },
+    "Checkout Success": {
+      "Type": "Succeed"
+    },
+    "Checkout Fail": {
+      "Type": "Fail"
     }
   }
+}
 }
