@@ -7,7 +7,9 @@
       "Resource": "${CartCheckerFunctionArn}",
       "Retry": [
         {
-          "ErrorEquals": ["States.TaskFailed"],
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
           "IntervalSeconds": 15,
           "MaxAttempts": 5,
           "BackoffRate": 1.5

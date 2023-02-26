@@ -8,7 +8,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 30
     MemorySize: 128
   Api:
     Cors:
@@ -83,7 +83,7 @@ Resources:
   OrderStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
-      Type: EXPRESS #why are we using express?
+      Type: STANDARD #why are we using express?
       DefinitionUri: statemachine/order_workflow.asl.json
       DefinitionSubstitutions:
         CartCheckerFunctionArn: !GetAtt CartCheckerFunction.Arn
@@ -105,11 +105,37 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        Listings:
+        CartChecker:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /api/listings/test # Testing
             Method: get
+  CheckoutPollFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/checkout/
+      Handler: app.lambdaHandler
+      Policies:
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt OrderStateMachine.Name
+        - Statement:
+            - Sid: StepFunctionsDescribeExecutionPolicy
+              Effect: Allow
+              Action:
+                - states:DescribeExecution
+              Resource: "*"
+      Environment:
+        Variables:
+          StateMachineArn: !GetAtt OrderStateMachine.Arn
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Checkout:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/checkout/test # Testing
+            Method: post
   FrontendBucket:
     Type: AWS::S3::Bucket
   ListingsFunction:
@@ -923,5 +949,11 @@ Outputs:
   LoginFunctionIamRole:
     Description: "Implicit IAM Role created for Login function"
     Value: !GetAtt LoginFunctionRole.Arn
+  OrderStateMachine:
+    Value: !GetAtt OrderStateMachine.Arn
+    Description: OrderStateMachine Arn
+  OrderApi:
+    Description: "API Gateway endpoint URL for Prod stage for Order step function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/order/checkout/"
   Website:
     Value: !GetAtt CloudFrontDistribution.DomainName
