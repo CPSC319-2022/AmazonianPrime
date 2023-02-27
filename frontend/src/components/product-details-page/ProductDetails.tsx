@@ -29,10 +29,10 @@ function ProductDetails() {
         </Grid>
       </Grid>
       <Grid container rowSpacing={0}>
-        <Grid item xs={1.5}>
+        <Grid item xs={1.2}>
           <p className="product-cost">C${cost}</p>
         </Grid>
-        <Grid item xs={10.5}>
+        <Grid item xs={10.8}>
           <p className="listed-time">Listed 1 hour ago</p>
         </Grid>
         <Grid item xs={0.5} className="shipping-icon" margin={0}>
