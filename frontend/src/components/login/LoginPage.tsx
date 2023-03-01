@@ -1,14 +1,30 @@
 import './LoginPage.scss';
-import Banner from '../common/Banner';
-import { Button } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
-import { blue } from '@mui/material/colors';
 import { useLazyLoginQuery } from '../../redux/api/user';
 import BuyerRegistration from './BuyerRegistration';
 import { setUser } from '../../redux/reducers/userSlice';
 import { useAppDispatch } from '../../redux/store';
+import { useEffect } from 'react';
 
 function LoginPage() {
+  function handleGoogleSignIn(response: any) {
+    
+  }
+
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id: '564219752620-5lcsrf60frhamrotf69bceiktsiamjmh.apps.googleusercontent.com',
+      callback: handleGoogleSignIn,
+    });
+
+    google.accounts.id.renderButton(document.getElementById('signInDiv')!, {
+      theme: 'outline',
+      size: 'large',
+      type: 'standard',
+      text: 'continue_with',
+      width: '300',
+    });
+  }, []);
+
   const dispatch = useAppDispatch();
   const [triggerGetQuery, result, lastPromiseInfo] = useLazyLoginQuery();
   function signIn() {
@@ -49,14 +65,7 @@ function LoginPage() {
         </div>
         <div className="login-page__login-prompts">
           <span>Sign in or Register</span>
-          <Button
-            variant="contained"
-            startIcon={<GoogleIcon sx={{ color: blue[400] }} />}
-            className="login-page__sign-in"
-            onClick={() => signIn()}
-          >
-            Sign in with Google
-          </Button>
+          <div id="signInDiv" className="login-page__sign-in"></div>
         </div>
       </div>
     </div>
