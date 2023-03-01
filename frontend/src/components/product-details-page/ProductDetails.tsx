@@ -14,36 +14,36 @@ function ProductDetails() {
 
   return (
     <div className="product-details">
-      <h1 className="product-name">{listingName}</h1>
+      <h1 className="product-details__name">{listingName}</h1>
       <Grid container rowSpacing={0}>
         <Grid item xs={0.9} marginTop={0.2} marginBottom={0.2}>
-          <div className="circle">
+          <div className="product-details_user-avatar">
             {user.firstName.charAt(0)}
             {user.lastName.charAt(0)}
           </div>
         </Grid>
         <Grid item xs={11.1} marginTop={0.5}>
-          <div className="user-name">
-            {user.firstName}&nbsp;{user.lastName.charAt(0)}.<div className="user-department">Marketing</div>
+          <div className="product-details__user-name">
+            {user.firstName}&nbsp;{user.lastName.charAt(0)}.<div className="product-details__user-department">Marketing</div>
           </div>
         </Grid>
       </Grid>
       <Grid container rowSpacing={0}>
         <Grid item xs={1.2}>
-          <p className="product-cost">C${cost}</p>
+          <p className="product-details__product-cost">C${cost}</p>
         </Grid>
         <Grid item xs={10.8}>
-          <p className="listed-time">Listed 1 hour ago</p>
+          <p className="product-details__listed-time">Listed 1 hour ago</p>
         </Grid>
-        <Grid item xs={0.5} className="shipping-icon" margin={0}>
+        <Grid item xs={0.5} className="product-details__shipping-icon" margin={0}>
           <p>
             <LocalShippingIcon />
           </p>
         </Grid>
         <Grid item xs={11.5} marginTop={1}>
-          <p className="small-font">Offers shipping to desk and home</p>
+          <p className="product-details__small-text">Offers shipping to desk and home</p>
         </Grid>
-        <div className="buttons">
+        <div className="product-details__buttons">
           <Button
             variant="contained"
             color="secondary"
@@ -62,8 +62,8 @@ function ProductDetails() {
       </Grid>
       <Details />
       <div>
-        <div className="small-header">Description</div>
-        <div className="description">{listing.description}</div>
+        <div className="product-details__small-header">Description</div>
+        <div className="product-details__description">{listing.description}</div>
       </div>
     </div>
   );
