@@ -111,7 +111,7 @@ jobs:
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
 
   build-and-package:
-    if: github.ref == 'refs/heads/main' || True
+    if: github.ref == 'refs/heads/main' || true
     needs: [test]
     runs-on: ubuntu-latest
     steps:
