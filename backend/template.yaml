@@ -253,7 +253,60 @@ Resources:
       VpcId:
         Ref: "rdsEC2VPC"
       Tags: [{ "Key": "Name", "Value": "lambdaSecurityGroup" }]
+  # ---- Database Functions ------
+  DBInitFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/db-init/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
 
+  primer:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      InlineCode: |
+        var aws = require('aws-sdk');
+        var response = require('cfn-response');
+        exports.handler = function(event, context) {
+            // For Delete requests, immediately send a SUCCESS response.
+            if (event.RequestType == "Delete") {
+                response.send(event, context, "SUCCESS");
+                return;
+            }
+            var responseStatus = "FAILED";
+            var responseData = {};
+            var functionName = event.ResourceProperties.FunctionName
+            var lambda = new aws.Lambda();
+            lambda.invoke({ FunctionName: functionName }, function(err, invokeResult) {
+                if (err) {
+                    responseData = {Error: "Invoke call failed"};
+                    console.log(responseData.Error + ":\n", err);
+                }
+                else responseStatus = "SUCCESS";
+                response.send(event, context, responseStatus, responseData);
+            });
+        };
+      Description: Invoke a function to create a log stream.
+      MemorySize: 128
+      Timeout: 15
+      Tracing: Active
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref DBInitFunction
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
