@@ -156,6 +156,34 @@ Resources:
             Path: /api/signup # Ensure api is proxied with /api/*
             Method: get # TODO: change this to PUT
 
+  ##  ----------------- Database Config -----------------
+  RDSLambdaVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      Tags: [{ "Key": "Name", "Value": "RDSLambdaVpc" }]
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "us-west-2a"
+      VpcId:
+        Ref: "RDSLambdaVpc"
+      CidrBlock: "192.168.1.0/24"
+      Tags: [{ "Key": "Name", "Value": "PrivateSubnet1" }]
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "us-west-2b"
+      VpcId:
+        Ref: "RDSLambdaVpc"
+      CidrBlock: "192.168.2.0/24"
+      Tags: [{ "Key": "Name", "Value": "PrivateSubnet2" }]
+  RDSSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Subnets for RDS"
+      SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Tags: [{ "Key": "Name", "Value": "RDSSubnetGroup" }]
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
