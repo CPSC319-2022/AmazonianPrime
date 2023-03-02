@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'update-yaml'
       - 'feature**'
   delete:
     branches:
@@ -12,7 +13,7 @@ on:
 env:
   PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  SAM_TEMPLATE: template.yaml
+  SAM_TEMPLATE: backend/build/template.yaml
   TESTING_STACK_NAME: sam-app
   TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::838579709157:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-BFN5LGAVR11F
   TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::838579709157:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-KY9NRNKAULBG
@@ -110,7 +111,7 @@ jobs:
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
 
   build-and-package:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || True
     needs: [test]
     runs-on: ubuntu-latest
     steps:
