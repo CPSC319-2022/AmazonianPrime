@@ -43,25 +43,19 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  let createUserTableQuery = `CREATE TABLE Users (
-    PersonID int,
-    LastName varchar(255),
-    FirstName varchar(255),
-    Address varchar(255),
-    City varchar(255)
-  );`;
-  const createTable = await new Promise((resolve, reject) => {
-    con.query(createUserTableQuery, function (err, res) {
+  const tablesList = await new Promise((resolve, reject) => {
+    con.query("SHOW TABLES", function (err, res) {
       if (err) {
-        reject("Couldn't create persons table!");
+        reject("Couldn't connect to database!");
       }
       resolve(res);
     });
   });
 
-  console.log(createTable);
+  console.log(tablesList);
 
   return {
-    status: "SUCCESS",
+    statusCode: 200,
+    body: tablesList,
   };
 };
