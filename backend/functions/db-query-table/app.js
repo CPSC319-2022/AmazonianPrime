@@ -11,8 +11,6 @@ var mysql = require("mysql");
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  console.log("--- Initializing DB Tables ---");
-
   console.log("Connecting to database...");
   var con = mysql.createConnection({
     host: process.env.DatabaseAddress,
@@ -46,7 +44,7 @@ exports.lambdaHandler = async (event, context) => {
   const tablesList = await new Promise((resolve, reject) => {
     con.query("SHOW TABLES", function (err, res) {
       if (err) {
-        reject("Couldn't connect to database!");
+        reject("Couldn't show database!");
       }
       resolve(res);
     });
