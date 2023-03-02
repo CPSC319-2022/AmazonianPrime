@@ -15,10 +15,10 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log("Connecting to database...");
   var con = mysql.createConnection({
-    host: "myrdsdemo.cl0n1j7rxinq.us-west-2.rds.amazonaws.com",
+    host: process.env.DatabaseAddress,
     user: "user",
     password: "Password1234",
-    database: "testingdb",
+    database: "databaseAmazonianPrime",
   });
 
   const connectionStatus = await new Promise((resolve, reject) => {
@@ -34,17 +34,32 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log("Successfully connected to database!");
 
-  const newDatabase = await new Promise((resolve, reject) => {
-    con.query("CREATE DATABASE testing3", function (err, res) {
+  const useDatabase = await new Promise((resolve, reject) => {
+    con.query("USE databaseAmazonianPrime", function (err, res) {
       if (err) {
-        reject("Couldn't obtain list of databases");
+        reject("Couldn't switch to database!");
       }
-      console.log("Successfully created dummy database!");
       resolve(res);
     });
   });
 
-  console.log(newDatabase);
+  let queryTable = `CREATE TABLE Persons (
+    PersonID int,
+    LastName varchar(255),
+    FirstName varchar(255),
+    Address varchar(255),
+    City varchar(255)
+);`;
+  const createTable = await new Promise((resolve, reject) => {
+    con.query(queryTable, function (err, res) {
+      if (err) {
+        reject("Couldn't create persons table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createTable);
 
   return {
     status: "SUCCESS",

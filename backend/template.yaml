@@ -265,6 +265,9 @@ Resources:
       VpcConfig:
         SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
         SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
       Policies:
         - Statement:
             - Sid: RDSLambdaConnectPolicy
@@ -272,7 +275,6 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
-
   primer:
     Type: AWS::Serverless::Function
     Properties:
@@ -307,6 +309,15 @@ Resources:
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref DBInitFunction
+  primerinvoke:
+    Type: AWS::CloudFormation::CustomResource
+    Version: "1.0"
+    DependsOn:
+      - rdsDBInstance
+      - DBInitFunction
+    Properties:
+      ServiceToken: !GetAtt primer.Arn
+      FunctionName: !Ref DBInitFunction
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
