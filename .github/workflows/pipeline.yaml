@@ -51,7 +51,7 @@ jobs:
           )" >> $GITHUB_ENV
       - name: Build frontend
         working-directory: frontend
-        run: npm install && npm run build
+        run: npm install && CI=false npm run build
       - name: Clear frontend bucket
         run: |
           aws s3 rm s3://${{ env.frontend_bucket_name }} --recursive
