@@ -29,7 +29,12 @@ function Details() {
           <p className="product-details__details__grey-text">Quantity</p>
         </Grid>
         <Grid item xs={9} marginTop={1}>
-          <Select className="product-details__details__select" defaultValue={1} size="small" style={{ backgroundColor: '#e0e0e0' }}>
+          <Select
+            className="product-details__details__select"
+            defaultValue={1}
+            size="small"
+            style={{ backgroundColor: '#e0e0e0' }}
+          >
             <MenuItem value="1">1</MenuItem>
             <MenuItem value="2">2</MenuItem>
           </Select>

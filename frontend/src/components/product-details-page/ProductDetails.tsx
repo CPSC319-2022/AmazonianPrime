@@ -23,7 +23,8 @@ function ProductDetails() {
         </Grid>
         <Grid item xs={11.1} marginTop={0.5}>
           <div className="product-details__user-name">
-            {user.firstName}&nbsp;{user.lastName.charAt(0)}.<div className="product-details__user-department">Marketing</div>
+            {user.firstName}&nbsp;{user.lastName.charAt(0)}.
+            <div className="product-details__user-department">Marketing</div>
           </div>
         </Grid>
       </Grid>
