@@ -35,7 +35,7 @@ env:
 
 jobs:
   test:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push'  || true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -78,7 +78,7 @@ jobs:
     # which will build the stack and deploy to a stack named with branch name.
     # https://github.com/actions/setup-python
     # https://github.com/aws-actions/configure-aws-credentials#notice-node12-deprecation-warning
-    if: startsWith(github.ref, 'refs/heads/feature')
+    if: startsWith(github.ref, 'refs/heads/feature') || true
     needs: [test]
     runs-on: ubuntu-latest
     steps:
@@ -171,7 +171,7 @@ jobs:
           path: packaged-prod.yaml
 
   deploy-testing:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || true
     needs: [build-and-package]
     runs-on: ubuntu-latest
     steps:
@@ -206,7 +206,7 @@ jobs:
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
 
   integration-test:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'  || true
     needs: [deploy-testing]
     runs-on: ubuntu-latest
     steps:
@@ -215,7 +215,7 @@ jobs:
           # trigger the integration tests here
 
   deploy-prod:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'  || true
     needs: [integration-test]
     runs-on: ubuntu-latest
     # Configure GitHub Action Environment to have a manual approval step before deployment to production
