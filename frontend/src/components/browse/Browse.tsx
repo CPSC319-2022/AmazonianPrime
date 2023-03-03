@@ -1,4 +1,3 @@
-import PinDropIcon from '@mui/icons-material/PinDrop';
 import './Browse.scss';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useEffect } from 'react';
@@ -7,12 +6,14 @@ import { setRecentListings } from '../../redux/reducers/listingsSlice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ListingPreview from '../listing/ListingPreview';
 import { Grid, Pagination } from '@mui/material';
+import Breadcrumbs from '../common/Breadcrumbs';
 
 function Browse() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const category = searchParams.get('category');
   const page = searchParams.get('page');
+  const searchQuery = searchParams.get('q')?.replace('+', ' ');
   const listings = useAppSelector((state) => state.listings.recentListings);
   const dispatch = useAppDispatch();
 
@@ -31,7 +32,7 @@ function Browse() {
   }
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    navigate(`?category=${category}&page=${value}`);
+    navigate(`?category=${category}${searchQuery && `&q=${searchQuery}`}&page=${value}`);
   };
 
   if (!listings)
@@ -47,7 +48,7 @@ function Browse() {
 
   return (
     <div className="browse">
-      <div className="browse__category">{category?.replace(/-/g, ' ')}</div>
+      <Breadcrumbs />
       <div className="browse__container">
         <Grid container className="browse__container-grid" columns={4}>
           {(!isLoading ? tempData : Array(20).fill(0)).map((listing, index) => (
