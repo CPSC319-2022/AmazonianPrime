@@ -28,7 +28,7 @@ jobs:
           role-session-name: deploy
           role-duration-seconds: 3600
           role-skip-session-tagging: true
-      - name: Build backend
+      - name: Build backend 
         working-directory: backend
         run: sam build
       - name: Deploy backend
