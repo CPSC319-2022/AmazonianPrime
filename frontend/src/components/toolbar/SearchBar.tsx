@@ -4,12 +4,14 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import './SearchBar.scss';
 import { Button, IconButton } from '@mui/material';
 import CategoryMenu from './CategoryMenu';
-import { useNavigate } from 'react-router-dom';
-import React, { useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useEffect, useMemo } from 'react';
 import { categories } from '../common/Categories';
 
 function SearchBar() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const category = searchParams.get('category');
   const [activeCategory, setActiveCategory] = React.useState(categories[0]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -37,6 +39,10 @@ function SearchBar() {
       search();
     }
   };
+
+  useEffect(() => {
+    setActiveCategory(category?.replace(/-/g, ' ') || categories[0]);
+  }, [searchParams]);
 
   const search = () => {
     if (formattedSearchQuery.length === 0) {

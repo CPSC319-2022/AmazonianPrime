@@ -2,7 +2,7 @@ export const categories = [
   'All Categories',
   'Amazon Merchandise',
   'Apparel',
-  'Electronis',
+  'Electronics',
   'Office Supplies',
   'Garden & Outdoors',
   'Home Goods',
