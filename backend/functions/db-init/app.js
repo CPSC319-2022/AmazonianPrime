@@ -44,7 +44,7 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   let createUserTableQuery = `CREATE TABLE Users (
-    PersonID int,
+    UserID int,
     LastName varchar(255),
     FirstName varchar(255),
     Address varchar(255),
@@ -54,6 +54,41 @@ exports.lambdaHandler = async (event, context) => {
     con.query(createUserTableQuery, function (err, res) {
       if (err) {
         reject("Couldn't create persons table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
+    PaymentID int, 
+    UserID int, 
+    AddressID int, 
+    CreditCardNum int, 
+    ExpiryDate int, 
+    CVV int, 
+    CardHolderName varchar(255),
+    primary key (PaymentID)
+  );`;
+
+  const createTablePaymentDetails = await new Promise((resolve, reject) => {
+    con.query(createPaymentDetailsTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create payment details table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createPaymentsMethodTableQuery = `CREATE TABLE PaymentMethod (
+    PaymentID int, 
+    UserID int, 
+    primary key (PaymentID, UserID)
+  );`;
+
+  const createTablePaymentMethod = await new Promise((resolve, reject) => {
+    con.query(createPaymentsMethodTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create payment method table!");
       }
       resolve(res);
     });
