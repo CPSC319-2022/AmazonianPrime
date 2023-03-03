@@ -169,6 +169,196 @@ Resources:
             Path: /api/signup # Ensure api is proxied with /api/*
             Method: get # TODO: change this to PUT
 
+  ##  ----------------- Database Config -----------------
+  rdsEC2VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      Tags: [{ "Key": "Name", "Value": "rdsEC2VPC" }]
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "us-west-2a"
+      VpcId:
+        Ref: "rdsEC2VPC"
+      CidrBlock: "192.168.1.0/24"
+      Tags: [{ "Key": "Name", "Value": "PrivateSubnet1" }]
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "us-west-2b"
+      VpcId:
+        Ref: "rdsEC2VPC"
+      CidrBlock: "192.168.2.0/24"
+      Tags: [{ "Key": "Name", "Value": "PrivateSubnet2" }]
+  rdsDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Subnets for RDS"
+      SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Tags: [{ "Key": "Name", "Value": "rdsDBSubnetGroup" }]
+  rdsDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: "db.t2.micro"
+      AllowMajorVersionUpgrade: "false"
+      AutoMinorVersionUpgrade: "false"
+      BackupRetentionPeriod: "7"
+      DBInstanceIdentifier: "CPSC319RDS"
+      DBName: "databaseAmazonianPrime"
+      VPCSecurityGroups: [{ "Ref": "rdsSecurityGroup" }]
+      DBSubnetGroupName:
+        Ref: "rdsDBSubnetGroup"
+      Engine: "MySQL"
+      EngineVersion: "8.0.28"
+      MasterUsername: "user"
+      MasterUserPassword: "Password1234"
+      MultiAZ: "false"
+      Port: "3306"
+      PubliclyAccessible: "false"
+      StorageType: "gp2"
+      Tags: [{ "Key": "Name", "Value": "rdsDBInstance" }]
+  rdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow RDS Connections"
+      SecurityGroupIngress:
+        [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "CidrIp": "0.0.0.0/0",
+          },
+          {
+            "SourceSecurityGroupId": { "Ref": "lambdaSecurityGroup" },
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+          },
+        ]
+      SecurityGroupEgress:
+        [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0",
+          },
+        ]
+      VpcId:
+        Ref: "rdsEC2VPC"
+      Tags: [{ "Key": "Name", "Value": "rdsSecurityGroup" }]
+  lambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow Lambda Connection to RDS"
+      SecurityGroupEgress:
+        [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "CidrIp": "0.0.0.0/0",
+          },
+        ]
+      VpcId:
+        Ref: "rdsEC2VPC"
+      Tags: [{ "Key": "Name", "Value": "lambdaSecurityGroup" }]
+  # ---- Database Functions ------
+  DBInitFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/db-init/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+  primer:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      InlineCode: |
+        var aws = require('aws-sdk');
+        var response = require('cfn-response');
+        exports.handler = function(event, context) {
+            // For Delete requests, immediately send a SUCCESS response.
+            if (event.RequestType == "Delete") {
+                response.send(event, context, "SUCCESS");
+                return;
+            }
+            var responseStatus = "FAILED";
+            var responseData = {};
+            var functionName = event.ResourceProperties.FunctionName
+            var lambda = new aws.Lambda();
+            lambda.invoke({ FunctionName: functionName }, function(err, invokeResult) {
+                if (err) {
+                    responseData = {Error: "Invoke call failed"};
+                    console.log(responseData.Error + ":\n", err);
+                }
+                else responseStatus = "SUCCESS";
+                response.send(event, context, responseStatus, responseData);
+            });
+        };
+      Description: Invoke a function to create a log stream.
+      MemorySize: 128
+      Timeout: 15
+      Tracing: Active
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref DBInitFunction
+  primerinvoke:
+    Type: AWS::CloudFormation::CustomResource
+    Version: "1.0"
+    DependsOn:
+      - rdsDBInstance
+      - DBInitFunction
+    Properties:
+      ServiceToken: !GetAtt primer.Arn
+      FunctionName: !Ref DBInitFunction
+
+  DBSQueryFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/db-query-table/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/db/tables # Ensure api is proxied with /api/*
+            Method: get
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
