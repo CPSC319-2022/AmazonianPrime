@@ -1,8 +1,8 @@
 import { Grid, Select, MenuItem } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
-import './Details.scss';
+import './DetailsMetaData.scss';
 
-function Details() {
+function DetailsMetaData() {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   if (!listing) {
     return null;
@@ -44,4 +44,4 @@ function Details() {
   );
 }
 
-export default Details;
+export default DetailsMetaData;

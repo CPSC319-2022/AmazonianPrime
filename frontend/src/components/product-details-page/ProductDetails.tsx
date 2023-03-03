@@ -2,7 +2,7 @@ import './ProductDetails.scss';
 import { useAppSelector } from '../../redux/store';
 import { Button, Grid } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import Details from './Details';
+import DetailsMetaData from './DetailsMetaData';
 
 function ProductDetails() {
   const listing = useAppSelector((state) => state.listings.listingDetails);
@@ -60,7 +60,7 @@ function ProductDetails() {
           </Button>
         </div>
       </Grid>
-      <Details />
+      <DetailsMetaData />
       <div>
         <div className="product-details__small-header">Description</div>
         <div className="product-details__description">{listing.description}</div>
