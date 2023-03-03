@@ -9,7 +9,7 @@ import { setRecentListings } from '../../redux/reducers/listingsSlice';
 function LandingPage() {
   const listings = useAppSelector((state) => state.listings.recentListings);
   const dispatch = useAppDispatch();
-  const { data } = useGetRecentListingsQuery();
+  const { data, isLoading } = useGetRecentListingsQuery();
   useEffect(() => {
     if (data) {
       dispatch(setRecentListings(data));
@@ -21,12 +21,10 @@ function LandingPage() {
       <div className="landing-page__welcome-content">
         <WelcomeContent />
       </div>
-      {listings && (
-        <>
-          <ListingRow title={'Recently Added'} listings={[...listings, ...listings, ...listings]} />
-          <ListingRow title={'Amazon Exclusives'} listings={listings} />
-        </>
-      )}
+      <>
+        <ListingRow isLoading={isLoading} title={'Recently Added'} listings={[...listings, ...listings, ...listings]} />
+        <ListingRow isLoading={isLoading} title={'Amazon Exclusives'} listings={listings} />
+      </>
     </div>
   );
 }

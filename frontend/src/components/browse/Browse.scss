@@ -1,0 +1,30 @@
+.browse {
+  margin: 2.5em 0 3em 0;
+}
+.browse__container-grid {
+  width: 100%;
+  margin: auto;
+}
+
+.browse__container {
+  margin: 0 3.5em;
+}
+
+.browse__category {
+  text-transform: capitalize;
+  margin-left: 2em;
+  font-weight: 500;
+  font-size: 1.2em;
+}
+
+.browse__container__grid-item.browse__container__grid-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.browse__pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
