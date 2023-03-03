@@ -1,1 +1,15 @@
 @import '../../variables';
+.product-details__details__grey-text {
+    font-weight: 450;
+    margin-bottom: 0;
+    color: grey;
+}
+  
+.product-details__details__category-value {
+    margin-bottom: 0;
+}
+
+.product-details__details__select {
+    width: 60px;
+    height: 20px;
+}

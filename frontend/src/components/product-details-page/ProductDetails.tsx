@@ -1,5 +1,4 @@
 import './ProductDetails.scss';
-import React from 'react';
 import { useAppSelector } from '../../redux/store';
 import { Button, Grid } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';

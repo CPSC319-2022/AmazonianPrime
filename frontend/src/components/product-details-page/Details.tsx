@@ -1,5 +1,6 @@
 import { Grid, Select, MenuItem } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
+import './Details.scss';
 
 function Details() {
   const listing = useAppSelector((state) => state.listings.listingDetails);
@@ -9,10 +10,10 @@ function Details() {
   const getDetailsRow = (category: string, value: string) => (
     <>
       <Grid item xs={3}>
-        <p className="product-details__grey-text">{category}</p>
+        <p className="product-details__details__grey-text">{category}</p>
       </Grid>
       <Grid item xs={9}>
-        <p className="product-details__category-value">{value}</p>
+        <p className="product-details__details__category-value">{value}</p>
       </Grid>
     </>
   );
@@ -25,10 +26,10 @@ function Details() {
         {getDetailsRow('Brand', 'N/A')}
         {getDetailsRow('Colour', 'N/A')}
         <Grid item xs={3}>
-          <p className="product-details__grey-text">Quantity</p>
+          <p className="product-details__details__grey-text">Quantity</p>
         </Grid>
         <Grid item xs={9} marginTop={1}>
-          <Select className="product-details__select" defaultValue={1} size="small" style={{ backgroundColor: '#e0e0e0' }}>
+          <Select className="product-details__details__select" defaultValue={1} size="small" style={{ backgroundColor: '#e0e0e0' }}>
             <MenuItem value="1">1</MenuItem>
             <MenuItem value="2">2</MenuItem>
           </Select>
