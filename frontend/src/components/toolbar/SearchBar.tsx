@@ -29,9 +29,9 @@ function SearchBar() {
     setAnchorEl(null);
   };
 
-  const handleClick = (category: string) => {
+  const handleClick = (newCategory: string) => {
     handleClose();
-    setActiveCategory(category);
+    setActiveCategory(newCategory);
   };
 
   const handleKeyDown = (event: any) => {
