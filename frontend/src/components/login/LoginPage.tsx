@@ -7,15 +7,7 @@ import { useEffect } from 'react';
 
 function LoginPage() {
   function handleGoogleSignIn(response: any) {
-    console.log(parseJWT(response.credential));
-  }
-
-  const parseJWT = (token: string) => {
-    try {
-      return JSON.parse(window.atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
-    }
+    console.log(response.credential);
   }
 
   useEffect(() => {
