@@ -15,6 +15,9 @@ Globals:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'content-type'"
       AllowOrigin: "'*'"
+Parameters:
+  PipelineRole:
+    Type: String
 
 Resources:
   FrontendBucketPolicy:
@@ -29,6 +32,16 @@ Resources:
             Action: "s3:GetObject"
             Resource: !Sub
               - "arn:aws:s3:::${Bucket}/*"
+              - Bucket: !Ref FrontendBucket
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !Ref PipelineRole
+            Action:
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+            Resource: !Sub
+              - 'arn:aws:s3:::${Bucket}/*'
               - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
