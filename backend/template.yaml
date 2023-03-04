@@ -397,7 +397,7 @@ Resources:
         - x86_64
       Events:
         http:
-          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /api/user/{token} # Ensure api is proxied with /api/*
             Method: get
