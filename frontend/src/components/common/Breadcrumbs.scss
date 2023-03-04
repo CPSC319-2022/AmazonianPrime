@@ -6,13 +6,7 @@
   font-size: 1.2em;
 }
 
-.breadcrumbs__search-string {
-  margin-left: 0.1em;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 1.1em;
-  color: $grey;
+.breadcrumbs__final-string {
   pointer-events: none;
 }
 
@@ -22,11 +16,5 @@
   align-items: center;
   margin-left: 2em;
   margin-bottom: 0.1em;
-}
-
-.breadcrumbs__breadcrumb-separator.breadcrumbs__breadcrumb-separator {
-  height: 0.75em;
-  color: $primary-color;
-  margin-top: 2px;
-  margin-right: 5.5px;
+  margin-top: 1.5em;
 }

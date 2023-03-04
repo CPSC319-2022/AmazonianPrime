@@ -1,29 +1,69 @@
 import './Breadcrumbs.scss';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Button } from '@mui/material';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Typography, Breadcrumbs as MUIBreadcrumbs } from '@mui/material';
+import { useAppSelector } from '../../redux/store';
 
 function Breadcrumbs() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const category = searchParams.get('category');
-  const searchQuery = searchParams.get('q')?.replace('+', ' ');
+  const listing = useAppSelector((state) => state.listings.listingDetails);
+  const { listingId } = useParams();
+  const category = searchParams.get('category') ?? location.state?.category;
+  const searchQuery = searchParams.get('q')?.replace('+', ' ') ?? location.state?.searchQuery;
+  const page = location.state?.page;
+
+  let breadCrumbs = [];
+  // This is the order in which the breadcrumbs will appear
+  if (category) {
+    breadCrumbs = [
+      {
+        link: category?.replace(/-/g, ' '),
+        navigate: `/browse?category=${category}&page=${page ?? 1}`,
+      },
+    ];
+
+    if (searchQuery) {
+      breadCrumbs = [
+        ...breadCrumbs,
+        {
+          link: `"${searchQuery}"`,
+          navigate: `/browse?category=${category}${searchQuery && `&q=${searchQuery}`}&page=${page ?? 1}`,
+        },
+      ];
+    }
+  } else {
+    breadCrumbs = [
+      {
+        link: 'Home',
+        navigate: '/',
+      },
+    ];
+  }
+  if (listingId && listing?.listingName) {
+    breadCrumbs = [
+      ...breadCrumbs,
+      {
+        link: listing.listingName,
+        navigate: '',
+      },
+    ];
+  }
 
   return (
     <div className="breadcrumbs">
-      <Button
-        onClick={() => navigate(`?category=${category}&page=${1}`)}
-        className="breadcrumbs__category"
-        variant="text"
-      >
-        {category?.replace(/-/g, ' ')}
-      </Button>
-      {searchQuery && (
-        <div className="breadcrumbs__search-string">
-          <ArrowForwardIosIcon className="breadcrumbs__breadcrumb-separator" />
-          <div>"{searchQuery}"</div>
-        </div>
-      )}
+      <MUIBreadcrumbs aria-label="breadcrumb" className="breadcrumbs__category">
+        {breadCrumbs.map(({ link, navigate }: { link: string; navigate: string }, index: number) => {
+          return index === breadCrumbs.length - 1 ? (
+            <Typography className="breadcrumbs__final-string" color="text.primary">
+              {link}
+            </Typography>
+          ) : (
+            <Link underline="hover" color="inherit" href={navigate}>
+              {link}
+            </Link>
+          );
+        })}
+      </MUIBreadcrumbs>
     </div>
   );
 }

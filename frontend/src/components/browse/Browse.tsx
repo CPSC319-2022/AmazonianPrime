@@ -13,7 +13,7 @@ function Browse() {
   const navigate = useNavigate();
   const category = searchParams.get('category');
   const page = searchParams.get('page');
-  const searchQuery = searchParams.get('q')?.replace('+', ' ') || "";
+  const searchQuery = searchParams.get('q')?.replace('+', ' ') || '';
   const listings = useAppSelector((state) => state.listings.recentListings);
   const dispatch = useAppDispatch();
 
