@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'update-yaml'
  
 env:
   PIPELINE_EXECUTION_ROLE: arn:aws:iam::838579709157:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-BFN5LGAVR11F
