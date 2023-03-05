@@ -109,27 +109,27 @@ exports.lambdaHandler = async (event, context) => {
   );`;
 
   const createTableAddress = await new Promise((resolve, reject) => {
-    con.query(createPaymentsMethodTableQuery, function (err, res) {
+    con.query(createAddressTableQuery, function (err, res) {
       if (err) {
-        reject("Couldn't create address method table!");
+        reject("Couldn't create address table!");
       }
       resolve(res);
     });
   });
 
   let createCountryTableQuery = `CREATE TABLE Country (
-    CityName varchar(255), 
-    Province varchar(255), 
-    StreetAddress varchar(255), 
+    CityName varchar(255) NOT NULL, 
+    Province varchar(255) NOT NULL, 
+    StreetAddress varchar(255) NOT NULL, 
     PostalCode varchar(255), 
     Country varchar(255),
     PRIMARY KEY (CityName, Province, StreetAddress)
   );`;
 
   const createTableCountry = await new Promise((resolve, reject) => {
-    con.query(createPaymentsMethodTableQuery, function (err, res) {
+    con.query(createCountryTableQuery, function (err, res) {
       if (err) {
-        reject("Couldn't create address method table!");
+        reject("Couldn't create country table!");
       }
       resolve(res);
     });
