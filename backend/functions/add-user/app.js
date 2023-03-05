@@ -1,3 +1,4 @@
+const dbConnection = require("dbConnection.js");
 var mysql = require("mysql");
 
 /**
@@ -11,51 +12,16 @@ var mysql = require("mysql");
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  console.log("Connecting to database...");
-  var con = mysql.createConnection({
-    host: process.env.DatabaseAddress,
-    user: "user",
-    password: "Password1234",
-    database: "databaseAmazonianPrime",
-  });
+  var con = await dbConnection.connectDB(
+    process.env.DatabaseAddress,
+    "user",
+    "Password1234",
+    "databaseAmazonianPrime"
+  );
 
-  const connectionStatus = await new Promise((resolve, reject) => {
-    con.connect(function (err) {
-      if (err) {
-        console.log("Failed to connect to the database");
-        reject("Failed to connect to the database");
-        //TO-DO: Need to figure out how to throw an error to primer function so that it rollsback the deployment
-      }
-      resolve("Connected to Database!");
-    });
-  });
+  const { firstName, lastName, email, department } = JSON.parse(event.body);
 
-  console.log("Successfully connected to database!");
-
-  const useDatabase = await new Promise((resolve, reject) => {
-    con.query("USE databaseAmazonianPrime", function (err, res) {
-      if (err) {
-        reject("Couldn't switch to database!");
-      }
-      resolve(res);
-    });
-  });
-
-  const postBody = JSON.parse(event.body);
-
-  let addUserQuery =
-    `INSERT INTO Users(firstName,lastName,email,username,department,isAdmin) 
-VALUES ("` +
-    postBody.firstName +
-    `", "` +
-    postBody.lastName +
-    `", "` +
-    postBody.email +
-    `", "` +
-    postBody.username +
-    `", "` +
-    postBody.department +
-    `", false);`;
+  let addUserQuery = `INSERT INTO Users(firstName, lastName, email, department, isAdmin) VALUES("${firstName}", "${lastName}", "${email}", "${department}", false)`;
 
   const addUsers = await new Promise((resolve, reject) => {
     con.query(addUserQuery, function (err, res) {
