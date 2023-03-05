@@ -7,12 +7,15 @@ import NavBar from './components/common/NavBar';
 import { ReactNode } from 'react';
 import LoginPage from './components/login/LoginPage';
 import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
+import Browse from './components/browse/Browse';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
+  // TEMP
+  const isLoggedIn = sessionStorage.getItem('user');
 
   const renderHomePage = (): ReactNode => {
-    if (!user) {
+    if (!user && !isLoggedIn) {
       return <LoginPage />;
     } else {
       return <LandingPage />;
@@ -28,6 +31,7 @@ const AppWrapper = () => {
       <Routes>
         <Route path="/" element={renderHomePage()} />
         <Route path="/listing/:listingId" element={<ProductDetailsPage />} />
+        <Route path="/browse" element={<Browse />} />
       </Routes>
     </ThemeProvider>
   );
