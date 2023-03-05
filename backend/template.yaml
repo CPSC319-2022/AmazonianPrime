@@ -387,6 +387,9 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
   GetUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -414,6 +417,28 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+
+  DBSharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: DBSharedLayer
+      Description: Some code to share with the other lambda functions
+      ContentUri: ./helpers
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Delete
+  NodeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: NodeDependenciesLayer
+      Description: Base layer for node apps
+      ContentUri: ./layers-dependencies
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Delete
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM

@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var OAuth2Client = require("google-auth-library");
+const dbConnection = require("dbConnection.js");
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -45,37 +46,16 @@ exports.lambdaHandler = async (event, context) => {
 
   const email = event.pathParameters.token; // This is actually the userToken, but I am passing in the email for now.
 
-  var con = mysql.createConnection({
-    host: process.env.DatabaseAddress,
-    user: "user",
-    password: "Password1234",
-    database: "databaseAmazonianPrime",
-  });
+  var con = await dbConnection.connectDB(
+    process.env.DatabaseAddress,
+    "user",
+    "Password1234",
+    "databaseAmazonianPrime"
+  );
 
-  const connectionStatus = await new Promise((resolve, reject) => {
-    con.connect(function (err) {
-      if (err) {
-        console.log("Failed to connect to the database");
-        reject("Failed to connect to the database");
-      }
-      resolve("Connected to Database!");
-    });
-  });
+  let getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "${email}"`;
 
-  console.log("Successfully connected to database!");
-
-  const useDatabase = await new Promise((resolve, reject) => {
-    con.query("USE databaseAmazonianPrime", function (err, res) {
-      if (err) {
-        reject("Couldn't switch to database!");
-      }
-      resolve(res);
-    });
-  });
-
-  let getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "` + email + `"`;
-
-  const getUser = await new Promise((resolve, reject) => {
+  let getUser = await new Promise((resolve, reject) => {
     con.query(getUserByEmailQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the user from database!");
@@ -85,11 +65,31 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   if (getUser.length < 1) {
-    // The user doesn't exist in database, return 204 error
-    return {
-      statusCode: 204,
-      body: "No users were found with the given",
-    };
+    let firstName = "fromJWT";
+    let lastName = "alsoFromJWT";
+    let userEmail = email; //this should also be from jwt
+    let addUserQuery = `INSERT INTO Users(firstName, lastName, email, isAdmin) VALUES("${firstName}", "${lastName}", "${userEmail}", false)`;
+
+    const addUsers = await new Promise((resolve, reject) => {
+      con.query(addUserQuery, function (err, res) {
+        if (err) {
+          reject("Couldn't add the user to database!");
+        }
+        resolve(res);
+      });
+    });
+
+    let insertedId = addUsers["insertId"];
+
+    let getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${insertedId}"`;
+    getUser = await new Promise((resolve, reject) => {
+      con.query(getUserByIdQuery, function (err, res) {
+        if (err) {
+          reject("Couldn't get the user from database!");
+        }
+        resolve(res);
+      });
+    });
   }
 
   return {
