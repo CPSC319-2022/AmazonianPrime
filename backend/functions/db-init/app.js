@@ -48,7 +48,6 @@ exports.lambdaHandler = async (event, context) => {
     FirstName varchar(255),
     LastName varchar(255),
     Email varchar(255) UNIQUE,
-    Username varchar(255) UNIQUE,
     Department varchar(255),
     IsAdmin Boolean,
     PRIMARY KEY (UserID)
@@ -85,7 +84,7 @@ exports.lambdaHandler = async (event, context) => {
   let createPaymentsMethodTableQuery = `CREATE TABLE PaymentMethod (
     PaymentID int NOT NULL, 
     UserID int NOT NULL, 
-    primary key (PaymentID, UserID)
+    PRIMARY KEY (PaymentID, UserID)
   );`;
 
   const createTablePaymentMethod = await new Promise((resolve, reject) => {
@@ -105,7 +104,7 @@ exports.lambdaHandler = async (event, context) => {
     StreetAddress varchar(255), 
     IsBillingAddress boolean, 
     IsShippingAddress boolean, 
-    PRIMARY KEY (addressID)
+    PRIMARY KEY (AddressID)
   );`;
 
   const createTableAddress = await new Promise((resolve, reject) => {
