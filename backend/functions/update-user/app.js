@@ -19,12 +19,12 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { firstName, lastName, email, department } = JSON.parse(event.body);
+  const { userId, firstName, lastName, department } = JSON.parse(event.body);
 
-  let addUserQuery = `INSERT INTO Users(firstName, lastName, email, department, isAdmin) VALUES("${firstName}", "${lastName}", "${email}", "${department}", false)`;
+  let updateUserQuery = `UPDATE Users SET FirstName="${firstName}", LastName= "${lastName}", Department= "${department}" WHERE UserID = ${userId} `;
 
-  const addUsers = await new Promise((resolve, reject) => {
-    con.query(addUserQuery, function (err, res) {
+  const updateUsers = await new Promise((resolve, reject) => {
+    con.query(updateUserQuery, function (err, res) {
       if (err) {
         reject("Couldn't add the user to database!");
       }
@@ -32,10 +32,10 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  console.log(addUsers);
+  console.log(updateUsers);
 
   return {
     statusCode: 200,
-    body: JSON.stringify(addUsers),
+    body: JSON.stringify(updateUsers),
   };
 };

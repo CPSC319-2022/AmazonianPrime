@@ -66,10 +66,11 @@ exports.lambdaHandler = async (event, context) => {
     UserID int, 
     AddressID int, 
     CreditCardNum int, 
-    ExpiryDate int, 
+    ExpiryDate DATE, 
     CVV int, 
     CardHolderName varchar(255),
-    PRIMARY KEY (PaymentID)
+    PRIMARY KEY (PaymentID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
   );`;
 
   const createTablePaymentDetails = await new Promise((resolve, reject) => {
@@ -84,33 +85,15 @@ exports.lambdaHandler = async (event, context) => {
   let createPaymentsMethodTableQuery = `CREATE TABLE PaymentMethod (
     PaymentID int NOT NULL, 
     UserID int NOT NULL, 
-    PRIMARY KEY (PaymentID, UserID)
+    PRIMARY KEY (PaymentID, UserID),
+    FOREIGN KEY (PaymentID) REFERENCES PaymentDetails(PaymentID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
   );`;
 
   const createTablePaymentMethod = await new Promise((resolve, reject) => {
     con.query(createPaymentsMethodTableQuery, function (err, res) {
       if (err) {
         reject("Couldn't create payment method table!");
-      }
-      resolve(res);
-    });
-  });
-
-  let createAddressTableQuery = `CREATE TABLE Address (
-    AddressID int NOT NULL AUTO_INCREMENT, 
-    UserID int, 
-    City varchar(255), 
-    Province varchar(255), 
-    StreetAddress varchar(255), 
-    IsBillingAddress boolean, 
-    IsShippingAddress boolean, 
-    PRIMARY KEY (AddressID)
-  );`;
-
-  const createTableAddress = await new Promise((resolve, reject) => {
-    con.query(createAddressTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create address table!");
       }
       resolve(res);
     });
@@ -129,6 +112,28 @@ exports.lambdaHandler = async (event, context) => {
     con.query(createCountryTableQuery, function (err, res) {
       if (err) {
         reject("Couldn't create country table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createAddressTableQuery = `CREATE TABLE Address (
+    AddressID int NOT NULL AUTO_INCREMENT, 
+    UserID int, 
+    CityName varchar(255), 
+    Province varchar(255), 
+    StreetAddress varchar(255), 
+    IsBillingAddress Boolean, 
+    IsShippingAddress Boolean, 
+    PRIMARY KEY (AddressID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (CityName, Province, StreetAddress) REFERENCES Country(CityName, Province, StreetAddress)
+  );`;
+
+  const createTableAddress = await new Promise((resolve, reject) => {
+    con.query(createAddressTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create address table!");
       }
       resolve(res);
     });
