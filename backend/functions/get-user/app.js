@@ -46,16 +46,16 @@ exports.lambdaHandler = async (event, context) => {
 
   const email = event.pathParameters.token; // This is actually the userToken, but I am passing in the email for now.
 
-  var con = await dbConnection.connectDB(
+  const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
     "user",
     "Password1234",
     "databaseAmazonianPrime"
   );
 
-  let getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "${email}"`;
+  const getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "${email}"`;
 
-  let getUser = await new Promise((resolve, reject) => {
+  var getUser = await new Promise((resolve, reject) => {
     con.query(getUserByEmailQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the user from database!");
@@ -68,7 +68,7 @@ exports.lambdaHandler = async (event, context) => {
     let firstName = "fromJWT";
     let lastName = "alsoFromJWT";
     let userEmail = email; //this should also be from jwt
-    let addUserQuery = `INSERT INTO Users(firstName, lastName, email, isAdmin) VALUES("${firstName}", "${lastName}", "${userEmail}", false)`;
+    const addUserQuery = `INSERT INTO Users(firstName, lastName, email, isAdmin) VALUES("${firstName}", "${lastName}", "${userEmail}", false)`;
 
     const addUsers = await new Promise((resolve, reject) => {
       con.query(addUserQuery, function (err, res) {
@@ -79,9 +79,9 @@ exports.lambdaHandler = async (event, context) => {
       });
     });
 
-    let insertedId = addUsers["insertId"];
+    const insertedId = addUsers["insertId"];
 
-    let getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${insertedId}"`;
+    const getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${insertedId}"`;
     getUser = await new Promise((resolve, reject) => {
       con.query(getUserByIdQuery, function (err, res) {
         if (err) {

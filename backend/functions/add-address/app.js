@@ -12,7 +12,7 @@ var mysql = require("mysql");
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  var con = await dbConnection.connectDB(
+  const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
     "user",
     "Password1234",
@@ -30,7 +30,7 @@ exports.lambdaHandler = async (event, context) => {
     isShipAddr,
   } = JSON.parse(event.body);
 
-  let checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${cityName}" AND Province = "${province}" AND StreetAddress = "${streetAddress}"`;
+  const checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${cityName}" AND Province = "${province}" AND StreetAddress = "${streetAddress}"`;
 
   const getCountry = await new Promise((resolve, reject) => {
     con.query(checkCountryQuery, function (err, res) {
@@ -42,7 +42,7 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   if (getCountry.length < 1) {
-    let addCountryQuery = `INSERT INTO Country(CityName, Province, StreetAddress, PostalCode, Country) VALUES("${cityName}", "${province}", "${streetAddress}", "${postalCode}", "${country}")`;
+    const addCountryQuery = `INSERT INTO Country(CityName, Province, StreetAddress, PostalCode, Country) VALUES("${cityName}", "${province}", "${streetAddress}", "${postalCode}", "${country}")`;
     const addCountry = await new Promise((resolve, reject) => {
       con.query(addCountryQuery, function (err, res) {
         if (err) {
@@ -53,7 +53,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   }
 
-  let addAddressQuery = `INSERT INTO Address(UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES(${userId}, "${cityName}", "${province}", "${streetAddress}", ${isBillingAddr}, ${isShipAddr})`;
+  const addAddressQuery = `INSERT INTO Address(UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES(${userId}, "${cityName}", "${province}", "${streetAddress}", ${isBillingAddr}, ${isShipAddr})`;
 
   const addAddress = await new Promise((resolve, reject) => {
     con.query(addAddressQuery, function (err, res) {
@@ -64,11 +64,11 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  let addressId = addAddress["insertId"];
+  const addressId = addAddress["insertId"];
 
-  let getAddressByIdQuery = `SELECT * FROM Address WHERE AddressID = "${addressId}"`;
+  const getAddressByIdQuery = `SELECT * FROM Address WHERE AddressID = "${addressId}"`;
 
-  let getAddress = await new Promise((resolve, reject) => {
+  const getAddress = await new Promise((resolve, reject) => {
     con.query(getAddressByIdQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the address from database!");

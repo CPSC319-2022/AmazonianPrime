@@ -12,7 +12,7 @@ var mysql = require("mysql");
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  var con = await dbConnection.connectDB(
+  const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
     "user",
     "Password1234",
@@ -21,7 +21,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const { userId, firstName, lastName, department } = JSON.parse(event.body);
 
-  let updateUserQuery = `UPDATE Users SET FirstName="${firstName}", LastName= "${lastName}", Department= "${department}" WHERE UserID = ${userId} `;
+  const updateUserQuery = `UPDATE Users SET FirstName="${firstName}", LastName= "${lastName}", Department= "${department}" WHERE UserID = ${userId} `;
 
   const updateUsers = await new Promise((resolve, reject) => {
     con.query(updateUserQuery, function (err, res) {

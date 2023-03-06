@@ -12,7 +12,7 @@ var mysql = require("mysql");
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  var con = await dbConnection.connectDB(
+  const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
     "user",
     "Password1234",
@@ -22,7 +22,7 @@ exports.lambdaHandler = async (event, context) => {
   const { userId, addressId, creditCardNum, expiryDate, cvv, cardHolderName } =
     JSON.parse(event.body);
 
-  let addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${userId}, ${addressId}, ${creditCardNum}, "${expiryDate}", ${cvv}, "${cardHolderName}")`;
+  const addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${userId}, ${addressId}, ${creditCardNum}, "${expiryDate}", ${cvv}, "${cardHolderName}")`;
 
   const addPayment = await new Promise((resolve, reject) => {
     con.query(addPaymentQuery, function (err, res) {
@@ -33,9 +33,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  let paymentId = addPayment["insertId"];
+  const paymentId = addPayment["insertId"];
 
-  let addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${userId}, ${paymentId})`;
+  const addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${userId}, ${paymentId})`;
 
   const addPaymentMethod = await new Promise((resolve, reject) => {
     con.query(addPaymentMethodQuery, function (err, res) {
@@ -46,9 +46,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  let getPaymentByIdQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${paymentId}"`;
+  const getPaymentByIdQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${paymentId}"`;
 
-  let getPayment = await new Promise((resolve, reject) => {
+  const getPayment = await new Promise((resolve, reject) => {
     con.query(getPaymentByIdQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the address from database!");
