@@ -33,10 +33,32 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  console.log(addPayment);
+  let paymentId = addPayment["insertId"];
+
+  let addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${userId}, ${paymentId})`;
+
+  const addPaymentMethod = await new Promise((resolve, reject) => {
+    con.query(addPaymentMethodQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't add the user to database!");
+      }
+      resolve(res);
+    });
+  });
+
+  let getPaymentByIdQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${paymentId}"`;
+
+  let getPayment = await new Promise((resolve, reject) => {
+    con.query(getPaymentByIdQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't get the address from database!");
+      }
+      resolve(res);
+    });
+  });
 
   return {
     statusCode: 200,
-    body: JSON.stringify(addPayment),
+    body: JSON.stringify(getPayment[0]),
   };
 };
