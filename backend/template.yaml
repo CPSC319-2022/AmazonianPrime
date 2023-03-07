@@ -41,7 +41,7 @@ Resources:
               - "s3:PutObject"
               - "s3:DeleteObject"
             Resource: !Sub
-              - 'arn:aws:s3:::${Bucket}/*'
+              - "arn:aws:s3:::${Bucket}/*"
               - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
@@ -359,6 +359,148 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
+
+  UpdateUserFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/update-user/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/update # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  GetUserFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/get-user/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/{token} # Ensure api is proxied with /api/*
+            Method: get
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+
+  AddPaymentFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/add-payment/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/payment # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+
+  AddAddressFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/add-address/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/address # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+
+  DBSharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: DBSharedLayer
+      Description: Some code to share with the other lambda functions
+      ContentUri: ./helpers
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Delete
+  NodeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: NodeDependenciesLayer
+      Description: Base layer for node apps
+      ContentUri: ./layers-dependencies
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Delete
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
