@@ -2,12 +2,14 @@
 
 .search-bar {
   display: flex;
+  height: 2.1em;
   flex-direction: row;
   align-items: center;
   border-radius: 5px;
   border: 2px solid $primary-color;
   background-color: $primary-color;
   flex: 1;
+  box-sizing: border-box;
 
   .search-bar__categories-button {
     color: white;
@@ -15,6 +17,7 @@
     flex-direction: row;
     align-items: center;
     padding: 0;
+    height: 110%;
   }
 }
 
@@ -22,14 +25,21 @@
   background-color: white;
   color: black;
   width: 90%;
+  height: 96%;
+  flex: 1;
 
   input {
     padding: 4px 0 4px 1em;
   }
 }
 
-.search-bar__search-icon {
+.search-bar__search-icon.search-bar__search-icon {
   height: 100%;
   color: white;
-  margin: 0 0.25em;
+  padding: 3px 4px;
+}
+
+.search-bar__categories-text {
+  padding-left: 8px;
+  text-transform: capitalize;
 }

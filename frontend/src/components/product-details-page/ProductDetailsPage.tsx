@@ -7,6 +7,7 @@ import { Grid } from '@mui/material';
 import ImagePreviews from './ImagePreviews';
 import ProductDetails from './ProductDetails';
 import { useParams } from 'react-router';
+import Breadcrumbs from '../common/Breadcrumbs';
 
 function ProductDetailsPage() {
   const dispatch = useAppDispatch();
@@ -18,22 +19,18 @@ function ProductDetailsPage() {
     }
   }, [data]);
 
-  if (isLoading || !data) {
-    // TODO: add loading
-    return null;
-  }
-
   return (
-    <Grid container className="product-details-page" columnSpacing={{ xs: 10 }}>
-      <Grid item xs={6}>
-        <div className="product-details-page__previews">
-          <ImagePreviews />
-        </div>
+    <div>
+      <Breadcrumbs />
+      <Grid container className="product-details-page">
+        <Grid item xs={6} className="product-details-page__item">
+          <ImagePreviews isLoading={isLoading} />
+        </Grid>
+        <Grid item xs={6} className="product-details-page__item">
+          <ProductDetails isLoading={isLoading} />
+        </Grid>
       </Grid>
-      <Grid item xs={6}>
-        <ProductDetails />
-      </Grid>
-    </Grid>
+    </div>
   );
 }
 

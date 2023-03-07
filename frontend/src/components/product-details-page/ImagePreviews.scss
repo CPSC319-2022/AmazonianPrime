@@ -3,7 +3,7 @@
 .image-preview {
   display: flex;
   flex-direction: row;
-  margin-left: auto;
+  padding-right: 5em;
 }
 .image-preview__previews {
   display: flex;
@@ -28,7 +28,10 @@
   outline: 3px solid $secondary-color;
 }
 
+.image-preview__active-item-container {
+  margin: 0 15px;
+}
+
 .image-preview__active-item {
   object-fit: cover;
-  margin-left: 15px;
 }
