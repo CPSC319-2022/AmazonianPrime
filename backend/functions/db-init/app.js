@@ -66,7 +66,7 @@ exports.lambdaHandler = async (event, context) => {
     UserID int, 
     AddressID int, 
     CreditCardNum int, 
-    ExpiryDate DATE, 
+    ExpiryDate varchar(10), 
     CVV int, 
     CardHolderName varchar(255),
     PRIMARY KEY (PaymentID),
