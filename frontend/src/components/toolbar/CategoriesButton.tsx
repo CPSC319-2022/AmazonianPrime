@@ -2,30 +2,31 @@ import { Button } from '@mui/material';
 import './CategoriesButton.scss';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import CategoryMenu from './CategoryMenu';
+import { categories } from '../common/Categories';
+import Menu from '../common/Menu';
+import useMenu from '../common/useMenu';
+import { getSlugCategory } from '../common/convertSlugCategory';
 
 function CategoriesButton() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const navigate = useNavigate();
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
   const handleRedirect = (category: string) => {
-    handleClose();
-    navigate(`browse?category=${category.split(' ').join('-').toLocaleLowerCase()}&page=1`);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
+    handleCloseMenu();
+    navigate(`browse?category=${getSlugCategory(category)}&page=1`);
   };
 
   return (
     <>
-      <Button className="categories-button" disableElevation onClick={handleClick}>
+      <Button className="categories-button" disableElevation onClick={handleOpenMenu}>
         Categories
       </Button>
-      <CategoryMenu anchorEl={anchorEl} open={open} handleClose={handleClose} handleClick={handleRedirect} />
+      <Menu
+        items={categories}
+        anchorEl={anchorEl}
+        open={open}
+        handleClose={handleCloseMenu}
+        handleClick={handleRedirect}
+      />
     </>
   );
 }

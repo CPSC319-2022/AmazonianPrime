@@ -1,0 +1,18 @@
+.menu__wrapper {
+  .menu__all-text {
+    font-weight: 700;
+    opacity: 1 !important;
+    font-size: 18px;
+  }
+
+  .menu__divider.menu__divider {
+    margin: 0 9px;
+  }
+
+  .menu__menu-item {
+    &:hover {
+      text-decoration: underline;
+      background-color: transparent;
+    }
+  }
+}

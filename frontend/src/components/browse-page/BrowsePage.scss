@@ -1,23 +1,21 @@
-.browse {
-  margin-bottom: 3em;
-}
-.browse__container-grid {
+.browse-page__container-grid {
   width: 100%;
   margin: auto;
 }
 
-.browse__container {
+.browse-page__container {
   margin: 0 3.5em;
 }
 
-.browse__container__grid-item.browse__container__grid-item {
+.browse-page__container__grid-item.browse-page__container__grid-item {
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.browse__pagination {
+.browse-page__pagination {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 3em;
 }

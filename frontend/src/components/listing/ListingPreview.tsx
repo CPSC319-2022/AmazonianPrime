@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -11,9 +12,15 @@ interface ListingPreviewProps {
   listing: ListingPreviewType;
   imageHeight?: string;
   imageWidth?: string;
+  showRemoveListingButton?: boolean;
 }
 
-const ListingPreview: React.FC<ListingPreviewProps> = ({ listing, imageHeight, imageWidth }) => {
+const ListingPreview: React.FC<ListingPreviewProps> = ({
+  listing,
+  imageHeight,
+  imageWidth,
+  showRemoveListingButton = false,
+}) => {
   const navigate = useNavigate();
   const dispath = useDispatch();
   const height = '250px';
@@ -25,15 +32,12 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({ listing, imageHeight, i
   const { imagePreview, listingName, cost, user, id } = listing;
 
   return (
-    <div
-      onClick={() => {
-        dispath(setPartialListingDetails(listing));
-        navigate(`/listing/${id}`, { state: { ...history } });
-      }}
-      tabIndex={0}
-      className="listing-preview"
-    >
+    <div tabIndex={0} className="listing-preview">
       <img
+        onClick={() => {
+          dispath(setPartialListingDetails(listing));
+          navigate(`/listing/${id}`, { state: { ...history } });
+        }}
         className="listing-preview__image"
         src={`data:image/jpeg;base64,${imagePreview}`}
         height={imageHeight ?? height}
@@ -41,9 +45,22 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({ listing, imageHeight, i
       />
       <span className="listing-preview__cost">${cost}</span>
       <div>{listingName}</div>
-      <div>
-        {user.firstName}&nbsp;{user.lastName.charAt(0)}.
-      </div>
+      {showRemoveListingButton ? (
+        <Button
+          color="secondary"
+          variant="contained"
+          className="listing-preview__remove-button"
+          onClick={() => {
+            alert('TODO');
+          }}
+        >
+          Remove Listing
+        </Button>
+      ) : (
+        <div>
+          {user.firstName}&nbsp;{user.lastName.charAt(0)}.
+        </div>
+      )}
     </div>
   );
 };
