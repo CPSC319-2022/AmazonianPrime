@@ -1,14 +1,13 @@
-import './Browse.scss';
+import './BrowsePage.scss';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useEffect } from 'react';
 import { useGetRecentListingsQuery } from '../../redux/api/listings';
 import { setRecentListings } from '../../redux/reducers/listingsSlice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import ListingPreview from '../listing/ListingPreview';
-import { Grid, Pagination } from '@mui/material';
 import Breadcrumbs from '../common/Breadcrumbs';
+import Gallery from '../common/Gallery';
 
-function Browse() {
+function BrowsePage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const category = searchParams.get('category');
@@ -37,8 +36,8 @@ function Browse() {
 
   if (!listings)
     return (
-      <div className="Browse">
-        <span className="Browse__content">Amazonian Prime</span>
+      <div>
+        <span>No content</span>
       </div>
     );
 
@@ -47,20 +46,11 @@ function Browse() {
   const maxPageCount = 10;
 
   return (
-    <div className="browse">
+    <div>
       <Breadcrumbs />
-      <div className="browse__container">
-        <Grid container className="browse__container-grid" columns={4}>
-          {(!isLoading ? tempData : Array(20).fill(0)).map((listing, index) => (
-            <Grid item xs={1} className="browse__container__grid-item" key={index}>
-              <ListingPreview listing={listing} key={index} imageHeight="80%" imageWidth="100%" />
-            </Grid>
-          ))}
-        </Grid>
-      </div>
-      <Pagination className="browse__pagination" count={maxPageCount} page={Number(page)} onChange={handlePageChange} />
+      <Gallery listings={tempData} isLoading={isLoading} handlePageChange={handlePageChange} />
     </div>
   );
 }
 
-export default Browse;
+export default BrowsePage;

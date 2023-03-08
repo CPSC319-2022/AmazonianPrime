@@ -2,6 +2,7 @@ import './Breadcrumbs.scss';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { Link, Typography, Breadcrumbs as MUIBreadcrumbs } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
+import { getFriendlyCategoryString } from './convertSlugCategory';
 
 function Breadcrumbs() {
   const location = useLocation();
@@ -17,7 +18,7 @@ function Breadcrumbs() {
   if (category) {
     breadCrumbs = [
       {
-        link: category?.replace(/-/g, ' '),
+        link: getFriendlyCategoryString(category),
         navigate: `/browse?category=${category}&page=${page ?? 1}`,
       },
     ];
