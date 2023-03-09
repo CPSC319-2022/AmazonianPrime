@@ -30,6 +30,6 @@ exports.lambdaHandler = async (event, context) => {
 
     return {
         statusCode: 200,
-        body: results,
+        body: JSON.stringify(results),
     };
 };
