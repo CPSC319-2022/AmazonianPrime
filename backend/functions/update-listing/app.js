@@ -1,4 +1,3 @@
-var { v4: uuidv4 } = require('uuid');
 const dbConnection = require("dbConnection.js");
 var mysql = require("mysql");
 
@@ -20,26 +19,24 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { userID, listingName, description, cost, quantity, category, condition, isActiveListing, postedTimestamp } =
-    JSON.parse(event.body);
+  const { listingID, listingName, description, cost, quantity, category, condition } =
+  JSON.parse(event.body);
 
-  const listingID = uuidv4();
+  const updateListingQuery = `UPDATE Listing SET listingName="${listingName}", description="${description}", cost=${cost}, quantity=${quantity}, category="${category}", condition="${condition}" WHERE listingID = ${listingID}`;
 
-  const createListingQuery = `INSERT INTO Listing(listingID, userID, listingName, description, cost, quantity, category, condition, isActiveListing, postedTimestamp) VALUES(${listingID}, ${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", ${isActiveListing}, "${postedTimestamp}")`;
-
-  const createListing = await new Promise((resolve, reject) => {
-    con.query(createListingQuery, function (err, res) {
+  const updateListing = await new Promise((resolve, reject) => {
+    con.query(updateListingQuery, function (err, res) {
       if (err) {
-        reject("Couldn't add listing to database!");
+        reject("Couldn't update listing to database!");
       }
       resolve(res);
     });
   });
 
-  console.log(createListing);
+  console.log(updateListing);
 
   return {
     statusCode: 200,
-    body: JSON.stringify(listingID),
+    body: JSON.stringify(updateListing),
   };
 };
