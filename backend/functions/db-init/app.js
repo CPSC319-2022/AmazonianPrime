@@ -48,7 +48,6 @@ exports.lambdaHandler = async (event, context) => {
     FirstName varchar(255),
     LastName varchar(255),
     Email varchar(255) UNIQUE,
-    Username varchar(255) UNIQUE,
     Department varchar(255),
     IsAdmin Boolean,
     PRIMARY KEY (UserID)
