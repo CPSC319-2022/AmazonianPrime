@@ -20,10 +20,12 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { userID, listingName, description, cost, quantity, category, condition, isActiveListing, postedTimestamp } =
+  const { userID, listingName, description, cost, quantity, category, condition } =
     JSON.parse(event.body);
 
   const listingID = uuidv4();
+  const isActiveListing = true
+  const postedTimestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
   const createListingQuery = `INSERT INTO Listing(ListingID, UserID, ListingName, Description, Cost, Quantity, Category, Condition, PostedTimestamp, IsActiveListing) VALUES(${listingID}, ${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", "${postedTimestamp}", ${isActiveListing})`;
 
