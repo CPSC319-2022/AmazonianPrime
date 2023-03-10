@@ -19,7 +19,7 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { institutionNum, accountNum, transitNum } =
+  const { userId, institutionNum, accountNum, transitNum } =
     JSON.parse(event.body);
 
   const addBankingDetailsQuery = `INSERT INTO BankingDetails(InstitutionNum, AccountNum, TransitNum) VALUES(${institutionNum}, ${accountNum}, ${transitNum})`;
