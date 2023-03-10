@@ -44,16 +44,96 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   let createUserTableQuery = `CREATE TABLE Users (
-    PersonID int,
-    LastName varchar(255),
+    UserID int NOT NULL AUTO_INCREMENT,
     FirstName varchar(255),
-    Address varchar(255),
-    City varchar(255)
+    LastName varchar(255),
+    Email varchar(255) UNIQUE,
+    Department varchar(255),
+    IsAdmin Boolean,
+    PRIMARY KEY (UserID)
   );`;
   const createTable = await new Promise((resolve, reject) => {
     con.query(createUserTableQuery, function (err, res) {
       if (err) {
-        reject("Couldn't create persons table!");
+        reject("Couldn't create users table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
+    PaymentID int NOT NULL AUTO_INCREMENT, 
+    UserID int, 
+    AddressID int, 
+    CreditCardNum int, 
+    ExpiryDate varchar(10), 
+    CVV int, 
+    CardHolderName varchar(255),
+    PRIMARY KEY (PaymentID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+  );`;
+
+  const createTablePaymentDetails = await new Promise((resolve, reject) => {
+    con.query(createPaymentDetailsTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create payment details table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createPaymentsMethodTableQuery = `CREATE TABLE PaymentMethod (
+    PaymentID int NOT NULL, 
+    UserID int NOT NULL, 
+    PRIMARY KEY (PaymentID, UserID),
+    FOREIGN KEY (PaymentID) REFERENCES PaymentDetails(PaymentID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+  );`;
+
+  const createTablePaymentMethod = await new Promise((resolve, reject) => {
+    con.query(createPaymentsMethodTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create payment method table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createCountryTableQuery = `CREATE TABLE Country (
+    CityName varchar(255) NOT NULL, 
+    Province varchar(255) NOT NULL, 
+    StreetAddress varchar(255) NOT NULL, 
+    PostalCode varchar(255), 
+    Country varchar(255),
+    PRIMARY KEY (CityName, Province, StreetAddress)
+  );`;
+
+  const createTableCountry = await new Promise((resolve, reject) => {
+    con.query(createCountryTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create country table!");
+      }
+      resolve(res);
+    });
+  });
+
+  let createAddressTableQuery = `CREATE TABLE Address (
+    AddressID int NOT NULL AUTO_INCREMENT, 
+    UserID int, 
+    CityName varchar(255), 
+    Province varchar(255), 
+    StreetAddress varchar(255), 
+    IsBillingAddress Boolean, 
+    IsShippingAddress Boolean, 
+    PRIMARY KEY (AddressID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (CityName, Province, StreetAddress) REFERENCES Country(CityName, Province, StreetAddress)
+  );`;
+
+  const createTableAddress = await new Promise((resolve, reject) => {
+    con.query(createAddressTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create address table!");
       }
       resolve(res);
     });

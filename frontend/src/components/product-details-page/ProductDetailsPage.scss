@@ -1,9 +1,15 @@
 @import '../../variables';
 
-.product-details-page {
-  padding: 1em;
+.product-details-page.product-details-page {
+  margin: 1em 7em 3em 7em;
+  box-sizing: border-box;
+  width: unset;
 }
 .product-details-page__previews {
   display: flex;
   flex-direction: column;
+}
+
+.product-details-page__item {
+  margin: 0 1em;
 }

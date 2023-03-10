@@ -1,55 +1,32 @@
 import { Button } from '@mui/material';
 import './CategoriesButton.scss';
 import * as React from 'react';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
+import { useNavigate } from 'react-router-dom';
+import { categories } from '../common/Categories';
+import Menu from '../common/Menu';
+import useMenu from '../common/useMenu';
+import { getSlugCategory } from '../common/convertSlugCategory';
 
 function CategoriesButton() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
+  const navigate = useNavigate();
+  const handleRedirect = (category: string) => {
+    handleCloseMenu();
+    navigate(`browse?category=${getSlugCategory(category)}&page=1`);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const categories = [
-    'Amazon Merchandise',
-    'Apparel',
-    'Electronis',
-    'Office Supplies',
-    'Garden & Outdoors',
-    'Home Goods',
-    'Pet Supplies',
-    'Sporting Goods',
-    'Toys & Games',
-    'Miscellaneous',
-  ];
 
   return (
     <>
-      <Button className="categories-button" disableElevation onClick={handleClick}>
+      <Button className="categories-button" disableElevation onClick={handleOpenMenu}>
         Categories
       </Button>
-      <Menu className="categories-button__menu" anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem
-          className="categories-button__menu-item categories-button__all-categories-text"
-          onClick={handleClose}
-          disableRipple
-        >
-          All Categories
-        </MenuItem>
-        {categories.map((category: string) => (
-          <>
-            <Divider className="categories-button__divider" />
-            <MenuItem className="categories-button__menu-item" onClick={handleClose} disableRipple>
-              {category}
-            </MenuItem>
-          </>
-        ))}
-      </Menu>
+      <Menu
+        items={categories}
+        anchorEl={anchorEl}
+        open={open}
+        handleClose={handleCloseMenu}
+        handleClick={handleRedirect}
+      />
     </>
   );
 }

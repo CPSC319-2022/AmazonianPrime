@@ -59,6 +59,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+!**/helpers/nodejs/node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
@@ -150,7 +151,8 @@ temp/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
