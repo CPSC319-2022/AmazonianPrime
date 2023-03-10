@@ -142,15 +142,15 @@ exports.lambdaHandler = async (event, context) => {
   console.log(createTable);
 
   let createListingTableQuery = `CREATE TABLE Listing (
-    ListingID int NOT NULL, 
+    ListingID int NOT NULL AUTO_INCREMENT, 
     UserID int, 
     ListingName varchar(255), 
     Description TEXT, 
     Cost DECIMAL(6,2), 
     Quantity int, 
     Category varchar(255), 
-    Condition varchar(255), 
-    PostedTimestamp TIMESTAMP,
+    ItemCondition varchar(255), 
+    PostedTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     IsActiveListing Boolean,
     PRIMARY KEY (ListingID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
