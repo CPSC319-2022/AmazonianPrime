@@ -22,7 +22,7 @@ exports.lambdaHandler = async (event, context) => {
   const { listingID, listingName, description, cost, quantity, category, condition } =
   JSON.parse(event.body);
 
-  const updateListingQuery = `UPDATE Listing SET listingName="${listingName}", description="${description}", cost=${cost}, quantity=${quantity}, category="${category}", condition="${condition}" WHERE listingID = ${listingID}`;
+  const updateListingQuery = `UPDATE Listing SET ListingName="${listingName}", Description="${description}", Cost=${cost}, Quantity=${quantity}, Category="${category}", Condition="${condition}" WHERE ListingID = ${listingID}`;
 
   const updateListing = await new Promise((resolve, reject) => {
     con.query(updateListingQuery, function (err, res) {

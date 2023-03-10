@@ -27,14 +27,14 @@ exports.lambdaHandler = async (event, context) => {
   var optionalWhere = `WHERE `
   var change = false
   if(name!==null) {
-    optionalWhere += `listingName = ${name}`
+    optionalWhere += `ListingName = ${name}`
     change = true
   }
   if(category!==null) {
     if(change) {
-      optionalWhere += ` AND category = ${category}`
+      optionalWhere += ` AND Category = ${category}`
     } else {
-      optionalWhere += ` category = ${category}`
+      optionalWhere += `Category = ${category}`
       change = true
     }
   }

@@ -25,7 +25,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const listingID = uuidv4();
 
-  const createListingQuery = `INSERT INTO Listing(listingID, userID, listingName, description, cost, quantity, category, condition, isActiveListing, postedTimestamp) VALUES(${listingID}, ${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", ${isActiveListing}, "${postedTimestamp}")`;
+  const createListingQuery = `INSERT INTO Listing(ListingID, UserID, ListingName, Description, Cost, Quantity, Category, Condition, PostedTimestamp, IsActiveListing) VALUES(${listingID}, ${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", "${postedTimestamp}", ${isActiveListing})`;
 
   const createListing = await new Promise((resolve, reject) => {
     con.query(createListingQuery, function (err, res) {
