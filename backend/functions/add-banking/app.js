@@ -51,7 +51,7 @@ exports.lambdaHandler = async (event, context) => {
   const getBanking = await new Promise((resolve, reject) => {
     con.query(getBankingByIdQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the address from database!");
+        reject("Couldn't get the banking details from database!");
       }
       resolve(res);
     });
