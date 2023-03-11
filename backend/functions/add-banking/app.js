@@ -35,7 +35,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const bankingId = addBankingDetails["insertId"];
 
-  const addBankingAccountQuery = `INSERT INTO BankingAccount(UserID, PaymentID) VALUES(${bankingId}, ${userId})`;
+  const addBankingAccountQuery = `INSERT INTO BankingAccount(BankingID, UserID) VALUES(${bankingId}, ${userId})`;
 
   const addBankingAccount = await new Promise((resolve, reject) => {
     con.query(addBankingAccountQuery, function (err, res) {
@@ -59,6 +59,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(getPayment[0]),
+    body: JSON.stringify(getBanking[0]),
   };
 };

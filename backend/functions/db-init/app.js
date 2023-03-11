@@ -66,12 +66,11 @@ exports.lambdaHandler = async (event, context) => {
     UserID int, 
     AddressID int, 
     CreditCardNum int, 
-    ExpiryDate int, 
+    ExpiryDate varchar(10), 
     CVV int, 
     CardHolderName varchar(255),
     PRIMARY KEY (PaymentID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID), 
-    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
   );`;
 
   const createTablePaymentDetails = await new Promise((resolve, reject) => {
@@ -86,8 +85,8 @@ exports.lambdaHandler = async (event, context) => {
   let createPaymentsMethodTableQuery = `CREATE TABLE PaymentMethod (
     PaymentID int NOT NULL, 
     UserID int NOT NULL, 
-    primary key (PaymentID, UserID),
-    FOREIGN KEY (PaymentID) REFERENCES PaymentDetails(PaymentID), 
+    PRIMARY KEY (PaymentID, UserID),
+    FOREIGN KEY (PaymentID) REFERENCES PaymentDetails(PaymentID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
   );`;
 
@@ -121,14 +120,14 @@ exports.lambdaHandler = async (event, context) => {
   let createAddressTableQuery = `CREATE TABLE Address (
     AddressID int NOT NULL AUTO_INCREMENT, 
     UserID int, 
-    City varchar(255), 
+    CityName varchar(255), 
     Province varchar(255), 
     StreetAddress varchar(255), 
-    IsBillingAddress boolean, 
-    IsShippingAddress boolean, 
+    IsBillingAddress Boolean, 
+    IsShippingAddress Boolean, 
     PRIMARY KEY (AddressID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID), 
-    FOREIGN KEY (City, Province, StreetAddress) REFERENCES Country(CityName, Province, StreetAddress)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (CityName, Province, StreetAddress) REFERENCES Country(CityName, Province, StreetAddress)
   );`;
 
   const createTableAddress = await new Promise((resolve, reject) => {
@@ -140,12 +139,14 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
+  console.log(createTable);
+
   let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
     BankingID int NOT NULL AUTO_INCREMENT, 
     InstitutionNum int, 
     AccountNum int, 
     TransitNum int, 
-    PRIMARY KEY (bankingID)
+    PRIMARY KEY (BankingID)
   );`;
 
   const createTableBankingDetails = await new Promise((resolve, reject) => {
@@ -160,9 +161,9 @@ exports.lambdaHandler = async (event, context) => {
   let createBankingAccountTableQuery = `CREATE TABLE BankingAccount (
     BankingID int, 
     UserID int, 
-    PRIMARY KEY (bankingID, userID), 
-    FOREIGN KEY (bankingID) REFERENCES BankingDetails(BankingID), 
-    FOREIGN KEY (userID) REFERENCES Users(userID)
+    PRIMARY KEY (BankingID, UserID), 
+    FOREIGN KEY (BankingID) REFERENCES BankingDetails(BankingID), 
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
   );`;
 
   const createTableBankingAccount = await new Promise((resolve, reject) => {
