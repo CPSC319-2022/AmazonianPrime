@@ -14,11 +14,11 @@ function Banner() {
 
   // TODO: use get address endpoint to access this information later
   const address = {
-    streetAddress: "2366 Main Mall",
-    city: "Vancouver",
-    province: "BC",
-    postalCode: "V6T 1Z4"
-  }
+    streetAddress: '2366 Main Mall',
+    city: 'Vancouver',
+    province: 'BC',
+    postalCode: 'V6T 1Z4',
+  };
 
   return (
     <div className="banner">
