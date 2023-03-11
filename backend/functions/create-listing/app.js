@@ -1,4 +1,4 @@
-var { v4: uuidv4 } = require('uuid');
+var { v4: uuidv4 } = require("uuid");
 const dbConnection = require("dbConnection.js");
 var mysql = require("mysql");
 
@@ -20,13 +20,17 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { userID, listingName, description, cost, quantity, category, condition } =
-    JSON.parse(event.body);
+  const {
+    userID,
+    listingName,
+    description,
+    cost,
+    quantity,
+    category,
+    condition,
+  } = JSON.parse(event.body);
 
-  const listingID = uuidv4();
-  const isActiveListing = true
-
-  const createListingQuery = `INSERT INTO Listing(ListingID, UserID, ListingName, Description, Cost, Quantity, Category, Condition, IsActiveListing) VALUES(${listingID}, ${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", ${isActiveListing})`;
+  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, Condition, IsActiveListing) VALUES(${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", true)`;
 
   const createListing = await new Promise((resolve, reject) => {
     con.query(createListingQuery, function (err, res) {
@@ -38,6 +42,8 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   console.log(createListing);
+
+  const listingID = createListing["insertId"];
 
   return {
     statusCode: 200,
