@@ -1,0 +1,21 @@
+.gallery__container-grid {
+  width: 100%;
+  margin: auto;
+}
+
+.gallery__container {
+  margin: 0 3.5em;
+}
+
+.gallery__container__grid-item.gallery__container__grid-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery__pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 3em;
+}

@@ -3,10 +3,24 @@
   font-size: 1.1em;
 }
 
-.listing-preview:hover {
-  cursor: pointer;
+.listing-preview {
+  img:hover {
+    cursor: pointer;
+  }
+}
+
+.listing-preview {
+  margin: 1em;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .listing-preview__image {
   object-fit: cover;
+}
+
+.listing-preview__remove-button.listing-preview__remove-button {
+  width: 10em;
+  margin-top: 0.5em;
 }
