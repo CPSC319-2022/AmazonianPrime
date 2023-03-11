@@ -47,9 +47,9 @@ function CreateListingModal() {
 
   function handleSubmit() {
     // TODO: handle redirect to newly created listing page with submitted info
-    console.log(titleRef.current?.value);
-    console.log(descriptionRef.current?.value);
-    console.log(costRef.current?.value);
+    // console.log(titleRef.current?.value);
+    // console.log(descriptionRef.current?.value);
+    // console.log(costRef.current?.value);
     dispatch(modifyCreateListingModalVisibility(false));
   }
 
@@ -57,14 +57,12 @@ function CreateListingModal() {
     setImages([]);
     dispatch(modifyCreateListingModalVisibility(false));
   }
-  const [file, setFile] = useState(null);
   const handleChange = (file: any) => {
     if (file.length > 5) {
       setOpenErrorToast(true);
       return;
     }
     setImages([...file]);
-    setFile(file);
   };
 
   return (
@@ -84,8 +82,8 @@ function CreateListingModal() {
                 <div className="create-listing__category">
                   <span className="create-listing__quantity">Category</span>
                   <Select size="small" value={category} onChange={(event) => setCategory(event.target.value)}>
-                    {categories.slice(1, categories.length).map((category: string) => {
-                      return <MenuItem value={category}>{category}</MenuItem>;
+                    {categories.slice(1, categories.length).map((value: string) => {
+                      return <MenuItem value={value}>{value}</MenuItem>;
                     })}
                   </Select>
                 </div>
@@ -109,8 +107,8 @@ function CreateListingModal() {
                   value={condition}
                   onChange={(event) => setCondition(event.target.value)}
                 >
-                  {conditions.map((condition: string) => {
-                    return <MenuItem value={condition}>{condition}</MenuItem>;
+                  {conditions.map((value: string) => {
+                    return <MenuItem value={value}>{value}</MenuItem>;
                   })}
                 </Select>
                 <div>
