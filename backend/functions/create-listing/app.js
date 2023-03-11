@@ -30,7 +30,7 @@ exports.lambdaHandler = async (event, context) => {
     condition,
   } = JSON.parse(event.body);
 
-  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, Condition, IsActiveListing) VALUES(${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", true)`;
+  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, IsActiveListing) VALUES(${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", true)`;
 
   const createListing = await new Promise((resolve, reject) => {
     con.query(createListingQuery, function (err, res) {
@@ -45,8 +45,19 @@ exports.lambdaHandler = async (event, context) => {
 
   const listingID = createListing["insertId"];
 
+  const getListingByIdQuery = `SELECT * FROM Listing WHERE ListingID = "${listingID}"`;
+
+  const getListing = await new Promise((resolve, reject) => {
+    con.query(getListingByIdQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't get the listing from database!");
+      }
+      resolve(res);
+    });
+  });
+
   return {
     statusCode: 200,
-    body: JSON.stringify(listingID),
+    body: JSON.stringify(getListing[0]),
   };
 };
