@@ -526,6 +526,14 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                 Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
+        - PolicyName: EC2AccessPolicy
+          PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                Resource: "*"
   UploadImageFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -536,6 +544,7 @@ Resources:
       Environment:
         Variables:
           S3_BUCKET_NAME: !Ref ImageBucket
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
       Architectures:
         - x86_64
       Events:
@@ -544,6 +553,19 @@ Resources:
           Properties:
             Path: /api/image/ # Ensure api is proxied with /api/*
             Method: post
+      VpcConfig:
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
