@@ -21,33 +21,31 @@ exports.lambdaHandler = async (event, context) => {
   );
 
   const {
-    userID,
-    listingName,
-    description,
-    cost,
-    quantity,
-    category,
-    condition,
+    UserID,
+    ListingName,
+    Description,
+    Cost,
+    Quantity,
+    Category,
+    Condition,
   } = JSON.parse(event.body);
 
   if (
-    !userID ||
-    !listingName ||
-    !description ||
-    !cost ||
-    !quantity ||
-    !category ||
-    !condition
+    !UserID ||
+    !ListingName ||
+    !Description ||
+    !Cost ||
+    !Quantity ||
+    !Category ||
+    !Condition
   ) {
     return {
       statusCode: 400,
-      body: {
-        errorMessage: "Missing required fields",
-      },
+      body: "Missing required fields",
     };
   }
 
-  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, IsActiveListing) VALUES(${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", true)`;
+  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, IsActiveListing) VALUES(${UserID}, "${ListingName}", "${Description}", ${Cost}, ${Quantity}, "${Category}", "${Condition}", true)`;
 
   try {
     const createListing = await new Promise((resolve, reject) => {
@@ -79,9 +77,7 @@ exports.lambdaHandler = async (event, context) => {
   } catch (error) {
     return {
       statusCode: 500,
-      body: {
-        errorMessage: JSON.stringify(error),
-      },
+      body: JSON.stringify(error),
     };
   }
 };
