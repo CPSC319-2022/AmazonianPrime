@@ -30,34 +30,58 @@ exports.lambdaHandler = async (event, context) => {
     condition,
   } = JSON.parse(event.body);
 
+  if (
+    !userID ||
+    !listingName ||
+    !description ||
+    !cost ||
+    !quantity ||
+    !category ||
+    !condition
+  ) {
+    return {
+      statusCode: 400,
+      body: {
+        errorMessage: "Missing required fields",
+      },
+    };
+  }
+
   const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, IsActiveListing) VALUES(${userID}, "${listingName}", "${description}", ${cost}, ${quantity}, "${category}", "${condition}", true)`;
 
-  const createListing = await new Promise((resolve, reject) => {
-    con.query(createListingQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't add listing to database!");
-      }
-      resolve(res);
+  try {
+    const createListing = await new Promise((resolve, reject) => {
+      con.query(createListingQuery, function (err, res) {
+        if (err) {
+          reject("Couldn't add listing to database!");
+        }
+        resolve(res);
+      });
     });
-  });
 
-  console.log(createListing);
+    const listingID = createListing["insertId"];
 
-  const listingID = createListing["insertId"];
+    const getListingByIdQuery = `SELECT * FROM Listing WHERE ListingID = "${listingID}"`;
 
-  const getListingByIdQuery = `SELECT * FROM Listing WHERE ListingID = "${listingID}"`;
-
-  const getListing = await new Promise((resolve, reject) => {
-    con.query(getListingByIdQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't get the listing from database!");
-      }
-      resolve(res);
+    const getListing = await new Promise((resolve, reject) => {
+      con.query(getListingByIdQuery, function (err, res) {
+        if (err) {
+          reject("Couldn't get the listing from database!");
+        }
+        resolve(res);
+      });
     });
-  });
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(getListing[0]),
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify(getListing[0]),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: {
+        errorMessage: JSON.stringify(error),
+      },
+    };
+  }
 };
