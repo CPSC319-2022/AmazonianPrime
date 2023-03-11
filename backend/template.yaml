@@ -552,10 +552,10 @@ Outputs:
     Description: "API Gateway endpoint URL for Prod stage for GetUser function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/user/:jwt"
   GetUserFunction:
-    Description: "API Gateway endpoint URL for Prod stage for GetUser function"
+    Description: "GetUser Lambda Function ARN"
     Value: !Sub GetUserFunction.Arn
   GetUserIamRole:
-    Description: "API Gateway endpoint URL for Prod stage for GetUser function"
+    Description: "Implicit IAM Role created for GetUser function"
     Value: !Sub GetUserFunctionRole.Arn
   ListingsApi:
     Description: "API Gateway endpoint URL for Prod stage for Listings function"
