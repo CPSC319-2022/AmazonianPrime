@@ -75,7 +75,7 @@ Resources:
             MinTTL: 0
             MaxTTL: 0
             ViewerProtocolPolicy: https-only
-            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            AllowedMethods: [ GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE ]
             ForwardedValues:
               QueryString: true
         Enabled: true
@@ -174,7 +174,7 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: "192.168.0.0/16"
-      Tags: [{ "Key": "Name", "Value": "rdsEC2VPC" }]
+      Tags: [ { "Key": "Name", "Value": "rdsEC2VPC" } ]
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -182,7 +182,7 @@ Resources:
       VpcId:
         Ref: "rdsEC2VPC"
       CidrBlock: "192.168.1.0/24"
-      Tags: [{ "Key": "Name", "Value": "PrivateSubnet1" }]
+      Tags: [ { "Key": "Name", "Value": "PrivateSubnet1" } ]
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
@@ -190,13 +190,13 @@ Resources:
       VpcId:
         Ref: "rdsEC2VPC"
       CidrBlock: "192.168.2.0/24"
-      Tags: [{ "Key": "Name", "Value": "PrivateSubnet2" }]
+      Tags: [ { "Key": "Name", "Value": "PrivateSubnet2" } ]
   rdsDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: "Subnets for RDS"
-      SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
-      Tags: [{ "Key": "Name", "Value": "rdsDBSubnetGroup" }]
+      SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
+      Tags: [ { "Key": "Name", "Value": "rdsDBSubnetGroup" } ]
   rdsDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -207,7 +207,7 @@ Resources:
       BackupRetentionPeriod: "7"
       DBInstanceIdentifier: "CPSC319RDS"
       DBName: "databaseAmazonianPrime"
-      VPCSecurityGroups: [{ "Ref": "rdsSecurityGroup" }]
+      VPCSecurityGroups: [ { "Ref": "rdsSecurityGroup" } ]
       DBSubnetGroupName:
         Ref: "rdsDBSubnetGroup"
       Engine: "MySQL"
@@ -218,7 +218,7 @@ Resources:
       Port: "3306"
       PubliclyAccessible: "false"
       StorageType: "gp2"
-      Tags: [{ "Key": "Name", "Value": "rdsDBInstance" }]
+      Tags: [ { "Key": "Name", "Value": "rdsDBInstance" } ]
   rdsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -249,7 +249,7 @@ Resources:
         ]
       VpcId:
         Ref: "rdsEC2VPC"
-      Tags: [{ "Key": "Name", "Value": "rdsSecurityGroup" }]
+      Tags: [ { "Key": "Name", "Value": "rdsSecurityGroup" } ]
   lambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -265,7 +265,7 @@ Resources:
         ]
       VpcId:
         Ref: "rdsEC2VPC"
-      Tags: [{ "Key": "Name", "Value": "lambdaSecurityGroup" }]
+      Tags: [ { "Key": "Name", "Value": "lambdaSecurityGroup" } ]
   # ---- Database Functions ------
   DBInitFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -276,8 +276,8 @@ Resources:
       Architectures:
         - x86_64
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -347,8 +347,8 @@ Resources:
             Path: /api/db/tables # Ensure api is proxied with /api/*
             Method: get
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -375,8 +375,8 @@ Resources:
             Path: /api/user/update # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -405,8 +405,8 @@ Resources:
             Path: /api/user/{token} # Ensure api is proxied with /api/*
             Method: get
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -436,8 +436,8 @@ Resources:
             Path: /api/user/payment # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -467,8 +467,8 @@ Resources:
             Path: /api/user/address # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -505,6 +505,20 @@ Resources:
   # ---- S3 Bucket Image Upload
   ImageBucket:
     Type: AWS::S3::Bucket
+  MyBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ImageBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:GetObject
+            Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
+
   ImageUploadLambdaRole:
     Type: AWS::IAM::Role
     Properties:
