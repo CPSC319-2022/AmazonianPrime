@@ -9,8 +9,7 @@ declare var google: any;
 
 function LoginPage() {
   function handleGoogleSignIn(response: any) {
-    console.log(response.credential);
-    triggerGetQuery('examplegmail');
+    triggerGetQuery(response.credential);
   }
 
   useEffect(() => {

@@ -2,6 +2,10 @@ var mysql = require("mysql");
 var OAuth2Client = require("google-auth-library");
 const dbConnection = require("dbConnection.js");
 
+function parseJWT (token) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
+
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
  * For demonstration purposes, this Lambda function does not actually perform any  actual transactions. It simply returns a mocked result.
@@ -15,7 +19,8 @@ const dbConnection = require("dbConnection.js");
 
 exports.lambdaHandler = async (event, context) => {
   // ------- Get user from Database -------
-  const email = event.pathParameters.token; // This is actually the userToken, but I am passing in the email for now.
+
+  const token = parseJWT(event.pathParameters.token);
 
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
@@ -24,7 +29,7 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "${email}"`;
+  const getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "${token.email}"`;
 
   var getUser = await new Promise((resolve, reject) => {
     con.query(getUserByEmailQuery, function (err, res) {
@@ -36,9 +41,9 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   if (getUser.length < 1) {
-    let firstName = "fromJWT";
-    let lastName = "alsoFromJWT";
-    let userEmail = email; //this should also be from jwt
+    let firstName = token.given_name;
+    let lastName = token.family_name;
+    let userEmail = token.email;
     const addUserQuery = `INSERT INTO Users(firstName, lastName, email, isAdmin) VALUES("${firstName}", "${lastName}", "${userEmail}", false)`;
 
     const addUsers = await new Promise((resolve, reject) => {
