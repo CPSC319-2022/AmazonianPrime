@@ -1,3 +1,90 @@
+@import '../../variables';
+
 .seller-modal__button-container {
   margin: 0 15px 10px;
+  color: $grey;
+}
+
+.create-listing__content {
+  display: flex;
+  flex-direction: row;
+}
+
+.create-listing__content-left {
+  margin-right: 1em;
+  transition: width 0.2s;
+}
+
+.create-listing__content-right {
+  width: 50%;
+  margin-left: auto;
+}
+
+.create-listing__content-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1em;
+}
+
+.create-listing__image-drop {
+  label {
+    margin-right: 0;
+    max-width: 100%;
+  }
+  input {
+    height: 70px;
+  }
+}
+
+.create-listing__quantity {
+  margin: 0 1em 0 2em;
+}
+
+.create-listing__category {
+  margin-left: auto;
+}
+
+.create-listing__description {
+  width: 100%;
+}
+
+.create-listing__description,
+.create-listing__image-drop,
+.create-listing__cost {
+  margin-top: 1em !important;
+}
+.seller-modal__image-preview {
+  object-fit: cover;
+}
+
+.seller-modal__image-preview-container {
+  margin-right: 1em;
+  margin-bottom: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 150px;
+}
+
+.create-listing__condition {
+  margin-right: 1em;
+}
+
+.seller-modal__save-button.seller-modal__save-button {
+  margin-left: 1em;
+}
+@media only screen and (max-width: 1200px) {
+  .create-listing__content-row,
+  .create-listing__quantity,
+  .create-listing__category {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
+    span {
+      margin: 0;
+      margin-top: 0.5em;
+    }
+  }
 }
