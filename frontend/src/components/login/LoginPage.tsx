@@ -5,9 +5,12 @@ import { setUser } from '../../redux/reducers/userSlice';
 import { useAppDispatch } from '../../redux/store';
 import { useEffect } from 'react';
 
+declare var google: any;
+
 function LoginPage() {
   function handleGoogleSignIn(response: any) {
     console.log(response.credential);
+    triggerGetQuery('examplegmail');
   }
 
   useEffect(() => {
@@ -27,9 +30,6 @@ function LoginPage() {
 
   const dispatch = useAppDispatch();
   const [triggerGetQuery, result, lastPromiseInfo] = useLazyLoginQuery();
-  function signIn() {
-    triggerGetQuery('examplegmail');
-  }
   if (result.data) {
     dispatch(setUser(result.data));
   }

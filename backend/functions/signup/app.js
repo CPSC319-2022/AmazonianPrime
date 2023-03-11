@@ -22,8 +22,8 @@ exports.lambdaHandler = async (event, context) => {
         "Access-Control-Allow-Methods": "GET", // Allow only GET request
       },
       body: JSON.stringify({
-        firstName: "John",
-        lastName: "Darwin",
+        FirstName: "John",
+        LastName: "Darwin",
         address: {
           city: "Vancouver",
           province: "BC",

@@ -13,37 +13,8 @@ const dbConnection = require("dbConnection.js");
  *
  */
 
-// let clientId = "";
-// let googleClientId =
-//   "564219752620-5lcsrf60frhamrotf69bceiktsiamjmh.apps.googleusercontent.com";
-// const oauthClient = new OAuth2Client(clientId);
-
 exports.lambdaHandler = async (event, context) => {
-  // ------- Google Authentication -------
-  // const tokenJWT = event.pathParameters.gmail;
-
-  // const ticket = await oauthClient.verifyIdToken({
-  //   idToken: tokenJWT,
-  //   audience: googleClientId,
-  // });
-
-  // setTimeout(() => {
-  //   if (!ticket) {
-  //     return {
-  //       statusCode: 504,
-  //       body: "Timeout on log in. Please try to log in again!",
-  //     };
-  //   }
-  // }, 500);
-
-  // // Source: https://developers.google.com/identity/sign-in/web/backend-auth
-  // const payload = ticket.getPayload();
-  // const givenName = payload.get("given_name");
-  // const familyName = payload.get("family_name");
-  // const email = payload.getEmail();
-
   // ------- Get user from Database -------
-
   const email = event.pathParameters.token; // This is actually the userToken, but I am passing in the email for now.
 
   const con = await dbConnection.connectDB(

@@ -18,8 +18,8 @@ const values = [
         condition: "Good - New",
         description: "Selling this very healthy monstera",
         user: {
-            firstName: "Phil",
-            lastName: "Dunphy"
+            FirstName: "Phil",
+            LastName: "Dunphy"
         }
     }],
     ["aa95cf19-91de-4eca-8a95-18eb4ce42bce", {
@@ -29,8 +29,8 @@ const values = [
         condition: "Good - New",
         description: "Great condition.",
         user: {
-            firstName: "Claire",
-            lastName: "Dunphy"
+            FirstName: "Claire",
+            LastName: "Dunphy"
         }
     }]
 ];

@@ -21,7 +21,7 @@ function WelcomeContent() {
               At <p>Amazonian Prime</p>,<br /> Amazonians Are All Prime Members.
             </span>
           </div>
-          <span>Welcome {user?.firstName}, to Your Office-Powered Marketplace. </span>
+          <span>Welcome {user?.FirstName}, to Your Office-Powered Marketplace. </span>
           <Button
             color="secondary"
             variant="contained"
