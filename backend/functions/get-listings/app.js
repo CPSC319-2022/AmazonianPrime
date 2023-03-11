@@ -23,26 +23,22 @@ exports.lambdaHandler = async (event, context) => {
   const category = event.queryStringParameters.category;
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
-  
-  var optionalWhere = `WHERE `
-  var change = false
-  if(name!==null) {
-    optionalWhere += `ListingName = ${name}`
-    change = true
-  }
-  if(category!==null) {
-    if(change) {
-      optionalWhere += ` AND Category = ${category}`
-    } else {
-      optionalWhere += `Category = ${category}`
-      change = true
-    }
-  }
-  if(!change) {
-    optionalWhere = ""
-  }
 
-  const getListingsQuery = `SELECT * FROM Listing ${optionalWhere} LIMIT ${limit} OFFSET ${offset}`;
+  var options = [];
+
+  if (name != null && name !== undefined) {
+    options.push(`ListingName = ${name}`);
+  }
+  if (category !== null && category !== undefined) {
+    options.push(`Category = ${category}`);
+  }
+  options.push(`Listing.UserID = Users.UserID`);
+
+  const whereClause = options.reduce((a, b) => {
+    return a + " AND " + b;
+  });
+
+  const getListingsQuery = `SELECT * FROM Listing, Users WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
 
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
@@ -55,8 +51,18 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(getListings);
 
+  // Need to figure out how to extract the image preview as well for each image here. Perhaps
+  const output = getListings.map((entry) => {
+    const { FirstName, LastName, Email, Department, ...ListingData } = entry;
+    return {
+      ...ListingData,
+      User: { FirstName, LastName, Email, Department },
+      ImagePreview: "",
+    };
+  });
+
   return {
     statusCode: 200,
-    body: JSON.stringify(getListings),
+    body: JSON.stringify(output),
   };
 };
