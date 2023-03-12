@@ -33,9 +33,6 @@ function LoginPage() {
     dispatch(setUser(result.data));
   }
 
-  if (!result.data && typeof (lastPromiseInfo.lastArg as any) !== 'symbol') {
-    return <BuyerRegistration />;
-  }
   return (
     <div className="login-page">
       <div className="login-page__contents">

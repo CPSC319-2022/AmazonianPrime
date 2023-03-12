@@ -5,7 +5,7 @@ import { useAppSelector } from '../../redux/store';
 function Banner() {
   const user = useAppSelector((state) => state.user.value);
 
-  if (!user)
+  if (!user?.Department)
     return (
       <div className="banner">
         <span className="banner__content">Amazonian Prime</span>

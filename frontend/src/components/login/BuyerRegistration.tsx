@@ -1,14 +1,18 @@
-import React from 'react';
 import './BuyerRegistration.scss';
-import Banner from '../common/Banner';
-import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Grid } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import { useLazySignupQuery } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
+import { useState } from 'react';
 import { useAppDispatch } from '../../redux/store';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import PaymentGrid from '../common/PaymentGrid';
+import AddressGrid from '../common/AddressGrid';
 
 function BuyerRegistration() {
+  const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
   const dispatch = useAppDispatch();
   const [triggerGetQuery, result] = useLazySignupQuery();
 
@@ -18,6 +22,9 @@ function BuyerRegistration() {
 
   function register() {
     triggerGetQuery();
+  }
+  function handleShippingCheckbox() {
+    setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
 
   return (
@@ -33,30 +40,33 @@ function BuyerRegistration() {
               please give us some more information about yourself.
             </span>
           </div>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField fullWidth required label="First Name" defaultValue="" variant="filled" />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth required label="User Name" defaultValue="" variant="filled" />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth required label="Department" defaultValue="" variant="filled" />
-            </Grid>
-          </Grid>
+          <div className="buyer-registration-page__forms">
+            <PaymentGrid />
+            <div className="buyer-registration-page__shipping-prompt">
+              <span>Shipping Address</span>
+            </div>
+            <div className="buyer-registration-page__shipping-contents">
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox onChange={handleShippingCheckbox} defaultChecked />}
+                  label="Same as billing address"
+                />
+              </FormGroup>
+            </div>
+            {!useBillingAddressForShipping && <AddressGrid />}
+          </div>
         </div>
-        <Button
-          color="secondary"
-          variant="contained"
-          className="buyer-registration-page__button"
-          endIcon={<TrendingFlatIcon />}
-          onClick={() => register()}
-        >
-          Start Shopping
-        </Button>
+        <div className="buyer-registration-page__action-buttons">
+          <Button
+            color="secondary"
+            variant="contained"
+            className="buyer-registration-page__continue-button"
+            endIcon={<TrendingFlatIcon />}
+            onClick={() => register()}
+          >
+            Start shopping
+          </Button>
+        </div>
       </div>
     </div>
   );
