@@ -29,7 +29,7 @@ exports.lambdaHandler = async (event, context) => {
   var options = [];
 
   if (name != null && name !== undefined) {
-    options.push(`ListingName LIKE '%${name.replace('-', ' ')}%'`);
+    options.push(`ListingName LIKE '%"${name.replace('-', ' ')}"%'`);
   }
   if (category !== null && category !== undefined) {
     options.push(`Category = ${category.replace('-', ' ')}`);
