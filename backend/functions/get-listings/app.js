@@ -1,5 +1,5 @@
-const dbConnection = require("dbConnection.js");
-var mysql = require("mysql");
+const dbConnection = require('dbConnection.js');
+var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -14,9 +14,9 @@ var mysql = require("mysql");
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
   const name = event.queryStringParameters.name;
@@ -35,7 +35,7 @@ exports.lambdaHandler = async (event, context) => {
   options.push(`Listing.UserID = Users.UserID`);
 
   const whereClause = options.reduce((a, b) => {
-    return a + " AND " + b;
+    return a + ' AND ' + b;
   });
 
   const getListingsQuery = `SELECT * FROM Listing, Users WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
@@ -43,7 +43,7 @@ exports.lambdaHandler = async (event, context) => {
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
       if (err) {
-        reject("Error getting listings");
+        reject('Error getting listings');
       }
       resolve(res);
     });
@@ -56,7 +56,7 @@ exports.lambdaHandler = async (event, context) => {
   const getListingsCount = await new Promise((resolve, reject) => {
     con.query(getNumberOfListings, function (err, res) {
       if (err) {
-        reject("Error getting listings");
+        reject('Error getting listings');
       }
       resolve(res);
     });
@@ -68,14 +68,14 @@ exports.lambdaHandler = async (event, context) => {
     return {
       ...ListingData,
       User: { FirstName, LastName, Email, Department },
-      ImagePreview: "",
+      ImagePreview: '',
     };
   });
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      TotalListings: getListingsCount[0]["COUNT(*)"],
+      TotalListings: getListingsCount[0]['COUNT(*)'],
       Data: output,
     }),
   };
