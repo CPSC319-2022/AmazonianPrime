@@ -19,8 +19,8 @@ function parseJWT (token) {
 
 exports.lambdaHandler = async (event, context) => {
   // ------- Get user from Database -------
-
   const token = parseJWT(event.pathParameters.token);
+  
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
     "user",
