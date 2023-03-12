@@ -23,14 +23,18 @@ exports.lambdaHandler = async (event, context) => {
   const category = event.queryStringParameters.category;
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
+  const startDate = event.queryStringParameters.startDate;
 
   var options = [];
 
   if (name != null && name !== undefined) {
-    options.push(`ListingName = ${name}`);
+    options.push(`ListingName = ${name.replace("-", " ")}`);
   }
   if (category !== null && category !== undefined) {
-    options.push(`Category = ${category}`);
+    options.push(`Category = ${category.replace("-", " ")}`);
+  }
+  if (startDate != null && startDate !== undefined) {
+    options.push(`Listing.PostedTimestamp BETWEEN ${startDate} AND CAST(GETDATE() AS DATE)`);
   }
   options.push(`Listing.UserID = Users.UserID`);
 
