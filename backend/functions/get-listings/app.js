@@ -23,6 +23,7 @@ exports.lambdaHandler = async (event, context) => {
   const category = event.queryStringParameters.category;
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
+  const filterDate = event.queryStringParameters.filterDate;
 
   var options = [];
 
