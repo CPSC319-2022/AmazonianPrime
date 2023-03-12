@@ -167,6 +167,25 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(createListingTable);
 
+  let createListingImageTableQuery = `CREATE TABLE ListingImage (
+    PictureID int NOT NULL AUTO_INCREMENT,
+    ListingID int NOT NULL, 
+    S3ImagePath varchar(255),
+    PRIMARY KEY (PictureID),
+    FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
+  );`;
+
+  const createListingImageTable = await new Promise((resolve, reject) => {
+    con.query(createListingImageTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create listing image table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createListingImageTable);
+
   return {
     status: "SUCCESS",
   };
