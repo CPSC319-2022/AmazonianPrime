@@ -35,8 +35,13 @@ exports.lambdaHandler = async (event, context) => {
   }
   options.push(`Listing.UserID = Users.UserID`);
 
+  var whereClauseDate = "";
+  if (filterDate != null && filterDate !== undefined) {
+    whereClauseDate = " AND " + `Listing.PostedTimestamp BETWEEN ${filterDate} AND CAST(GETDATE() AS DATE)`;
+  }
+
   const whereClause = options.reduce((a, b) => {
-    return a + " AND " + b;
+    return a + " AND " + b + whereClauseDate;
   });
 
   const getListingsQuery = `SELECT * FROM Listing, Users WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
