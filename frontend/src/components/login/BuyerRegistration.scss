@@ -2,6 +2,7 @@
 
 .buyer-registration-page {
   background-image: url('../../images/forest.jpg');
+  min-height: calc(100vh - $banner-height);
   height: auto;
   background-repeat: no-repeat;
   background-position-x: 0px;
