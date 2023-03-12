@@ -8,6 +8,8 @@ import { useAppDispatch } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import PaymentGrid from '../common/PaymentGrid';
+import AddressGrid from '../common/AddressGrid';
 
 function BuyerRegistration() {
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
@@ -39,50 +41,7 @@ function BuyerRegistration() {
             </span>
           </div>
           <div className="buyer-registration-page__forms">
-            <div className="buyer-registration-page__payment-prompt">
-              <span>Payment Details</span>
-            </div>
-            <div className="buyer-registration-page__payment-grid">
-              <Grid container spacing={1.5}>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="First Name" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Card Number" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField fullWidth required label="CVC" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField fullWidth required label="MM / YY" defaultValue="" variant="filled" />
-                </Grid>
-              </Grid>
-            </div>
-            <div className="buyer-registration-page__billing-prompt">
-              <span>Billing Address</span>
-            </div>
-            <div className="buyer-registration-page__billing-grid">
-              <Grid container spacing={1.5}>
-                <Grid item xs={12}>
-                  <TextField fullWidth required label="Street Address" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="City" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Province" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Postal Code" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Country" defaultValue="" variant="filled" />
-                </Grid>
-              </Grid>
-            </div>
+            <PaymentGrid />
             <div className="buyer-registration-page__shipping-prompt">
               <span>Shipping Address</span>
             </div>
@@ -94,51 +53,19 @@ function BuyerRegistration() {
                 />
               </FormGroup>
             </div>
-            {!useBillingAddressForShipping && (
-              <Grid container spacing={1.5}>
-                <Grid item xs={12}>
-                  <TextField fullWidth required label="Street Address" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="City" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Province" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Postal Code" defaultValue="" variant="filled" />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField fullWidth required label="Country" defaultValue="" variant="filled" />
-                </Grid>
-              </Grid>
-            )}
+            {!useBillingAddressForShipping && <AddressGrid />}
           </div>
         </div>
         <div className="buyer-registration-page__action-buttons">
-          <Grid container spacing={0}>
-            <Grid item xs={5.3}>
-              <Button
-                color="primary"
-                variant="outlined"
-                className="buyer-registration-page__skip-button"
-                onClick={() => register()}
-              >
-                Skip this step
-              </Button>
-            </Grid>
-            <Grid item xs={1}>
-              <Button
-                color="secondary"
-                variant="contained"
-                className="buyer-registration-page__continue-button"
-                endIcon={<TrendingFlatIcon />}
-                onClick={() => register()}
-              >
-                Start shopping
-              </Button>
-            </Grid>
-          </Grid>
+          <Button
+            color="secondary"
+            variant="contained"
+            className="buyer-registration-page__continue-button"
+            endIcon={<TrendingFlatIcon />}
+            onClick={() => register()}
+          >
+            Start shopping
+          </Button>
         </div>
       </div>
     </div>
