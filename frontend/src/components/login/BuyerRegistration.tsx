@@ -1,7 +1,7 @@
 import './BuyerRegistration.scss';
 import { Button, TextField, Grid } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useLazySignupQuery } from '../../redux/api/user';
+import { useSignupMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
 import { useAppDispatch } from '../../redux/store';
@@ -14,14 +14,25 @@ import AddressGrid from '../common/AddressGrid';
 function BuyerRegistration() {
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
   const dispatch = useAppDispatch();
-  const [triggerGetQuery, result] = useLazySignupQuery();
+  const [updateProfile, result] = useSignupMutation();
 
   if (result.data) {
     dispatch(setUser(result.data));
   }
 
+  // TODO: Populate with user input
+  const updatedUser = {
+    "UserId": "2",
+    "FirstName": "John",
+    "LastName": "Doe",
+    "Department": "Sample"
+  }
+
   function register() {
-    triggerGetQuery();
+    updateProfile(updatedUser);
+  }
+  function handleShippingCheckbox() {
+    setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
