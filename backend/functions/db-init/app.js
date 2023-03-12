@@ -215,8 +215,9 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
-
+    
   console.log(createListingImageTable);
+
 
   return {
     status: 'SUCCESS',
