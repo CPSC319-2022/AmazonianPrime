@@ -26,11 +26,11 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
       <Grid container rowSpacing={0}>
         <Grid item xs={12} className="product-details__seller-details">
           <div className="product-details_user-avatar">
-            {user.firstName.charAt(0)}
-            {user.lastName.charAt(0)}
+            {user.FirstName?.charAt(0)}
+            {user.LastName?.charAt(0)}
           </div>
           <div className="product-details__user-name">
-            {user.firstName}&nbsp;{user.lastName.charAt(0)}.
+            {user.FirstName}&nbsp;{user.LastName?.charAt(0)}.
             <div className="product-details__user-department">Marketing</div>
           </div>
         </Grid>

@@ -58,7 +58,7 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
         </Button>
       ) : (
         <div>
-          {user.firstName}&nbsp;{user.lastName.charAt(0)}.
+          {user.FirstName}&nbsp;{user.LastName?.charAt(0)}.
         </div>
       )}
     </div>
