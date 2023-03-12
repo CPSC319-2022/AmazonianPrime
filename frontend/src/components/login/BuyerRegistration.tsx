@@ -34,9 +34,6 @@ function BuyerRegistration() {
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
-  function handleShippingCheckbox() {
-    setUseBillingAddressForShipping(!useBillingAddressForShipping);
-  }
 
   return (
     <div className="buyer-registration-page">
