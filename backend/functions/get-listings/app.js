@@ -51,6 +51,17 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(getListings);
 
+  const getNumberOfListings = `SELECT COUNT(*) FROM Listing, Users WHERE ${whereClause};`;
+
+  const getListingsCount = await new Promise((resolve, reject) => {
+    con.query(getNumberOfListings, function (err, res) {
+      if (err) {
+        reject("Error getting listings");
+      }
+      resolve(res);
+    });
+  });
+
   // Need to figure out how to extract the image preview as well for each image here. Perhaps
   const output = getListings.map((entry) => {
     const { FirstName, LastName, Email, Department, ...ListingData } = entry;
@@ -63,6 +74,9 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(output),
+    body: JSON.stringify({
+      TotalListings: getListingsCount[0]["COUNT(*)"],
+      Data: output,
+    }),
   };
 };
