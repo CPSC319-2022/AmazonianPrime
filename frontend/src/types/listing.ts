@@ -3,8 +3,7 @@ import { User } from './user';
 export interface Listing {
   ListingID: number;
   UserID: number;
-  // TODO: change after michael
-  User?: any;
+  User: User;
   ListingName: string;
   Description: string;
   Cost: number;

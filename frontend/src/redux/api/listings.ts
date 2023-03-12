@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Listing } from '../../types/listing';
 import { PaginatedListingPreviews } from '../../types/paginatedListingPreviews';
+import moment from 'moment';
 
 const LIMIT = 12;
 export const listingsApi = createApi({
@@ -9,12 +10,14 @@ export const listingsApi = createApi({
   tagTypes: ['Listings'],
   endpoints: (builder) => ({
     getRecentListings: builder.query<PaginatedListingPreviews[], void>({
-      // TODO implement this in BE
-      query: () => 'listing?limit=10&offset=1',
+      query: () => {
+        // return listings posted 14 days ago
+        return `listing?startDate="${moment(new Date()).subtract(14, 'd').format('YYYY-MM-DD')}"&limit=20&offset=1`;
+      },
     }),
-    getListings: builder.query<PaginatedListingPreviews[], any>({
+    getListings: builder.query<PaginatedListingPreviews[], { page: number; category: string; name: string }>({
       query: ({ page, category, name }) => {
-        return `listing?${category !== 'all-categories' ? `category="${category}"&` : ''}${
+        return `listing?${category !== 'all-categories' ? `category=\"${category}\"&` : ''}${
           name && `name="${name}"&`
         }limit=${LIMIT}&offset=${LIMIT * (page - 1)}`;
       },

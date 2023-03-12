@@ -3,30 +3,45 @@ import './LandingPage.scss';
 import WelcomeContent from './WelcomeContent';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { useGetRecentListingsQuery } from '../../redux/api/listings';
-import { setRecentListings } from '../../redux/reducers/listingsSlice';
+import { useGetListingsQuery, useGetRecentListingsQuery } from '../../redux/api/listings';
+import { setAmazonExclusives, setRecentListings } from '../../redux/reducers/listingsSlice';
 
 function LandingPage() {
-  const paginatedListings = useAppSelector((state) => state.listings.recentListings);
+  const paginatedRecentListings = useAppSelector((state) => state.listings.recentListings);
+  const paginatedAmazonExclusives = useAppSelector((state) => state.listings.amazonExlusives);
   const dispatch = useAppDispatch();
-  const { data, isLoading } = useGetRecentListingsQuery();
+  const { data: recentListings, isLoading: isLoadingRecentListings } = useGetRecentListingsQuery();
+  const { data: amazonExclusives, isLoading: isLoadingAmazonExclusives } = useGetListingsQuery({
+    page: 1,
+    category: 'amazon-merchandise',
+    name: '',
+  });
   useEffect(() => {
-    if (data) {
-      dispatch(setRecentListings(data));
+    if (recentListings) {
+      dispatch(setRecentListings(recentListings));
     }
-  }, [data]);
+    if (amazonExclusives) {
+      dispatch(setAmazonExclusives(amazonExclusives));
+    }
+  }, [recentListings, amazonExclusives]);
 
   return (
     <div>
       <div className="landing-page__welcome-content">
         <WelcomeContent />
       </div>
-      {paginatedListings && (
-        <>
-          <ListingRow isLoading={isLoading} title={'Recently Added'} listings={paginatedListings.Data} />
-          <ListingRow isLoading={isLoading} title={'Amazon Exclusives'} listings={paginatedListings.Data} />
-        </>
-      )}
+      <>
+        <ListingRow
+          isLoading={isLoadingRecentListings}
+          title={'Recently Added'}
+          listings={paginatedRecentListings?.Data}
+        />
+        <ListingRow
+          isLoading={isLoadingAmazonExclusives}
+          title={'Amazon Merchandise'}
+          listings={paginatedAmazonExclusives?.Data}
+        />
+      </>
     </div>
   );
 }

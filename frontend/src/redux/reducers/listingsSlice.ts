@@ -4,9 +4,13 @@ import { ListingPreview } from '../../types/listingPreview';
 import { PaginatedListingPreviews } from '../../types/paginatedListingPreviews';
 
 export interface ListingsState {
+  // Landing page previews
   recentListings: PaginatedListingPreviews | null;
+  amazonExlusives: PaginatedListingPreviews | null;
+
   listings: PaginatedListingPreviews | null;
   listingDetails: Listing | null;
+  isLoadingListings: boolean;
 }
 
 interface Action {
@@ -21,8 +25,10 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
   name: 'listingSlice',
   initialState: {
     recentListings: null,
+    amazonExlusives: null,
     listings: null,
     listingDetails: null,
+    isLoadingListings: false,
   },
   reducers: {
     setListings: (state: ListingsState, action: Action) => {
@@ -30,9 +36,19 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
         state.listings = action.payload as PaginatedListingPreviews;
       }
     },
+    setIsLoadingListings: (state: ListingsState, action: Action) => {
+      if (action?.payload) {
+        state.isLoadingListings = action.payload.isLoadingListings;
+      }
+    },
     setRecentListings: (state: ListingsState, action: Action) => {
       if (action?.payload) {
         state.recentListings = action.payload as PaginatedListingPreviews;
+      }
+    },
+    setAmazonExclusives: (state: ListingsState, action: Action) => {
+      if (action?.payload) {
+        state.amazonExlusives = action.payload as PaginatedListingPreviews;
       }
     },
     setPartialListingDetails: (state: ListingsState, action: Action) => {
@@ -54,6 +70,13 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
   },
 });
 
-export const { setRecentListings, setPartialListingDetails, setListingDetails, setListings } = listings.actions;
+export const {
+  setRecentListings,
+  setPartialListingDetails,
+  setListingDetails,
+  setListings,
+  setIsLoadingListings,
+  setAmazonExclusives,
+} = listings.actions;
 
 export default listings.reducer;

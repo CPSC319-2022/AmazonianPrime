@@ -3,13 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Grid, Pagination } from '@mui/material';
 import { ListingPreview as ListingPreviewType } from '../../types/listingPreview';
 import ListingPreview from '../listing/ListingPreview';
-import { Listing } from '../../types/listing';
 import NoContent from './NoContent';
+import { useAppSelector } from '../../redux/store';
 
 interface GalleryProps {
   listings: ListingPreviewType[] | undefined;
   totalListingsLength: number;
-  isLoading: boolean;
   handlePageChange: (_: React.ChangeEvent<unknown>, value: number) => void;
   showRemoveListingButton?: boolean;
 }
@@ -18,11 +17,11 @@ const LIMIT = 12;
 const Gallery: React.FC<GalleryProps> = ({
   listings,
   totalListingsLength,
-  isLoading,
   handlePageChange,
   showRemoveListingButton = false,
 }) => {
   const [searchParams] = useSearchParams();
+  const isLoading = useAppSelector((state) => state.listings.isLoadingListings);
   const navigate = useNavigate();
   const page = searchParams.get('page');
   if (!page) {
@@ -31,12 +30,13 @@ const Gallery: React.FC<GalleryProps> = ({
   }
 
   if (listings?.length === 0 && !isLoading) return <NoContent />;
+  const showListings = !isLoading && listings;
 
   return (
     <div>
       <div className="gallery__container">
         <Grid container className="gallery__container-grid" columns={4}>
-          {(!isLoading && listings ? listings : Array(20).fill(0)).map((listing: ListingPreviewType | null, index) => (
+          {(showListings ? listings : Array(20).fill(0)).map((listing: ListingPreviewType | null, index) => (
             <Grid item xs={1} className="gallery__container__grid-item" key={index}>
               <ListingPreview
                 listing={listing}
@@ -49,12 +49,14 @@ const Gallery: React.FC<GalleryProps> = ({
           ))}
         </Grid>
       </div>
-      <Pagination
-        className="gallery__pagination"
-        count={Math.ceil(totalListingsLength / LIMIT)}
-        page={Number(page)}
-        onChange={handlePageChange}
-      />
+      {showListings && (
+        <Pagination
+          className="gallery__pagination"
+          count={Math.ceil(totalListingsLength / LIMIT)}
+          page={Number(page)}
+          onChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

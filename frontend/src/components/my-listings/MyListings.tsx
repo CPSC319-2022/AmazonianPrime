@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetRecentListingsQuery } from '../../redux/api/listings';
-import { setRecentListings } from '../../redux/reducers/listingsSlice';
+import { setIsLoadingListings, setRecentListings } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import Gallery from '../common/Gallery';
 import ListingPreview from '../listing/ListingPreview';
@@ -19,10 +19,11 @@ function MyListings() {
   const page = searchParams.get('page');
   const paginatedListings = useAppSelector((state) => state.listings.recentListings);
   useEffect(() => {
+    dispatch(setIsLoadingListings({ isLoadingListings: isLoading }));
     if (data) {
       dispatch(setRecentListings(data));
     }
-  }, [data]);
+  }, [data, isLoading]);
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     navigate(`?page=${value}`);
   };
@@ -40,7 +41,6 @@ function MyListings() {
       <Gallery
         totalListingsLength={Number(TotalListings)}
         listings={tempData}
-        isLoading={isLoading}
         handlePageChange={handlePageChange}
         showRemoveListingButton
       />

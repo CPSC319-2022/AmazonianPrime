@@ -1,11 +1,12 @@
 import './BrowsePage.scss';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useAppSelector } from '../../redux/store';
 import { useEffect } from 'react';
 import { useGetListingsQuery } from '../../redux/api/listings';
-import { setListings } from '../../redux/reducers/listingsSlice';
+import { setIsLoadingListings, setListings } from '../../redux/reducers/listingsSlice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Breadcrumbs from '../common/Breadcrumbs';
 import Gallery from '../common/Gallery';
+import { useDispatch } from 'react-redux';
 
 function BrowsePage() {
   const [searchParams] = useSearchParams();
@@ -14,15 +15,20 @@ function BrowsePage() {
   const page = searchParams.get('page');
   const searchQuery = searchParams.get('q')?.replace('+', ' ') || '';
   const paginatedListings = useAppSelector((state) => state.listings.listings);
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
 
-  const { data, isLoading } = useGetListingsQuery({ category, page, name: searchQuery });
+  const { data, isLoading } = useGetListingsQuery({
+    category: category ?? '',
+    page: Number(page) ?? 1,
+    name: searchQuery,
+  });
 
   useEffect(() => {
+    dispatch(setIsLoadingListings({ isLoadingListings: isLoading }));
     if (data) {
       dispatch(setListings(data));
     }
-  }, [data]);
+  }, [data, isLoading]);
 
   if (!page || !category) {
     navigate('/');
@@ -39,7 +45,6 @@ function BrowsePage() {
       <Gallery
         totalListingsLength={Number(paginatedListings?.TotalListings)}
         listings={paginatedListings?.Data}
-        isLoading={isLoading}
         handlePageChange={handlePageChange}
       />
     </div>
