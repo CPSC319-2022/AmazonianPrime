@@ -23,6 +23,7 @@ exports.lambdaHandler = async (event, context) => {
   const category = event.queryStringParameters.category;
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
+  const filterDate = event.queryStringParameters.filterDate;
 
   var options = [];
 
@@ -35,8 +36,10 @@ exports.lambdaHandler = async (event, context) => {
   options.push(`Listing.UserID = Users.UserID`);
 
   const whereClause = options.reduce((a, b) => {
-    return a + " AND " + b;
+    return a + " AND " + b + " AND " + whereClauseDate;
   });
+
+  const whereClauseDate = `Listing.PostedTimestamp BETWEEN ${filterDate} AND CAST(GETDATE() AS DATE)`;
 
   const getListingsQuery = `SELECT * FROM Listing, Users WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
 
