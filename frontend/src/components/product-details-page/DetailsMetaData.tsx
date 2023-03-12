@@ -21,10 +21,8 @@ function DetailsMetaData() {
     <div>
       <div className="product-details__small-header">Details</div>
       <Grid container rowSpacing={0} className="product-details__small-text">
-        {getDetailsRow('Condition', listing.condition)}
-        {getDetailsRow('Size', 'N/A')}
-        {getDetailsRow('Brand', 'N/A')}
-        {getDetailsRow('Colour', 'N/A')}
+        {getDetailsRow('Condition', listing.ItemCondition)}
+        {getDetailsRow('Category', listing.Category)}
         <Grid item xs={3}>
           <p className="product-details__details__grey-text">Quantity</p>
         </Grid>
@@ -35,8 +33,9 @@ function DetailsMetaData() {
             size="small"
             style={{ backgroundColor: '#e0e0e0' }}
           >
-            <MenuItem value="1">1</MenuItem>
-            <MenuItem value="2">2</MenuItem>
+            {Array.from(Array(listing.Quantity).keys()).map((quantity: number) => (
+              <MenuItem value={`${quantity + 1}`}>{quantity + 1}</MenuItem>
+            ))}
           </Select>
         </Grid>
       </Grid>

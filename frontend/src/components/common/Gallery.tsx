@@ -3,16 +3,21 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Grid, Pagination } from '@mui/material';
 import { ListingPreview as ListingPreviewType } from '../../types/listingPreview';
 import ListingPreview from '../listing/ListingPreview';
+import { Listing } from '../../types/listing';
+import NoContent from './NoContent';
 
 interface GalleryProps {
-  listings: [] | ListingPreviewType[];
+  listings: ListingPreviewType[] | undefined;
+  totalListingsLength: number;
   isLoading: boolean;
   handlePageChange: (_: React.ChangeEvent<unknown>, value: number) => void;
   showRemoveListingButton?: boolean;
 }
 
+const LIMIT = 12;
 const Gallery: React.FC<GalleryProps> = ({
   listings,
+  totalListingsLength,
   isLoading,
   handlePageChange,
   showRemoveListingButton = false,
@@ -25,18 +30,13 @@ const Gallery: React.FC<GalleryProps> = ({
     return null;
   }
 
-  if (!listings)
-    return (
-      <div>
-        <span>No Content</span>
-      </div>
-    );
+  if (listings?.length === 0 && !isLoading) return <NoContent />;
 
   return (
     <div>
       <div className="gallery__container">
         <Grid container className="gallery__container-grid" columns={4}>
-          {(!isLoading ? listings : Array(20).fill(0)).map((listing, index) => (
+          {(!isLoading && listings ? listings : Array(20).fill(0)).map((listing: ListingPreviewType | null, index) => (
             <Grid item xs={1} className="gallery__container__grid-item" key={index}>
               <ListingPreview
                 listing={listing}
@@ -49,7 +49,12 @@ const Gallery: React.FC<GalleryProps> = ({
           ))}
         </Grid>
       </div>
-      <Pagination className="gallery__pagination" count={10} page={Number(page)} onChange={handlePageChange} />
+      <Pagination
+        className="gallery__pagination"
+        count={Math.ceil(totalListingsLength / LIMIT)}
+        page={Number(page)}
+        onChange={handlePageChange}
+      />
     </div>
   );
 };

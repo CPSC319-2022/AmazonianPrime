@@ -67,6 +67,24 @@
   width: 150px;
 }
 
+.seller-modal__image-text-container {
+  span {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 5px;
+  width: 100%;
+
+  .seller-modal__image-remove-button {
+    margin-left: auto;
+  }
+}
+
 .create-listing__condition {
   margin-right: 1em;
 }

@@ -17,7 +17,7 @@ function MyListings() {
   // TODO: should update redux
   const { data, isLoading } = useGetRecentListingsQuery();
   const page = searchParams.get('page');
-  const listings = useAppSelector((state) => state.listings.recentListings);
+  const paginatedListings = useAppSelector((state) => state.listings.recentListings);
   useEffect(() => {
     if (data) {
       dispatch(setRecentListings(data));
@@ -26,13 +26,24 @@ function MyListings() {
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     navigate(`?page=${value}`);
   };
-  const tempData = [...listings, ...listings, ...listings];
+
+  if (!paginatedListings || paginatedListings.Data.length === 0) {
+    return <div>Empty Data</div>;
+  }
+  const { Data, TotalListings } = paginatedListings;
+  const tempData = [...paginatedListings.Data, ...paginatedListings.Data, ...paginatedListings.Data];
   return (
     <div className="browse">
       <Breadcrumbs aria-label="breadcrumb" className="my-listings__breadcrumbs">
         <Typography color="text.primary">My Listings</Typography>
       </Breadcrumbs>
-      <Gallery listings={tempData} isLoading={isLoading} handlePageChange={handlePageChange} showRemoveListingButton />
+      <Gallery
+        totalListingsLength={Number(TotalListings)}
+        listings={tempData}
+        isLoading={isLoading}
+        handlePageChange={handlePageChange}
+        showRemoveListingButton
+      />
     </div>
   );
 }

@@ -40,11 +40,11 @@ function Breadcrumbs() {
       },
     ];
   }
-  if (listingId && listing?.listingName) {
+  if (listingId && listing?.ListingName) {
     breadCrumbs = [
       ...breadCrumbs,
       {
-        link: listing.listingName,
+        link: listing.ListingName,
         navigate: '',
       },
     ];

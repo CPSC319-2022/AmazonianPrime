@@ -7,7 +7,7 @@ import { useGetRecentListingsQuery } from '../../redux/api/listings';
 import { setRecentListings } from '../../redux/reducers/listingsSlice';
 
 function LandingPage() {
-  const listings = useAppSelector((state) => state.listings.recentListings);
+  const paginatedListings = useAppSelector((state) => state.listings.recentListings);
   const dispatch = useAppDispatch();
   const { data, isLoading } = useGetRecentListingsQuery();
   useEffect(() => {
@@ -21,10 +21,12 @@ function LandingPage() {
       <div className="landing-page__welcome-content">
         <WelcomeContent />
       </div>
-      <>
-        <ListingRow isLoading={isLoading} title={'Recently Added'} listings={[...listings, ...listings, ...listings]} />
-        <ListingRow isLoading={isLoading} title={'Amazon Exclusives'} listings={listings} />
-      </>
+      {paginatedListings && (
+        <>
+          <ListingRow isLoading={isLoading} title={'Recently Added'} listings={paginatedListings.Data} />
+          <ListingRow isLoading={isLoading} title={'Amazon Exclusives'} listings={paginatedListings.Data} />
+        </>
+      )}
     </div>
   );
 }

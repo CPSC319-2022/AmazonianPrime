@@ -1,8 +1,8 @@
 import './BrowsePage.scss';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useEffect } from 'react';
-import { useGetRecentListingsQuery } from '../../redux/api/listings';
-import { setRecentListings } from '../../redux/reducers/listingsSlice';
+import { useGetListingsQuery } from '../../redux/api/listings';
+import { setListings } from '../../redux/reducers/listingsSlice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Breadcrumbs from '../common/Breadcrumbs';
 import Gallery from '../common/Gallery';
@@ -13,15 +13,14 @@ function BrowsePage() {
   const category = searchParams.get('category');
   const page = searchParams.get('page');
   const searchQuery = searchParams.get('q')?.replace('+', ' ') || '';
-  const listings = useAppSelector((state) => state.listings.recentListings);
+  const paginatedListings = useAppSelector((state) => state.listings.listings);
   const dispatch = useAppDispatch();
 
-  // TODO: use NEW query and redux storage (pending backend)
-  const { data, isLoading } = useGetRecentListingsQuery();
+  const { data, isLoading } = useGetListingsQuery({ category, page, name: searchQuery });
 
   useEffect(() => {
     if (data) {
-      dispatch(setRecentListings(data));
+      dispatch(setListings(data));
     }
   }, [data]);
 
@@ -34,21 +33,15 @@ function BrowsePage() {
     navigate(`?category=${category}${searchQuery && `&q=${searchQuery}`}&page=${value}`);
   };
 
-  if (!listings)
-    return (
-      <div>
-        <span>No content</span>
-      </div>
-    );
-
-  const tempData = [...listings, ...listings, ...listings];
-  // TODO: change
-  const maxPageCount = 10;
-
   return (
     <div>
       <Breadcrumbs />
-      <Gallery listings={tempData} isLoading={isLoading} handlePageChange={handlePageChange} />
+      <Gallery
+        totalListingsLength={Number(paginatedListings?.TotalListings)}
+        listings={paginatedListings?.Data}
+        isLoading={isLoading}
+        handlePageChange={handlePageChange}
+      />
     </div>
   );
 }
