@@ -1,6 +1,6 @@
-var { v4: uuidv4 } = require("uuid");
-const dbConnection = require("dbConnection.js");
-var mysql = require("mysql");
+var { v4: uuidv4 } = require('uuid');
+const dbConnection = require('dbConnection.js');
+var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -15,9 +15,9 @@ var mysql = require("mysql");
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
   const {
@@ -41,7 +41,7 @@ exports.lambdaHandler = async (event, context) => {
   ) {
     return {
       statusCode: 400,
-      body: "Missing required fields",
+      body: 'Missing required fields',
     };
   }
 
@@ -57,7 +57,7 @@ exports.lambdaHandler = async (event, context) => {
       });
     });
 
-    const listingID = createListing["insertId"];
+    const listingID = createListing['insertId'];
 
     const getListingByIdQuery = `SELECT * FROM Listing WHERE ListingID = "${listingID}"`;
 

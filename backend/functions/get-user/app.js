@@ -1,8 +1,8 @@
-var mysql = require("mysql");
-var OAuth2Client = require("google-auth-library");
-const dbConnection = require("dbConnection.js");
+var mysql = require('mysql');
+var OAuth2Client = require('google-auth-library');
+const dbConnection = require('dbConnection.js');
 
-function parseJWT (token) {
+function parseJWT(token) {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
@@ -20,12 +20,12 @@ function parseJWT (token) {
 exports.lambdaHandler = async (event, context) => {
   // ------- Get user from Database -------
   const token = parseJWT(event.pathParameters.token);
-  
+
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
   const getUserByEmailQuery = `SELECT * FROM Users WHERE Email = "${token.email}"`;
@@ -54,7 +54,7 @@ exports.lambdaHandler = async (event, context) => {
       });
     });
 
-    const insertedId = addUsers["insertId"];
+    const insertedId = addUsers['insertId'];
 
     const getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${insertedId}"`;
     getUser = await new Promise((resolve, reject) => {
