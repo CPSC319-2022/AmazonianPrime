@@ -37,9 +37,7 @@ exports.lambdaHandler = async (event, context) => {
     options.push(`Category = ${category.replace(/-/g, ' ')}`);
   }
   if (startDate != null && startDate !== undefined) {
-    options.push(
-      `Listing.PostedTimestamp BETWEEN ${startDate} AND CAST(GETDATE() AS DATE)`,
-    );
+    options.push(`Date(PostedTimestamp) > ${startDate}`);
   }
   if (listingUserId != null && listingUserId !== undefined) {
     options.push(`Listing.UserId = ${listingUserId}`);
