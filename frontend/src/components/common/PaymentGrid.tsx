@@ -2,7 +2,7 @@ import { TextField, Grid } from '@mui/material';
 import './PaymentGrid.scss';
 import AddressGrid from './AddressGrid';
 
-function Banner() {
+function PaymentGrid() {
   return (
     <div className='payment-grid'>
       <div className="payment-grid__payment-prompt">
@@ -35,4 +35,4 @@ function Banner() {
   );
 }
 
-export default Banner;
+export default PaymentGrid;

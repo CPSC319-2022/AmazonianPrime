@@ -1,6 +1,6 @@
 import { TextField, Grid } from '@mui/material';
 
-function Banner() {
+function AddressGrid() {
   return (
     <div className='address-grid'>
       <Grid container spacing={1.5}>
@@ -24,4 +24,4 @@ function Banner() {
   );
 }
 
-export default Banner;
+export default AddressGrid;
