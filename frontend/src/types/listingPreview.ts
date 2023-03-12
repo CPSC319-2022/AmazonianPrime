@@ -5,5 +5,7 @@ export interface ListingPreview {
   imagePreview: string;
   listingName: string;
   cost: string;
+  condition: string;
+  description: string;
   user: User;
 }

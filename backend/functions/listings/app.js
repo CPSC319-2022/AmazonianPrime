@@ -44,8 +44,8 @@ exports.lambdaHandler = async (event, context) => {
           condition: "Good - New",
           description: "Selling this very healthy monstera",
           user: {
-            firstName: "Phil",
-            lastName: "Dunphy",
+            FirstName: "Phil",
+            LastName: "Dunphy",
           },
         },
         {
@@ -56,8 +56,8 @@ exports.lambdaHandler = async (event, context) => {
           condition: "Good - New",
           description: "Great condition.",
           user: {
-            firstName: "Claire",
-            lastName: "Dunphy",
+            FirstName: "Claire",
+            LastName: "Dunphy",
           },
         },
         {
@@ -68,8 +68,8 @@ exports.lambdaHandler = async (event, context) => {
           condition: "Used - Good",
           description: "Great condition.",
           user: {
-            firstName: "Hailey",
-            lastName: "Dunphy",
+            FirstName: "Hailey",
+            LastName: "Dunphy",
           },
         },
         {
@@ -80,8 +80,8 @@ exports.lambdaHandler = async (event, context) => {
           condition: "Good - New",
           description: "Great condition.",
           user: {
-            firstName: "Luke",
-            lastName: "Dunphy",
+            FirstName: "Luke",
+            LastName: "Dunphy",
           },
         },
         {
@@ -92,8 +92,8 @@ exports.lambdaHandler = async (event, context) => {
           condition: "Good - New",
           description: "Great condition.",
           user: {
-            firstName: "Alex",
-            lastName: "Dunphy",
+            FirstName: "Alex",
+            LastName: "Dunphy",
           },
         },
         {
@@ -104,8 +104,8 @@ exports.lambdaHandler = async (event, context) => {
           condition: "Good - New",
           description: "Great condition.",
           user: {
-            firstName: "Jeff",
-            lastName: "Bezos",
+            FirstName: "Jeff",
+            LastName: "Bezos",
           },
         },
       ]),

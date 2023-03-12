@@ -7,12 +7,18 @@ import NavBar from './components/common/NavBar';
 import { ReactNode } from 'react';
 import LoginPage from './components/login/LoginPage';
 import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
+import OrdersPage from './components/orders/OrdersPage';
+import CartPage from './components/cart/CartPage';
+import MyListings from './components/my-listings/MyListings';
+import BrowsePage from './components/browse-page/BrowsePage';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
+  // TEMP
+  const isLoggedIn = sessionStorage.getItem('user');
 
   const renderHomePage = (): ReactNode => {
-    if (!user) {
+    if (!user && !isLoggedIn) {
       return <LoginPage />;
     } else {
       return <LandingPage />;
@@ -28,6 +34,10 @@ const AppWrapper = () => {
       <Routes>
         <Route path="/" element={renderHomePage()} />
         <Route path="/listing/:listingId" element={<ProductDetailsPage />} />
+        <Route path="/browse" element={<BrowsePage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/my-listings" element={<MyListings />} />
       </Routes>
     </ThemeProvider>
   );
