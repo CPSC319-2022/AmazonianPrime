@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "backend for Anmazonian Prime",
   "license": "MIT",
+  "dependencies": {
+    "prettier": "^2.8.4"
+  },
   "scripts": {
+    "format": "prettier --write \"*/**/*.json\" \"*/**/*.js\"",
     "dev:start": "sam build && sam local start-api -p 8080"
   }
 }

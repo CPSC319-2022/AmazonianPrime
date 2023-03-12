@@ -2,7 +2,8 @@
 
 .buyer-registration-page {
   background-image: url('../../images/forest.jpg');
-  height: calc(100vh - $banner-height);
+  min-height: calc(100vh - $banner-height);
+  height: auto;
   background-repeat: no-repeat;
   background-position-x: 0px;
   background-position-y: 30%;
@@ -13,9 +14,9 @@
 }
 
 .buyer-registration-page__box {
-  margin: auto;
-  width: auto;
-  height: 75%;
+  margin: 40px auto;
+  width: 880px;
+  height: auto;
   border-radius: 5px;
   background-color: white;
   white-space: nowrap;
@@ -24,9 +25,11 @@
   flex-direction: column;
   justify-content: space-between;
 
-  .buyer-registration-page__button {
+  .buyer-registration-page__action-buttons {
     margin-top: auto;
     align-self: flex-end;
+    display: flex;
+    flex-direction: row;
     margin-right: 30px;
     margin-bottom: 20px;
   }
@@ -41,18 +44,28 @@
 
 .buyer-registration-page__welcome {
   font-weight: 600;
-  font-size: 48px;
+  font-size: 34px;
 }
 
 .buyer-registration-page__prompt {
   padding-top: 15px;
   padding-right: 30px;
-  padding-bottom: 15px;
+  padding-bottom: 20px;
   font-weight: 400;
-  font-size: 24px;
+  font-size: 20px;
 
   p {
     color: $secondary-color;
     display: inline;
   }
+}
+
+.buyer-registration-page__shipping-prompt {
+  padding-top: 20px;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.buyer-registration-page__shipping-contents {
+  padding: 5px;
 }
