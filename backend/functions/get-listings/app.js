@@ -29,10 +29,12 @@ exports.lambdaHandler = async (event, context) => {
   var options = [];
 
   if (name != null && name !== undefined) {
-    options.push(`ListingName LIKE '%"${name.replace('-', ' ')}"%'`);
+    let parsedName = name.replace(/-/g, ' ');
+    parsedName = name.replace(/\"/g, '');
+    options.push(`ListingName LIKE '%${parsedName}%'`);
   }
   if (category !== null && category !== undefined) {
-    options.push(`Category = ${category.replace('-', ' ')}`);
+    options.push(`Category = ${category.replace(/-/g, ' ')}`);
   }
   if (startDate != null && startDate !== undefined) {
     options.push(
