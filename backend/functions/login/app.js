@@ -19,12 +19,12 @@ exports.lambdaHandler = async (event, context) => {
       statusCode: 404,
       headers: {
         // CORS: https://stackoverflow.com/questions/67065130/how-to-enable-cors-with-aws-sam
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Origin": "*", // Allow from anywhere
-        "Access-Control-Allow-Methods": "GET", // Allow only GET request
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': '*', // Allow from anywhere
+        'Access-Control-Allow-Methods': 'GET', // Allow only GET request
       },
       // TODO: returning empty now to simulate that a user is not found in DB
-      body: "",
+      body: '',
     };
   } catch (err) {
     console.log(err);

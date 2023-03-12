@@ -10,6 +10,7 @@
 ## Checklist
 
 * [ ] Conventional commits are followed.
+* [ ] `yarn format` completed for BACKEND and FRONTEND.
 * [ ] `yarn verify` completed.
 * [ ] The new work has been locally tested and before and after screenshots are provided.
 * [ ] There are no package lock files (only `yarn` should be used) - frontend only.

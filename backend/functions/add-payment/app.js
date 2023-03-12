@@ -1,5 +1,5 @@
-const dbConnection = require("dbConnection.js");
-var mysql = require("mysql");
+const dbConnection = require('dbConnection.js');
+var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -14,9 +14,9 @@ var mysql = require("mysql");
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
   const { userId, addressId, creditCardNum, expiryDate, cvv, cardHolderName } =
@@ -33,7 +33,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const paymentId = addPayment["insertId"];
+  const paymentId = addPayment['insertId'];
 
   const addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${userId}, ${paymentId})`;
 
