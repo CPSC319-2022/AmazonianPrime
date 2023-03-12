@@ -4,7 +4,7 @@ import AddressGrid from './AddressGrid';
 
 function PaymentGrid() {
   return (
-    <div className='payment-grid'>
+    <div className="payment-grid">
       <div className="payment-grid__payment-prompt">
         <span>Payment Details</span>
       </div>

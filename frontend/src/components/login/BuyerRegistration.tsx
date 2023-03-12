@@ -22,17 +22,14 @@ function BuyerRegistration() {
 
   // TODO: Populate with user input
   const updatedUser = {
-    "UserId": "2",
-    "FirstName": "John",
-    "LastName": "Doe",
-    "Department": "Sample"
-  }
+    UserId: '2',
+    FirstName: 'John',
+    LastName: 'Doe',
+    Department: 'Sample',
+  };
 
   function register() {
     updateProfile(updatedUser);
-  }
-  function handleShippingCheckbox() {
-    setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
