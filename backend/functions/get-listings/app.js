@@ -24,17 +24,23 @@ exports.lambdaHandler = async (event, context) => {
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
   const startDate = event.queryStringParameters.startDate;
+  const listingUserId = event.queryStringParameters.listingUserId;
 
   var options = [];
 
   if (name != null && name !== undefined) {
-    options.push(`ListingName = ${name.replace("-", " ")}`);
+    options.push(`ListingName LIKE '%${name.replace('-', ' ')}%'`);
   }
   if (category !== null && category !== undefined) {
-    options.push(`Category = ${category.replace("-", " ")}`);
+    options.push(`Category = ${category.replace('-', ' ')}`);
   }
   if (startDate != null && startDate !== undefined) {
-    options.push(`Date(PostedTimestamp) > ${startDate}`);
+    options.push(
+      `Listing.PostedTimestamp BETWEEN ${startDate} AND CAST(GETDATE() AS DATE)`,
+    );
+  }
+  if (listingUserId != null && listingUserId !== undefined) {
+    options.push(`Listing.UserId = ${listingUserId}`);
   }
   options.push(`Listing.UserID = Users.UserID`);
 
