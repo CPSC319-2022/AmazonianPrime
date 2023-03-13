@@ -19,10 +19,10 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { userId, institutionNum, accountNum, transitNum } =
+  const { UserID, InstitutionNum, AccountNum, TransitNum } =
     JSON.parse(event.body);
 
-  const addBankingDetailsQuery = `INSERT INTO BankingDetails(InstitutionNum, AccountNum, TransitNum) VALUES(${institutionNum}, ${accountNum}, ${transitNum})`;
+  const addBankingDetailsQuery = `INSERT INTO BankingDetails(InstitutionNum, AccountNum, TransitNum) VALUES(${InstitutionNum}, ${AccountNum}, ${TransitNum})`;
 
   const addBankingDetails = await new Promise((resolve, reject) => {
     con.query(addBankingDetailsQuery, function (err, res) {
@@ -33,9 +33,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const bankingId = addBankingDetails["insertId"];
+  const BankingID = addBankingDetails["insertId"];
 
-  const addBankingAccountQuery = `INSERT INTO BankingAccount(BankingID, UserID) VALUES(${bankingId}, ${userId})`;
+  const addBankingAccountQuery = `INSERT INTO BankingAccount(BankingID, UserID) VALUES(${BankingID}, ${UserID})`;
 
   const addBankingAccount = await new Promise((resolve, reject) => {
     con.query(addBankingAccountQuery, function (err, res) {
@@ -46,7 +46,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE BankingID = "${bankingId}"`;
+  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE BankingID = "${BankingID}"`;
 
   const getBanking = await new Promise((resolve, reject) => {
     con.query(getBankingByIdQuery, function (err, res) {
