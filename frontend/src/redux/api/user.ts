@@ -11,12 +11,12 @@ export const userApi = createApi({
     signup: builder.mutation<User, Partial<User>>({
       query(body) {
         return {
-          url: `user`,
+          url: `user/update`,
           credentials: 'include',
           method: 'POST',
           body,
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
         };
       },
