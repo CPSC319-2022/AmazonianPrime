@@ -1,12 +1,14 @@
 import { TextField, Grid } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { setPayment } from '../../redux/reducers/paymentSlice';
+import { setPaymentAddress } from '../../redux/reducers/paymentAddressSlice';
 import './PaymentGrid.scss';
 import AddressGrid from './AddressGrid';
 
 function PaymentGrid() {
   const user = useAppSelector((state) => state.user.value);
   const payment = useAppSelector((state) => state.payment.value);
+  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
 
   const dispatch = useAppDispatch();
 
@@ -81,7 +83,7 @@ function PaymentGrid() {
       <div className="payment-grid__address-prompt">
         <span>Billing Address</span>
       </div>
-      <AddressGrid />
+      <AddressGrid isBillingAddress={true} isShippingAddress={false}/>
     </div>
   );
 }

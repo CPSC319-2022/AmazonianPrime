@@ -15,6 +15,8 @@ import AddressGrid from '../common/AddressGrid';
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
   const payment = useAppSelector((state) => state.payment.value);
+  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
+  const shippingAddress = useAppSelector((state) => state.shippingAddress.value);
   
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
   const dispatch = useAppDispatch();
@@ -31,6 +33,8 @@ function BuyerRegistration() {
     //dispatch(setUser(updatedUser));
     //updateProfile(updatedUser);
     console.log(payment);
+    console.log(paymentAddress);
+    console.log(shippingAddress);
   }
 
   function handleShippingCheckbox() {
@@ -75,7 +79,7 @@ function BuyerRegistration() {
                 />
               </FormGroup>
             </div>
-            {!useBillingAddressForShipping && <AddressGrid />}
+            {!useBillingAddressForShipping && <AddressGrid isBillingAddress={false} isShippingAddress={true}/>}
           </div>
         </div>
         <div className="buyer-registration-page__action-buttons">

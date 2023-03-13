@@ -21,7 +21,6 @@ export const payment = createSlice<PaymentState, SliceReducers, 'paymentSlice'>(
   reducers: {
     setPayment: (state: PaymentState, action: Action) => {
       if (action?.payload) {
-        // This is temp work. IRL we should find a way to stay signed in after refresh
         state.value = action.payload as Payment;
       }
     },
