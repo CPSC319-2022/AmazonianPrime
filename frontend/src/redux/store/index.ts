@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import userReducer from '../reducers/userSlice';
 import paymentReducer from '../reducers/paymentSlice';
+import addressReducer from '../reducers/addressSlice';
 import listingsReducer from '../reducers/listingsSlice';
 import sellerModalReducer from '../reducers/sellerModalSlice';
 import { userApi } from '../api/user';
@@ -12,6 +13,7 @@ const store = configureStore({
     // user
     user: userReducer,
     payment: paymentReducer,
+    address: addressReducer,
     sellerModal: sellerModalReducer,
     [userApi.reducerPath]: userApi.reducer,
     // listings
