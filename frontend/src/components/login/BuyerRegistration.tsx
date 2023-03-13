@@ -21,16 +21,16 @@ function BuyerRegistration() {
   }
 
   // TODO: Populate with user input
-  // const updatedUser = {
-  //   UserId: '2',
-  //   FirstName: 'John',
-  //   LastName: 'Doe',
-  //   Department: 'Sample',
-  // };
+  const updatedUser = {
+    UserId: '2',
+    FirstName: 'John',
+    LastName: 'Doe',
+    Department: 'Sample',
+  };
 
   function register() {
-    // updateProfile(updatedUser);
-    dispatch(setUser({ Department: 'AWS' }));
+    updateProfile(updatedUser);
+    dispatch(setUser(result.data));
   }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
