@@ -21,18 +21,23 @@ function BuyerRegistration() {
   //   dispatch(setUser(result.data));
   // }
 
-  const updatedUser = {
+  let updatedUser = {
     UserId: user?.UserID,
     FirstName: user?.FirstName,
     LastName: user?.LastName,
-    Department: 'Sample',
+    Department: '',
   };
 
   function register() {
-    updateProfile(updatedUser);
+    console.log(updatedUser);
+    // updateProfile(updatedUser);
   }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
+  }
+
+  function handleDepartmentInput(input: any) {
+    updatedUser.Department = input.target.value;
   }
 
   return (
@@ -48,11 +53,15 @@ function BuyerRegistration() {
               please give us some more information about yourself.
             </span>
           </div>
+          <div className="buyer-registration-page__department-prompt">
+            <span>Department</span>
+          </div>
+          <TextField fullWidth required label="Department" 
+          defaultValue="" variant="filled"
+          className='department-input'
+          onChange={handleDepartmentInput}
+          />
           <div className="buyer-registration-page__forms">
-            <div className="buyer-registration-page__department-prompt">
-              <span>Department</span>
-            </div>
-            <TextField fullWidth required label="Department" defaultValue="" variant="filled" className='department-input'/>
             <PaymentGrid />
             <div className="buyer-registration-page__shipping-prompt">
               <span>Shipping Address</span>
