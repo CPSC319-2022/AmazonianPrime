@@ -30,7 +30,7 @@ function BuyerRegistration() {
 
   function register() {
     updateProfile(updatedUser);
-    dispatch(setUser({ Department: 'AWS' }));
+    dispatch(setUser(result.data));
   }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
