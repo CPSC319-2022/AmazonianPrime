@@ -5,4 +5,7 @@ export interface Payment {
   ExpiryDate: string, 
   CVV: string, 
   CardHolderName: string
+
+  FirstName: string
+  LastName: string
 }

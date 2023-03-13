@@ -30,6 +30,7 @@ function BuyerRegistration() {
   function register() {
     //dispatch(setUser(updatedUser));
     //updateProfile(updatedUser);
+    console.log(payment);
   }
 
   function handleShippingCheckbox() {

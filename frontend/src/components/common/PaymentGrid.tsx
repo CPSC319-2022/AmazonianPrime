@@ -1,19 +1,57 @@
 import { TextField, Grid } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { setPayment } from '../../redux/reducers/paymentSlice';
 import './PaymentGrid.scss';
 import AddressGrid from './AddressGrid';
 
 function PaymentGrid() {
+  const user = useAppSelector((state) => state.user.value);
+  const payment = useAppSelector((state) => state.payment.value);
+
+  const dispatch = useAppDispatch();
+
   let paymentInfo = { 
-    UserID: 1, 
-    AddressID: 3, 
-    CreditCardNum: "1324345", 
-    ExpiryDate: "2025-01-01", 
-    CVV: "123", 
-    CardHolderName: "John Doe" 
+    UserID: user?.UserID, 
+    AddressID: payment?.AddressID, 
+    CreditCardNum: payment?.CreditCardNum, 
+    ExpiryDate: payment?.ExpiryDate, 
+    CVV: payment?.CVV, 
+    CardHolderName: payment?.CardHolderName,
+
+    FirstName: payment?.FirstName,
+    LastName: payment?.LastName,
   }
 
   function handleFirstNameInput(input: any) {
-    paymentInfo.CardHolderName = input.target.value;
+    paymentInfo.FirstName = input.target.value
+    paymentInfo.CardHolderName = paymentInfo.FirstName + " " + paymentInfo.LastName
+
+    dispatch(setPayment(paymentInfo));
+  }
+
+  function handleLastNameInput(input: any) {
+    paymentInfo.LastName = input.target.value
+    paymentInfo.CardHolderName = paymentInfo.FirstName + " " + paymentInfo.LastName
+
+    dispatch(setPayment(paymentInfo));
+  }
+
+  function handleCardNumberInput(input: any) {
+    paymentInfo.CreditCardNum = input.target.value
+
+    dispatch(setPayment(paymentInfo));
+  }
+
+  function handleCVVInput(input: any) {
+    paymentInfo.CVV = input.target.value
+
+    dispatch(setPayment(paymentInfo));
+  }
+
+  function handleExpiryDateInput(input: any) {
+    paymentInfo.ExpiryDate = input.target.value
+
+    dispatch(setPayment(paymentInfo));
   }
 
   return (
@@ -27,16 +65,16 @@ function PaymentGrid() {
             <TextField fullWidth required label="First Name" defaultValue="" variant="filled" onChange={handleFirstNameInput} />
           </Grid>
           <Grid item xs={6}>
-            <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" onChange={handleLastNameInput} />
           </Grid>
           <Grid item xs={6}>
-            <TextField fullWidth required label="Card Number" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="Card Number" defaultValue="" variant="filled" onChange={handleCardNumberInput}/>
           </Grid>
           <Grid item xs={3}>
-            <TextField fullWidth required label="CVC" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="CVV" defaultValue="" variant="filled" onChange={handleCVVInput}/>
           </Grid>
           <Grid item xs={3}>
-            <TextField fullWidth required label="MM / YY" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="MM / YY" defaultValue="" variant="filled" onChange={handleExpiryDateInput}/>
           </Grid>
         </Grid>
       </div>
