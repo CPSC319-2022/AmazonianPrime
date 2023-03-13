@@ -28,6 +28,15 @@ function BuyerRegistration() {
     Department: '',
   };
 
+  let paymentInfo = { 
+    UserID: 1, 
+    AddressID: 3, 
+    CreditCardNum: 1324345, 
+    ExpiryDate: "2025-01-01", 
+    CVV: "123", 
+    CardHolderName: "John Doe" 
+  }
+
   function register() {
     console.log(updatedUser);
     // updateProfile(updatedUser);
