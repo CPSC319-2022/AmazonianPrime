@@ -1,5 +1,5 @@
 import './BuyerRegistration.scss';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import { useSignupMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
@@ -17,9 +17,9 @@ function BuyerRegistration() {
   const dispatch = useAppDispatch();
   const [updateProfile, result] = useSignupMutation();
 
-  if (result.data) {
-    dispatch(setUser(result.data));
-  }
+  // if (result.data) {
+  //   dispatch(setUser(result.data));
+  // }
 
   const updatedUser = {
     UserId: user?.UserID,
@@ -49,6 +49,10 @@ function BuyerRegistration() {
             </span>
           </div>
           <div className="buyer-registration-page__forms">
+            <div className="buyer-registration-page__department-prompt">
+              <span>Department</span>
+            </div>
+            <TextField fullWidth required label="Department" defaultValue="" variant="filled" className='department-input'/>
             <PaymentGrid />
             <div className="buyer-registration-page__shipping-prompt">
               <span>Shipping Address</span>
