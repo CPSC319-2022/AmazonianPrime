@@ -3,6 +3,7 @@ import { Button, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import { useSignupMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
+import { setPayment } from '../../redux/reducers/paymentSlice';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
@@ -13,13 +14,11 @@ import AddressGrid from '../common/AddressGrid';
 
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
+  const payment = useAppSelector((state) => state.payment.value);
+  
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
   const dispatch = useAppDispatch();
   const [updateProfile, result] = useSignupMutation();
-
-  // if (result.data) {
-  //   dispatch(setUser(result.data));
-  // }
 
   let updatedUser = {
     UserId: user?.UserID,
@@ -28,19 +27,11 @@ function BuyerRegistration() {
     Department: '',
   };
 
-  let paymentInfo = { 
-    UserID: 1, 
-    AddressID: 3, 
-    CreditCardNum: 1324345, 
-    ExpiryDate: "2025-01-01", 
-    CVV: "123", 
-    CardHolderName: "John Doe" 
+  function register() {
+    //dispatch(setUser(updatedUser));
+    //updateProfile(updatedUser);
   }
 
-  function register() {
-    console.log(updatedUser);
-    // updateProfile(updatedUser);
-  }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
@@ -90,7 +81,6 @@ function BuyerRegistration() {
           <Button
             color="secondary"
             variant="contained"
-            className="buyer-registration-page__continue-button"
             endIcon={<TrendingFlatIcon />}
             onClick={() => register()}
           >
