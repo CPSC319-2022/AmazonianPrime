@@ -4,6 +4,7 @@ import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import { useSignupMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
 import { setPayment } from '../../redux/reducers/paymentSlice';
+import { setPaymentAddress } from '../../redux/reducers/paymentAddressSlice';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
@@ -15,9 +16,9 @@ import AddressGrid from '../common/AddressGrid';
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
   const payment = useAppSelector((state) => state.payment.value);
-  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
-  const shippingAddress = useAppSelector((state) => state.shippingAddress.value);
-  
+  let paymentAddress = useAppSelector((state) => state.paymentAddress.value);
+  let shippingAddress = useAppSelector((state) => state.shippingAddress.value);
+
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
   const dispatch = useAppDispatch();
   const [updateProfile, result] = useSignupMutation();
@@ -38,6 +39,10 @@ function BuyerRegistration() {
   }
 
   function handleShippingCheckbox() {
+    if (paymentAddress) {
+      const { IsShipAddr, ...rest } = paymentAddress;
+      dispatch(setPaymentAddress({ ...rest, IsShipAddr: !useBillingAddressForShipping }));
+    }
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
 
@@ -61,13 +66,17 @@ function BuyerRegistration() {
           <div className="buyer-registration-page__department-prompt">
             <span>Department</span>
           </div>
-          <TextField fullWidth required label="Department" 
-          defaultValue="" variant="filled"
-          className='department-input'
-          onChange={handleDepartmentInput}
+          <TextField
+            fullWidth
+            required
+            label="Department"
+            defaultValue=""
+            variant="filled"
+            className="department-input"
+            onChange={handleDepartmentInput}
           />
           <div className="buyer-registration-page__forms">
-            <PaymentGrid />
+            <PaymentGrid useBillingAddressForShipping={useBillingAddressForShipping} />
             <div className="buyer-registration-page__shipping-prompt">
               <span>Shipping Address</span>
             </div>
@@ -79,16 +88,11 @@ function BuyerRegistration() {
                 />
               </FormGroup>
             </div>
-            {!useBillingAddressForShipping && <AddressGrid isBillingAddress={false} isShippingAddress={true}/>}
+            {!useBillingAddressForShipping && <AddressGrid isBillingAddress={false} isShippingAddress={true} />}
           </div>
         </div>
         <div className="buyer-registration-page__action-buttons">
-          <Button
-            color="secondary"
-            variant="contained"
-            endIcon={<TrendingFlatIcon />}
-            onClick={() => register()}
-          >
+          <Button color="secondary" variant="contained" endIcon={<TrendingFlatIcon />} onClick={() => register()}>
             Start shopping
           </Button>
         </div>

@@ -16,7 +16,7 @@ interface SliceReducers {
 export const address = createSlice<AddressState, SliceReducers, 'shippingAddressSlice'>({
   name: 'shippingAddressSlice',
   initialState: {
-    value: null
+    value: null,
   },
   reducers: {
     setShippingAddress: (state: AddressState, action: Action) => {

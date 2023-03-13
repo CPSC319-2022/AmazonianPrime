@@ -16,7 +16,7 @@ export const userApi = createApi({
           method: 'POST',
           body,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
         };
       },

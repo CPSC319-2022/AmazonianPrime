@@ -16,7 +16,7 @@ interface SliceReducers {
 export const address = createSlice<AddressState, SliceReducers, 'paymentAddressSlice'>({
   name: 'paymentAddressSlice',
   initialState: {
-    value: null
+    value: null,
   },
   reducers: {
     setPaymentAddress: (state: AddressState, action: Action) => {
