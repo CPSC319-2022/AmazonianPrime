@@ -64,12 +64,12 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const AddressId = addAddress['insertId'];
+  const AddressID = addAddress['insertId'];
 
-  const getAddressByIdQuery = `SELECT * FROM Address WHERE AddressID = "${AddressId}"`;
+  const getAddressByIDQuery = `SELECT * FROM Address WHERE AddressID = "${AddressID}"`;
 
   const getAddress = await new Promise((resolve, reject) => {
-    con.query(getAddressByIdQuery, function (err, res) {
+    con.query(getAddressByIDQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the address from database!");
       }

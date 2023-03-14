@@ -19,10 +19,10 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const { UserId, AddressId, CreditCardNum, ExpiryDate, CVV, CardHolderName } =
+  const { UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName } =
     JSON.parse(event.body);
 
-  const addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${UserId}, ${AddressId}, ${CreditCardNum}, "${ExpiryDate}", ${CVV}, "${CardHolderName}")`;
+  const addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${UserID}, ${AddressID}, ${CreditCardNum}, "${ExpiryDate}", ${CVV}, "${CardHolderName}")`;
 
   const addPayment = await new Promise((resolve, reject) => {
     con.query(addPaymentQuery, function (err, res) {
@@ -33,9 +33,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const PaymentId = addPayment['insertId'];
+  const PaymentID = addPayment['insertId'];
 
-  const addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${UserId}, ${PaymentId})`;
+  const addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${UserID}, ${PaymentID})`;
 
   const addPaymentMethod = await new Promise((resolve, reject) => {
     con.query(addPaymentMethodQuery, function (err, res) {
@@ -46,10 +46,10 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const getPaymentByIdQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentId}"`;
+  const getPaymentByIDQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentID}"`;
 
   const getPayment = await new Promise((resolve, reject) => {
-    con.query(getPaymentByIdQuery, function (err, res) {
+    con.query(getPaymentByIDQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the address from database!");
       }
