@@ -20,40 +20,40 @@ exports.lambdaHandler = async (event, context) => {
   );
 
   const {
-    userId,
-    cityName,
-    province,
-    streetAddress,
-    postalCode,
-    country,
-    isBillingAddr,
-    isShipAddr,
+    UserID,
+    CityName,
+    Province,
+    StreetAddress,
+    PostalCode,
+    Country,
+    IsBillingAddr,
+    IsShipAddr,
   } = JSON.parse(event.body);
 
-  const checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${cityName}" AND Province = "${province}" AND StreetAddress = "${streetAddress}"`;
+  const checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${CityName}" AND Province = "${Province}" AND StreetAddress = "${StreetAddress}"`;
 
   const getCountry = await new Promise((resolve, reject) => {
     con.query(checkCountryQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the country from database!");
+        reject("Couldn't get the Country from database!");
       }
       resolve(res);
     });
   });
 
   if (getCountry.length < 1) {
-    const addCountryQuery = `INSERT INTO Country(CityName, Province, StreetAddress, PostalCode, Country) VALUES("${cityName}", "${province}", "${streetAddress}", "${postalCode}", "${country}")`;
+    const addCountryQuery = `INSERT INTO Country(CityName, Province, StreetAddress, PostalCode, Country) VALUES("${CityName}", "${Province}", "${StreetAddress}", "${PostalCode}", "${Country}")`;
     const addCountry = await new Promise((resolve, reject) => {
       con.query(addCountryQuery, function (err, res) {
         if (err) {
-          reject("Couldn't add country to database!");
+          reject("Couldn't add Country to database!");
         }
         resolve(res);
       });
     });
   }
 
-  const addAddressQuery = `INSERT INTO Address(UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES(${userId}, "${cityName}", "${province}", "${streetAddress}", ${isBillingAddr}, ${isShipAddr})`;
+  const addAddressQuery = `INSERT INTO Address(UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES(${UserID}, "${CityName}", "${Province}", "${StreetAddress}", ${IsBillingAddr}, ${IsShipAddr})`;
 
   const addAddress = await new Promise((resolve, reject) => {
     con.query(addAddressQuery, function (err, res) {
@@ -64,12 +64,12 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const addressId = addAddress['insertId'];
+  const AddressID = addAddress['insertId'];
 
-  const getAddressByIdQuery = `SELECT * FROM Address WHERE AddressID = "${addressId}"`;
+  const getAddressByIDQuery = `SELECT * FROM Address WHERE AddressID = "${AddressID}"`;
 
   const getAddress = await new Promise((resolve, reject) => {
-    con.query(getAddressByIdQuery, function (err, res) {
+    con.query(getAddressByIDQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the address from database!");
       }
