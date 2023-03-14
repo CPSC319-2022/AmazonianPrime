@@ -19,7 +19,7 @@ exports.lambdaHandler = async (event, context) => {
     "databaseAmazonianPrime"
   );
 
-  const { UserID, AddressID, InstitutionNum, AccountNum, TransitNum } =
+  const { UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard } =
     JSON.parse(event.body);
 
   if (
@@ -27,7 +27,8 @@ exports.lambdaHandler = async (event, context) => {
       !AddressID ||
       !InstitutionNum ||
       !AccountNum ||
-      !TransitNum
+      !TransitNum ||
+      !NameOnCard
     ) {
       return {
         statusCode: 400,
@@ -35,7 +36,7 @@ exports.lambdaHandler = async (event, context) => {
       };
     }
 
-  const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum})`;
+  const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum}, "${NameOnCard}")`;
 
   const addBankingDetails = await new Promise((resolve, reject) => {
     con.query(addBankingDetailsQuery, function (err, res) {
