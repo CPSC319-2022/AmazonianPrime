@@ -80,8 +80,8 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   var addPaymentDetailsQueries = [`INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (1, 1, 1, 1234123412341234, "1025", 100, "John Doe")`,
-  `INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (2, 2, 3, 4321432143214321, "0626", 200, "Alice Ather")`,  
-  `INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (3, 3, 2, 1234567812345678, "0825", 300, "Bob Carlson")`];
+  `INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (2, 2, 2, 4321432143214321, "0626", 200, "Alice Ather")`,  
+  `INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (3, 3, 3, 1234567812345678, "0825", 300, "Bob Carlson")`];
   
   addPaymentDetailsQueries.forEach(async (queryString) => {
     let insertPaymentDetails = await new Promise((resolve, reject) => {
