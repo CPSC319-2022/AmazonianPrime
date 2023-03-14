@@ -143,7 +143,7 @@ exports.lambdaHandler = async (event, context) => {
 
   let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
     BankingID int NOT NULL AUTO_INCREMENT, 
-    InstitutionNum int, 
+    InstitutionNum int NOT NULL, 
     AccountNum int, 
     TransitNum int, 
     PRIMARY KEY (BankingID)

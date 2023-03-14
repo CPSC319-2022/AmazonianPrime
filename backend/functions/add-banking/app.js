@@ -22,6 +22,18 @@ exports.lambdaHandler = async (event, context) => {
   const { UserID, InstitutionNum, AccountNum, TransitNum } =
     JSON.parse(event.body);
 
+  if (
+      !UserID ||
+      !InstitutionNum ||
+      !AccountNum ||
+      !TransitNum
+    ) {
+      return {
+        statusCode: 400,
+        body: 'Missing required fields',
+      };
+    }
+
   const addBankingDetailsQuery = `INSERT INTO BankingDetails(InstitutionNum, AccountNum, TransitNum) VALUES(${InstitutionNum}, ${AccountNum}, ${TransitNum})`;
 
   const addBankingDetails = await new Promise((resolve, reject) => {
