@@ -21,7 +21,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const addUserQueries = [`INSERT INTO Users (UserID, FirstName, LastName, Email, Department, IsAdmin) VALUES (1, "John", "Doe", "johndoe@gmail.com", "Marketing", false)`,
   `INSERT INTO Users (UserID, FirstName, LastName, Email, Department, IsAdmin) VALUES (2, "Alice", "Ather", "aather@gmail.com", null, false)`, 
-  `INSERT INTO Users (UserID, FirstName, LastName, Email, Department, IsAdmin) VALUES (3, "Bob", "Carlson", "bobc321@hotmail.com", "Management", true)`];
+  `INSERT INTO Users (UserID, FirstName, LastName, Email, Department, IsAdmin) VALUES (3, "Bob", "Carlson", "bobc321@gmail.com", "Management", true)`];
   
   addUserQueries.forEach(async (queryString) => {
     let insertUsers = await new Promise((resolve, reject) => {
@@ -34,9 +34,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const addListingsQueries = [`INSERT INTO Listing (ListingID, UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, PostedTimestamp, IsActiveListing) VALUES (1, 1, "listing1", "listing1 description", 10.50, 5, "category1", "used", "2023-03-01 12:00:00", true)`,
-  `INSERT INTO Listing (ListingID, UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, PostedTimestamp, IsActiveListing) VALUES (2, 2, "listing2", "listing2 description", 20.00, 1, "category2", "used - good", "2023-03-01 12:00:00", true)`,
-  `INSERT INTO Listing (ListingID, UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, PostedTimestamp, IsActiveListing) VALUES (3, 3, "listing3", "listing3 description", 5.00, 10, "category3", "used", "2023-03-10 12:00:00", false)`];
+  const addListingsQueries = [`INSERT INTO Listing (ListingID, UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, PostedTimestamp, IsActiveListing) VALUES (1, 1, "MCM Arm Chair", "Great condition.", 40.00, 2, "Amazon Merchandise", "Used- Like New", "2023-03-01 12:00:00", true)`,
+  `INSERT INTO Listing (ListingID, UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, PostedTimestamp, IsActiveListing) VALUES (2, 2, "Healthy Monstera", "Selling this very healthy monstera", 20.00, 1, "Garden & Outdoors", "New", "2023-03-01 12:00:00", true)`,
+  `INSERT INTO Listing (ListingID, UserID, ListingName, Description, Cost, Quantity, Category, ItemCondition, PostedTimestamp, IsActiveListing) VALUES (3, 3, "Listing 3", "Listing 3 Description", 5.00, 10, "Miscellaneous", "Used Fair", "2023-03-10 12:00:00", false)`];
   
   addListingsQueries.forEach(async (queryString) => {
     let insertListing = await new Promise((resolve, reject) => {

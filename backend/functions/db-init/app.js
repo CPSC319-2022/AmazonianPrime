@@ -170,42 +170,6 @@ let createCountryTableQuery = `CREATE TABLE Country (
 
   console.log(createTableShippingAddress);
 
-  let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
-    BankingID int NOT NULL AUTO_INCREMENT, 
-    InstitutionNum int NOT NULL, 
-    AccountNum int, 
-    TransitNum int, 
-    PRIMARY KEY (BankingID)
-  );`;
-
-  const createTableBankingDetails = await new Promise((resolve, reject) => {
-    con.query(createBankingDetailsTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create banking details table!");
-      }
-      resolve(res);
-    });
-  });
-
-  let createBankingAccountTableQuery = `CREATE TABLE BankingAccount (
-    BankingID int, 
-    UserID int, 
-    PRIMARY KEY (BankingID, UserID), 
-    FOREIGN KEY (BankingID) REFERENCES BankingDetails(BankingID), 
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-  );`;
-
-  const createTableBankingAccount = await new Promise((resolve, reject) => {
-    con.query(createBankingAccountTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create banking account table!");
-      }
-      resolve(res);
-    });
-  });
-
-  console.log(createTable);
-
   let createListingTableQuery = `CREATE TABLE Listing (
     ListingID int NOT NULL AUTO_INCREMENT, 
     UserID int, 
