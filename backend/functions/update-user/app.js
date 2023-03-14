@@ -21,6 +21,18 @@ exports.lambdaHandler = async (event, context) => {
 
   const { UserID, FirstName, LastName, Department } = JSON.parse(event.body);
 
+  if (
+    !UserID ||
+    !FirstName ||
+    !LastName ||
+    !Department 
+  ) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
+
   const updateUserQuery = `UPDATE Users SET FirstName="${FirstName}", LastName= "${LastName}", Department= "${Department}" WHERE UserID = ${UserID} `;
 
   const updateUsers = await new Promise((resolve, reject) => {

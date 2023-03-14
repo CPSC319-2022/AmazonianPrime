@@ -23,6 +23,19 @@ exports.lambdaHandler = async (event, context) => {
     event.body,
   );
 
+  if (
+      !CityName ||
+      !Province ||
+      !StreetAddress ||
+      !PostalCode ||
+      !Country
+    ) {
+      return {
+        statusCode: 400,
+        body: 'Missing required fields',
+      };
+    }
+
   const checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${CityName}" AND Province = "${Province}" AND StreetAddress = "${StreetAddress}"`;
 
   const getCountry = await new Promise((resolve, reject) => {

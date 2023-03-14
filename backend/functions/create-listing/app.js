@@ -40,9 +40,6 @@ exports.lambdaHandler = async (event, context) => {
     !Cost ||
     !Quantity ||
     !Category ||
-    !Size ||
-    !Brand ||
-    !Colour ||
     !ItemCondition
   ) {
     return {
@@ -51,7 +48,7 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, Size, Brand, Colour, ItemCondition, IsActiveListing) VALUES(${UserID}, "${ListingName}", "${Description}", ${Cost}, ${Quantity}, "${Category}", "${Size}", "${Brand}", "${Colour}", "${ItemCondition}", true)`;
+  const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ${Size !== undefined ? "Size, " : ""}${Brand !== undefined ? "Brand, " : ""}${Colour !== undefined ? "Colour, " : ""}ItemCondition, IsActiveListing) VALUES(${UserID}, "${ListingName}", "${Description}", ${Cost}, ${Quantity}, "${Category}", ${Size !== undefined ? `"${Size}",`: ""} ${Brand !== undefined ? `"${Brand}",`: ""} ${Colour !== undefined ? `"${Colour}",`: ""} "${ItemCondition}", true)`;
 
   try {
     const createListing = await new Promise((resolve, reject) => {
@@ -86,4 +83,9 @@ exports.lambdaHandler = async (event, context) => {
       body: JSON.stringify(error),
     };
   }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(createListingQuery),
+  };
 };
