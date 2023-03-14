@@ -46,10 +46,10 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const getPaymentByIdQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentID}"`;
+  const getPaymentByIDQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentID}"`;
 
   const getPayment = await new Promise((resolve, reject) => {
-    con.query(getPaymentByIdQuery, function (err, res) {
+    con.query(getPaymentByIDQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the address from database!");
       }

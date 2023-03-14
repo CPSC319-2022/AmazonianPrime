@@ -54,11 +54,11 @@ exports.lambdaHandler = async (event, context) => {
       });
     });
 
-    const insertedId = addUsers['insertId'];
+    const insertedID = addUsers['insertId'];
 
-    const getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${insertedId}"`;
+    const getUserByIDQuery = `SELECT * FROM Users WHERE UserID = "${insertedID}"`;
     getUser = await new Promise((resolve, reject) => {
-      con.query(getUserByIdQuery, function (err, res) {
+      con.query(getUserByIDQuery, function (err, res) {
         if (err) {
           reject("Couldn't get the user from database!");
         }

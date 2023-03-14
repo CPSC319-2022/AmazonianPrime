@@ -24,7 +24,7 @@ exports.lambdaHandler = async (event, context) => {
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
   const startDate = event.queryStringParameters.startDate;
-  const listingUserId = event.queryStringParameters.listingUserId;
+  const listingUserID = event.queryStringParameters.listingUserId;
 
   var options = [];
 
@@ -39,8 +39,8 @@ exports.lambdaHandler = async (event, context) => {
   if (startDate != null && startDate !== undefined) {
     options.push(`Date(PostedTimestamp) > ${startDate}`);
   }
-  if (listingUserId != null && listingUserId !== undefined) {
-    options.push(`Listing.UserId = ${listingUserId}`);
+  if (listingUserID != null && listingUserID !== undefined) {
+    options.push(`Listing.UserID = ${listingUserID}`);
   }
   options.push(`Listing.UserID = Users.UserID`);
 

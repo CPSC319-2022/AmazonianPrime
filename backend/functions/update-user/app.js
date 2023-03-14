@@ -19,9 +19,9 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const { UserId, FirstName, LastName, Department } = JSON.parse(event.body);
+  const { UserID, FirstName, LastName, Department } = JSON.parse(event.body);
 
-  const updateUserQuery = `UPDATE Users SET FirstName="${FirstName}", LastName= "${LastName}", Department= "${Department}" WHERE UserID = ${UserId} `;
+  const updateUserQuery = `UPDATE Users SET FirstName="${FirstName}", LastName= "${LastName}", Department= "${Department}" WHERE UserID = ${UserID} `;
 
   const updateUsers = await new Promise((resolve, reject) => {
     con.query(updateUserQuery, function (err, res) {
