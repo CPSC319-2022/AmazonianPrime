@@ -47,7 +47,11 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const updateListingQuery = `UPDATE Listing SET ListingName="${ListingName}", Description="${Description}", Cost=${Cost}, Quantity=${Quantity}, Category="${Category}", ${Size !== undefined ? `Size = "${Size}", ` : ""}${Brand !== undefined ? `Brand = "${Brand}", ` : ""}${Colour !== undefined ? `Colour = "${Colour}", ` : ""}ItemCondition="${ItemCondition}" WHERE ListingID = ${ListingID}`;
+  const updateListingQuery = `UPDATE Listing SET ListingName="${ListingName}", Description="${Description}", Cost=${Cost}, Quantity=${Quantity}, Category="${Category}", ${
+    Size !== undefined ? `Size = "${Size}", ` : ''
+  }${Brand !== undefined ? `Brand = "${Brand}", ` : ''}${
+    Colour !== undefined ? `Colour = "${Colour}", ` : ''
+  }ItemCondition="${ItemCondition}" WHERE ListingID = ${ListingID}`;
 
   const updateListing = await new Promise((resolve, reject) => {
     con.query(updateListingQuery, function (err, res) {

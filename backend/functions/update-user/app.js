@@ -21,12 +21,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const { UserID, FirstName, LastName, Department } = JSON.parse(event.body);
 
-  if (
-    !UserID ||
-    !FirstName ||
-    !LastName ||
-    !Department 
-  ) {
+  if (!UserID || !FirstName || !LastName || !Department) {
     return {
       statusCode: 400,
       body: 'Missing required fields',

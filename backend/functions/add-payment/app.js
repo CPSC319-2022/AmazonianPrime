@@ -22,19 +22,19 @@ exports.lambdaHandler = async (event, context) => {
   const { UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName } =
     JSON.parse(event.body);
 
-    if (
-      !UserID ||
-      !AddressID ||
-      !CreditCardNum ||
-      !ExpiryDate ||
-      !CVV ||
-      !CardHolderName
-    ) {
-      return {
-        statusCode: 400,
-        body: 'Missing required fields',
-      };
-    }
+  if (
+    !UserID ||
+    !AddressID ||
+    !CreditCardNum ||
+    !ExpiryDate ||
+    !CVV ||
+    !CardHolderName
+  ) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
 
   const addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${UserID}, ${AddressID}, ${CreditCardNum}, "${ExpiryDate}", ${CVV}, "${CardHolderName}")`;
 
