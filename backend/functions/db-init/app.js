@@ -52,7 +52,7 @@ exports.lambdaHandler = async (event, context) => {
     IsAdmin Boolean,
     PRIMARY KEY (UserID)
   );`;
-  const createTable = await new Promise((resolve, reject) => {
+  const createTableUsers = await new Promise((resolve, reject) => {
     con.query(createUserTableQuery, function (err, res) {
       if (err) {
         reject("Couldn't create users table!");
@@ -60,6 +60,8 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
+
+  console.log(createTableUsers);
 
   let createCountryTableQuery = `CREATE TABLE Country (
     CityName varchar(255) NOT NULL, 
@@ -99,6 +101,8 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
+  console.log(createTableAddress);
+
   let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
     PaymentID int NOT NULL AUTO_INCREMENT, 
     UserID int NOT NULL, 
@@ -121,7 +125,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  console.log(createTable);
+  console.log(createTablePaymentDetails);
 
   let createListingTableQuery = `CREATE TABLE Listing (
     ListingID int NOT NULL AUTO_INCREMENT, 
