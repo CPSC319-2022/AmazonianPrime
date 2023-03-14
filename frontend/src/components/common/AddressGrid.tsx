@@ -1,18 +1,21 @@
 import { TextField, Grid } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { setPaymentAddress } from '../../redux/reducers/paymentAddressSlice';
-import { setShippingAddress } from '../../redux/reducers/shippingAddressSlice';
+import { useAppDispatch } from '../../redux/store';
 
 interface AddressGridProps {
-  isShippingAddress: boolean;
-  isBillingAddress: boolean;
+  setAddressInput: Function;
+  setCityInput: Function;
+  setProvinceInput: Function;
+  setPostalCodeInput: Function;
+  setCountryInput: Function;
 }
 
-const AddressGrid: React.FC<AddressGridProps> = ({ isShippingAddress, isBillingAddress }) => {
-  const user = useAppSelector((state) => state.user.value);
-  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
-  const shippingAddress = useAppSelector((state) => state.shippingAddress.value);
-
+const AddressGrid: React.FC<AddressGridProps> = ({
+  setAddressInput,
+  setCityInput,
+  setProvinceInput,
+  setPostalCodeInput,
+  setCountryInput,
+}) => {
   const dispatch = useAppDispatch();
 
   let newAddress: {
@@ -27,82 +30,6 @@ const AddressGrid: React.FC<AddressGridProps> = ({ isShippingAddress, isBillingA
     IsShipAddr?: boolean;
   };
 
-  isBillingAddress
-    ? (newAddress = {
-        AddressID: paymentAddress?.AddressID,
-        UserID: user?.UserID,
-        CityName: paymentAddress?.CityName,
-        Province: paymentAddress?.Province,
-        StreetAddress: paymentAddress?.StreetAddress,
-        PostalCode: paymentAddress?.PostalCode,
-        Country: paymentAddress?.Country,
-
-        IsBillingAddr: isBillingAddress,
-        IsShipAddr: isShippingAddress,
-      })
-    : (newAddress = {
-        AddressID: shippingAddress?.AddressID,
-        UserID: user?.UserID,
-        CityName: shippingAddress?.CityName,
-        Province: shippingAddress?.Province,
-        StreetAddress: shippingAddress?.StreetAddress,
-        PostalCode: shippingAddress?.PostalCode,
-        Country: shippingAddress?.Country,
-
-        IsBillingAddr: isBillingAddress,
-        IsShipAddr: isShippingAddress,
-      });
-
-  function handleStreetAddressInput(input: any) {
-    newAddress.StreetAddress = input.target.value;
-
-    if (isBillingAddress) {
-      dispatch(setPaymentAddress(newAddress));
-    } else if (isShippingAddress) {
-      dispatch(setShippingAddress(newAddress));
-    }
-  }
-
-  function handleCityInput(input: any) {
-    newAddress.CityName = input.target.value;
-
-    if (isBillingAddress) {
-      dispatch(setPaymentAddress(newAddress));
-    } else if (isShippingAddress) {
-      dispatch(setShippingAddress(newAddress));
-    }
-  }
-
-  function handleProvinceInput(input: any) {
-    newAddress.Province = input.target.value;
-
-    if (isBillingAddress) {
-      dispatch(setPaymentAddress(newAddress));
-    } else if (isShippingAddress) {
-      dispatch(setShippingAddress(newAddress));
-    }
-  }
-
-  function handlePostalCodeInput(input: any) {
-    newAddress.PostalCode = input.target.value;
-
-    if (isBillingAddress) {
-      dispatch(setPaymentAddress(newAddress));
-    } else if (isShippingAddress) {
-      dispatch(setShippingAddress(newAddress));
-    }
-  }
-
-  function handleCountryInput(input: any) {
-    newAddress.Country = input.target.value;
-
-    if (isBillingAddress) {
-      dispatch(setPaymentAddress(newAddress));
-    } else if (isShippingAddress) {
-      dispatch(setShippingAddress(newAddress));
-    }
-  }
-
   return (
     <div className="address-grid">
       <Grid container spacing={1.5}>
@@ -113,11 +40,18 @@ const AddressGrid: React.FC<AddressGridProps> = ({ isShippingAddress, isBillingA
             label="Street Address"
             defaultValue=""
             variant="filled"
-            onChange={handleStreetAddressInput}
+            onChange={(e) => setAddressInput(e.target.value)}
           />
         </Grid>
         <Grid item xs={6}>
-          <TextField fullWidth required label="City" defaultValue="" variant="filled" onChange={handleCityInput} />
+          <TextField
+            fullWidth
+            required
+            label="City"
+            defaultValue=""
+            variant="filled"
+            onChange={(e) => setCityInput(e.target.value)}
+          />
         </Grid>
         <Grid item xs={6}>
           <TextField
@@ -126,7 +60,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({ isShippingAddress, isBillingA
             label="Province"
             defaultValue=""
             variant="filled"
-            onChange={handleProvinceInput}
+            onChange={(e) => setProvinceInput(e.target.value)}
           />
         </Grid>
         <Grid item xs={6}>
@@ -136,7 +70,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({ isShippingAddress, isBillingA
             label="Postal Code"
             defaultValue=""
             variant="filled"
-            onChange={handlePostalCodeInput}
+            onChange={(e) => setPostalCodeInput(e.target.value)}
           />
         </Grid>
         <Grid item xs={6}>
@@ -146,7 +80,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({ isShippingAddress, isBillingA
             label="Country"
             defaultValue=""
             variant="filled"
-            onChange={handleCountryInput}
+            onChange={(e) => setCountryInput(e.target.value)}
           />
         </Grid>
       </Grid>

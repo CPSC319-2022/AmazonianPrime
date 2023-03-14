@@ -1,65 +1,34 @@
 import { TextField, Grid } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { setPayment } from '../../redux/reducers/paymentSlice';
-import { setPaymentAddress } from '../../redux/reducers/paymentAddressSlice';
 import './PaymentGrid.scss';
 import AddressGrid from './AddressGrid';
 
 interface PaymentGridProps {
-  useBillingAddressForShipping: boolean;
+  setFirstNameInput: Function;
+  setLastNameInput: Function;
+  setCreditCardInput: Function;
+  setExpiryDateInput: Function;
+  setCVVInput: Function;
+
+  setBillingAddressInput: Function;
+  setBillingCityInput: Function;
+  setBillingProvinceInput: Function;
+  setBillingPostalCodeInput: Function;
+  setBillingCountryInput: Function;
 }
 
-const PaymentGrid: React.FC<PaymentGridProps> = ({ useBillingAddressForShipping }) => {
-  const user = useAppSelector((state) => state.user.value);
-  const payment = useAppSelector((state) => state.payment.value);
-  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
+const PaymentGrid: React.FC<PaymentGridProps> = ({
+  setFirstNameInput,
+  setLastNameInput,
+  setCreditCardInput,
+  setExpiryDateInput,
+  setCVVInput,
 
-  const dispatch = useAppDispatch();
-
-  let paymentInfo = {
-    UserID: user?.UserID,
-    AddressID: payment?.AddressID,
-    CreditCardNum: payment?.CreditCardNum,
-    ExpiryDate: payment?.ExpiryDate,
-    CVV: payment?.CVV,
-    CardHolderName: payment?.CardHolderName,
-
-    FirstName: payment?.FirstName,
-    LastName: payment?.LastName,
-  };
-
-  function handleFirstNameInput(input: any) {
-    paymentInfo.FirstName = input.target.value;
-    paymentInfo.CardHolderName = paymentInfo.FirstName + ' ' + paymentInfo.LastName;
-
-    dispatch(setPayment(paymentInfo));
-  }
-
-  function handleLastNameInput(input: any) {
-    paymentInfo.LastName = input.target.value;
-    paymentInfo.CardHolderName = paymentInfo.FirstName + ' ' + paymentInfo.LastName;
-
-    dispatch(setPayment(paymentInfo));
-  }
-
-  function handleCardNumberInput(input: any) {
-    paymentInfo.CreditCardNum = input.target.value;
-
-    dispatch(setPayment(paymentInfo));
-  }
-
-  function handleCVVInput(input: any) {
-    paymentInfo.CVV = input.target.value;
-
-    dispatch(setPayment(paymentInfo));
-  }
-
-  function handleExpiryDateInput(input: any) {
-    paymentInfo.ExpiryDate = input.target.value;
-
-    dispatch(setPayment(paymentInfo));
-  }
-
+  setBillingAddressInput,
+  setBillingCityInput,
+  setBillingProvinceInput,
+  setBillingPostalCodeInput,
+  setBillingCountryInput,
+}) => {
   return (
     <div className="payment-grid">
       <div className="payment-grid__payment-prompt">
@@ -74,7 +43,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({ useBillingAddressForShipping 
               label="First Name"
               defaultValue=""
               variant="filled"
-              onChange={handleFirstNameInput}
+              onChange={(e) => setFirstNameInput(e.target.value)}
             />
           </Grid>
           <Grid item xs={6}>
@@ -84,7 +53,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({ useBillingAddressForShipping 
               label="Last Name"
               defaultValue=""
               variant="filled"
-              onChange={handleLastNameInput}
+              onChange={(e) => setLastNameInput(e.target.value)}
             />
           </Grid>
           <Grid item xs={6}>
@@ -94,11 +63,18 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({ useBillingAddressForShipping 
               label="Card Number"
               defaultValue=""
               variant="filled"
-              onChange={handleCardNumberInput}
+              onChange={(e) => setCreditCardInput(e.target.value)}
             />
           </Grid>
           <Grid item xs={3}>
-            <TextField fullWidth required label="CVV" defaultValue="" variant="filled" onChange={handleCVVInput} />
+            <TextField
+              fullWidth
+              required
+              label="CVV"
+              defaultValue=""
+              variant="filled"
+              onChange={(e) => setCVVInput(e.target.value)}
+            />
           </Grid>
           <Grid item xs={3}>
             <TextField
@@ -107,7 +83,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({ useBillingAddressForShipping 
               label="MM / YY"
               defaultValue=""
               variant="filled"
-              onChange={handleExpiryDateInput}
+              onChange={(e) => setExpiryDateInput(e.target.value)}
             />
           </Grid>
         </Grid>
@@ -115,7 +91,13 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({ useBillingAddressForShipping 
       <div className="payment-grid__address-prompt">
         <span>Billing Address</span>
       </div>
-      <AddressGrid isBillingAddress={true} isShippingAddress={useBillingAddressForShipping} />
+      <AddressGrid
+        setAddressInput={setBillingAddressInput}
+        setCityInput={setBillingCityInput}
+        setProvinceInput={setBillingProvinceInput}
+        setPostalCodeInput={setBillingPostalCodeInput}
+        setCountryInput={setBillingCountryInput}
+      />
     </div>
   );
 };

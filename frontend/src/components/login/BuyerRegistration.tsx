@@ -16,10 +16,31 @@ import AddressGrid from '../common/AddressGrid';
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
   const payment = useAppSelector((state) => state.payment.value);
-  let paymentAddress = useAppSelector((state) => state.paymentAddress.value);
-  let shippingAddress = useAppSelector((state) => state.shippingAddress.value);
+  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
+  const shippingAddress = useAppSelector((state) => state.shippingAddress.value);
 
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
+
+  const [departmentInput, setDepartmentInput] = useState('');
+
+  const [firstNameInput, setFirstNameInput] = useState('');
+  const [lastNameInput, setLastNameInput] = useState('');
+  const [creditCardInput, setCreditCardInput] = useState('');
+  const [expiryDateInput, setExpiryDateInput] = useState('');
+  const [cvvInput, setCVVInput] = useState('');
+
+  const [billingAddressInput, setBillingAddressInput] = useState('');
+  const [billingCityInput, setBillingCityInput] = useState('');
+  const [billingProvinceInput, setBillingProvinceInput] = useState('');
+  const [billingPostalCodeInput, setBillingPostalCodeInput] = useState('');
+  const [billingCountryInput, setBillingCountryInput] = useState('');
+
+  const [shippingAddressInput, setShippingAddressInput] = useState('');
+  const [shippingCityInput, setShippingCityInput] = useState('');
+  const [shippingProvinceInput, setShippingProvinceInput] = useState('');
+  const [shippingPostalCodeInput, setShippingPostalCodeInput] = useState('');
+  const [shippingCountryInput, setShippingCountryInput] = useState('');
+
   const dispatch = useAppDispatch();
   const [updateProfile, result] = useSignupMutation();
 
@@ -30,12 +51,37 @@ function BuyerRegistration() {
     Department: '',
   };
 
+  let paymentInfo = {
+    UserID: user?.UserID,
+    AddressID: payment?.AddressID,
+    CreditCardNum: payment?.CreditCardNum,
+    ExpiryDate: payment?.ExpiryDate,
+    CVV: payment?.CVV,
+    CardHolderName: payment?.CardHolderName,
+
+    FirstName: payment?.FirstName,
+    LastName: payment?.LastName,
+  };
+
   function register() {
     //dispatch(setUser(updatedUser));
     //updateProfile(updatedUser);
-    console.log(payment);
-    console.log(paymentAddress);
-    console.log(shippingAddress);
+    console.log(departmentInput);
+    console.log(firstNameInput, lastNameInput, creditCardInput, cvvInput, expiryDateInput);
+    console.log(
+      billingAddressInput,
+      billingCityInput,
+      billingCountryInput,
+      billingPostalCodeInput,
+      billingProvinceInput,
+    );
+    console.log(
+      shippingAddressInput,
+      shippingCityInput,
+      shippingCountryInput,
+      shippingPostalCodeInput,
+      shippingProvinceInput,
+    );
   }
 
   function handleShippingCheckbox() {
@@ -44,10 +90,6 @@ function BuyerRegistration() {
       dispatch(setPaymentAddress({ ...rest, IsShipAddr: !useBillingAddressForShipping }));
     }
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
-  }
-
-  function handleDepartmentInput(input: any) {
-    updatedUser.Department = input.target.value;
   }
 
   return (
@@ -73,10 +115,21 @@ function BuyerRegistration() {
             defaultValue=""
             variant="filled"
             className="department-input"
-            onChange={handleDepartmentInput}
+            onChange={(e) => setDepartmentInput(e.target.value)}
           />
           <div className="buyer-registration-page__forms">
-            <PaymentGrid useBillingAddressForShipping={useBillingAddressForShipping} />
+            <PaymentGrid
+              setFirstNameInput={setFirstNameInput}
+              setLastNameInput={setLastNameInput}
+              setCreditCardInput={setCreditCardInput}
+              setExpiryDateInput={setExpiryDateInput}
+              setCVVInput={setCVVInput}
+              setBillingAddressInput={setBillingAddressInput}
+              setBillingCityInput={setBillingCityInput}
+              setBillingProvinceInput={setBillingProvinceInput}
+              setBillingPostalCodeInput={setBillingPostalCodeInput}
+              setBillingCountryInput={setBillingCountryInput}
+            />
             <div className="buyer-registration-page__shipping-prompt">
               <span>Shipping Address</span>
             </div>
@@ -88,7 +141,15 @@ function BuyerRegistration() {
                 />
               </FormGroup>
             </div>
-            {!useBillingAddressForShipping && <AddressGrid isBillingAddress={false} isShippingAddress={true} />}
+            {!useBillingAddressForShipping && (
+              <AddressGrid
+                setAddressInput={setShippingAddressInput}
+                setCityInput={setShippingCityInput}
+                setProvinceInput={setShippingProvinceInput}
+                setPostalCodeInput={setShippingPostalCodeInput}
+                setCountryInput={setShippingCountryInput}
+              />
+            )}
           </div>
         </div>
         <div className="buyer-registration-page__action-buttons">
