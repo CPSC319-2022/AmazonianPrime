@@ -1,10 +1,11 @@
 import './BuyerRegistration.scss';
 import { Button, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useSignupMutation, useAddAddressMutation } from '../../redux/api/user';
+import { useSignupMutation, useAddAddressMutation, useAddPaymentMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
 import { setPayment } from '../../redux/reducers/paymentSlice';
 import { setPaymentAddress } from '../../redux/reducers/paymentAddressSlice';
+import { setShippingAddress } from '../../redux/reducers/shippingAddressSlice';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
@@ -42,30 +43,32 @@ function BuyerRegistration() {
   const [shippingCountryInput, setShippingCountryInput] = useState('');
 
   const dispatch = useAppDispatch();
-  const [updateProfile, addProfileResult] = useSignupMutation();
+  const [updateProfile, updateProfileResult] = useSignupMutation();
   const [updateAddress, addAddressResult] = useAddAddressMutation();
+  const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
-  let paymentInfo = {
-    UserID: user?.UserID,
-    AddressID: payment?.AddressID,
-    CreditCardNum: payment?.CreditCardNum,
-    ExpiryDate: payment?.ExpiryDate,
-    CVV: payment?.CVV,
-    CardHolderName: payment?.CardHolderName,
+  if (addAddressResult.data) {
+    if (addAddressResult.data.IsBillingAddr) {
+      dispatch(setPaymentAddress(addAddressResult.data));
+    }
+    if (addAddressResult.data.IsShipAddr) {
+      dispatch(setShippingAddress(addAddressResult.data));
+    }  
+  }
 
-    FirstName: payment?.FirstName,
-    LastName: payment?.LastName,
-  };
+  if (addPaymentResult.data) {
+    dispatch(setPayment(addPaymentResult.data));
+  }
 
-  function register() {
+  async function register() {
     let updatedUser = {
-      UserId: user?.UserID,
+      UserID: user?.UserID,
       FirstName: user?.FirstName,
       LastName: user?.LastName,
-      Department: '',
+      Department: departmentInput,
     };
 
-    let billingAddressInfo = {
+    const billingAddressInfo = {
       UserID: user?.UserID,
       CityName: billingCityInput,
       Province: billingProvinceInput,
@@ -76,14 +79,37 @@ function BuyerRegistration() {
       IsShipAddr: useBillingAddressForShipping,
     }
 
-    updateProfile(updatedUser);
-    
-    if (useBillingAddressForShipping) {
-      updateAddress(billingAddressInfo)
+    const shippingAddressInfo = {
+      UserID: user?.UserID,
+      CityName: shippingCityInput,
+      Province: shippingProvinceInput,
+      StreetAddress: shippingAddressInput,
+      PostalCode: shippingPostalCodeInput,
+      Country: shippingCountryInput,
+      IsBillingAddr: false,
+      IsShipAddr: true,
     }
 
-    //dispatch(setUser(updatedUser));
-    //updateProfile(updatedUser);
+    updateProfile(updatedUser);
+
+    const address = await updateAddress(billingAddressInfo).unwrap();
+
+    if (!useBillingAddressForShipping) {
+      updateAddress(shippingAddressInfo);
+    }
+
+    const paymentInfo = {
+      UserID: user?.UserID,
+      AddressID: address?.AddressID,
+      CreditCardNum: creditCardInput,
+      ExpiryDate: expiryDateInput,
+      CVV: cvvInput,
+      CardHolderName: firstNameInput + " " + lastNameInput
+    };
+
+    updatePayment(paymentInfo);
+    
+    dispatch(setUser(updatedUser));
   }
 
   function handleShippingCheckbox() {

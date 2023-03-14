@@ -36,7 +36,20 @@ export const userApi = createApi({
         };
       },
     }),
+    addPayment: builder.mutation<Payment, Partial<Payment>>({
+      query(body) {
+        return {
+          url: `user/payment`,
+          credentials: 'include',
+          method: 'POST',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useLoginQuery, useLazyLoginQuery, useSignupMutation, useAddAddressMutation } = userApi;
+export const { useLoginQuery, useLazyLoginQuery, useSignupMutation, useAddAddressMutation, useAddPaymentMutation } = userApi;
