@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   backend
@@ -28,20 +28,19 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
+            Principal: '*'
+            Action: 's3:GetObject'
             Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
+              - 'arn:aws:s3:::${Bucket}/*'
           - Effect: Allow
             Principal:
               AWS:
                 - !Ref PipelineRole
             Action:
-              - "s3:PutObject"
-              - "s3:DeleteObject"
+              - 's3:PutObject'
+              - 's3:DeleteObject'
             Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
+              - 'arn:aws:s3:::${Bucket}/*'
               - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
@@ -57,10 +56,10 @@ Resources:
           - Id: FrontendBucket
             DomainName: !GetAtt FrontendBucket.RegionalDomainName
             S3OriginConfig:
-              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
           - Id: Backend
-            DomainName: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
-            OriginPath: "/Prod"
+            DomainName: !Sub '${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com'
+            OriginPath: '/Prod'
             CustomOriginConfig:
               OriginProtocolPolicy: https-only
         DefaultCacheBehavior:
@@ -70,7 +69,7 @@ Resources:
             QueryString: true
         CacheBehaviors:
           - TargetOriginId: Backend
-            PathPattern: "api/*"
+            PathPattern: 'api/*'
             DefaultTTL: 0
             MinTTL: 0
             MaxTTL: 0
@@ -173,99 +172,99 @@ Resources:
   rdsEC2VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: "192.168.0.0/16"
-      Tags: [{ "Key": "Name", "Value": "rdsEC2VPC" }]
+      CidrBlock: '192.168.0.0/16'
+      Tags: [{ 'Key': 'Name', 'Value': 'rdsEC2VPC' }]
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: "us-west-2a"
+      AvailabilityZone: 'us-west-2a'
       VpcId:
-        Ref: "rdsEC2VPC"
-      CidrBlock: "192.168.1.0/24"
-      Tags: [{ "Key": "Name", "Value": "PrivateSubnet1" }]
+        Ref: 'rdsEC2VPC'
+      CidrBlock: '192.168.1.0/24'
+      Tags: [{ 'Key': 'Name', 'Value': 'PrivateSubnet1' }]
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: "us-west-2b"
+      AvailabilityZone: 'us-west-2b'
       VpcId:
-        Ref: "rdsEC2VPC"
-      CidrBlock: "192.168.2.0/24"
-      Tags: [{ "Key": "Name", "Value": "PrivateSubnet2" }]
+        Ref: 'rdsEC2VPC'
+      CidrBlock: '192.168.2.0/24'
+      Tags: [{ 'Key': 'Name', 'Value': 'PrivateSubnet2' }]
   rdsDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: "Subnets for RDS"
-      SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
-      Tags: [{ "Key": "Name", "Value": "rdsDBSubnetGroup" }]
+      DBSubnetGroupDescription: 'Subnets for RDS'
+      SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Tags: [{ 'Key': 'Name', 'Value': 'rdsDBSubnetGroup' }]
   rdsDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: 20
-      DBInstanceClass: "db.t2.micro"
-      AllowMajorVersionUpgrade: "false"
-      AutoMinorVersionUpgrade: "false"
-      BackupRetentionPeriod: "7"
-      DBInstanceIdentifier: "CPSC319RDS"
-      DBName: "databaseAmazonianPrime"
-      VPCSecurityGroups: [{ "Ref": "rdsSecurityGroup" }]
+      DBInstanceClass: 'db.t2.micro'
+      AllowMajorVersionUpgrade: 'false'
+      AutoMinorVersionUpgrade: 'false'
+      BackupRetentionPeriod: '7'
+      DBInstanceIdentifier: 'CPSC319RDS'
+      DBName: 'databaseAmazonianPrime'
+      VPCSecurityGroups: [{ 'Ref': 'rdsSecurityGroup' }]
       DBSubnetGroupName:
-        Ref: "rdsDBSubnetGroup"
-      Engine: "MySQL"
-      EngineVersion: "8.0.28"
-      MasterUsername: "user"
-      MasterUserPassword: "Password1234"
-      MultiAZ: "false"
-      Port: "3306"
-      PubliclyAccessible: "false"
-      StorageType: "gp2"
-      Tags: [{ "Key": "Name", "Value": "rdsDBInstance" }]
+        Ref: 'rdsDBSubnetGroup'
+      Engine: 'MySQL'
+      EngineVersion: '8.0.28'
+      MasterUsername: 'user'
+      MasterUserPassword: 'Password1234'
+      MultiAZ: 'false'
+      Port: '3306'
+      PubliclyAccessible: 'false'
+      StorageType: 'gp2'
+      Tags: [{ 'Key': 'Name', 'Value': 'rdsDBInstance' }]
   rdsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Allow RDS Connections"
+      GroupDescription: 'Allow RDS Connections'
       SecurityGroupIngress:
         [
           {
-            "IpProtocol": "tcp",
-            "FromPort": "3306",
-            "ToPort": "3306",
-            "CidrIp": "0.0.0.0/0",
+            'IpProtocol': 'tcp',
+            'FromPort': '3306',
+            'ToPort': '3306',
+            'CidrIp': '0.0.0.0/0',
           },
           {
-            "SourceSecurityGroupId": { "Ref": "lambdaSecurityGroup" },
-            "IpProtocol": "tcp",
-            "FromPort": "3306",
-            "ToPort": "3306",
+            'SourceSecurityGroupId': { 'Ref': 'lambdaSecurityGroup' },
+            'IpProtocol': 'tcp',
+            'FromPort': '3306',
+            'ToPort': '3306',
           },
         ]
       SecurityGroupEgress:
         [
           {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": "0.0.0.0/0",
+            'IpProtocol': 'tcp',
+            'FromPort': '80',
+            'ToPort': '80',
+            'CidrIp': '0.0.0.0/0',
           },
         ]
       VpcId:
-        Ref: "rdsEC2VPC"
-      Tags: [{ "Key": "Name", "Value": "rdsSecurityGroup" }]
+        Ref: 'rdsEC2VPC'
+      Tags: [{ 'Key': 'Name', 'Value': 'rdsSecurityGroup' }]
   lambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Allow Lambda Connection to RDS"
+      GroupDescription: 'Allow Lambda Connection to RDS'
       SecurityGroupEgress:
         [
           {
-            "IpProtocol": "tcp",
-            "FromPort": "3306",
-            "ToPort": "3306",
-            "CidrIp": "0.0.0.0/0",
+            'IpProtocol': 'tcp',
+            'FromPort': '3306',
+            'ToPort': '3306',
+            'CidrIp': '0.0.0.0/0',
           },
         ]
       VpcId:
-        Ref: "rdsEC2VPC"
-      Tags: [{ "Key": "Name", "Value": "lambdaSecurityGroup" }]
+        Ref: 'rdsEC2VPC'
+      Tags: [{ 'Key': 'Name', 'Value': 'lambdaSecurityGroup' }]
   # ---- Database Functions ------
   DBInitFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -276,8 +275,8 @@ Resources:
       Architectures:
         - x86_64
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -287,7 +286,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
   primer:
     Type: AWS::Serverless::Function
     Properties:
@@ -324,7 +323,7 @@ Resources:
             FunctionName: !Ref DBInitFunction
   primerinvoke:
     Type: AWS::CloudFormation::CustomResource
-    Version: "1.0"
+    Version: '1.0'
     DependsOn:
       - rdsDBInstance
       - DBInitFunction
@@ -347,8 +346,8 @@ Resources:
             Path: /api/db/tables # Ensure api is proxied with /api/*
             Method: get
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -358,7 +357,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
 
   UpdateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -375,8 +374,8 @@ Resources:
             Path: /api/user/update # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -386,7 +385,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -405,8 +404,8 @@ Resources:
             Path: /api/user/{token} # Ensure api is proxied with /api/*
             Method: get
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -416,7 +415,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -448,8 +447,8 @@ Resources:
                   Required: false
                   Caching: false
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -459,7 +458,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -479,8 +478,8 @@ Resources:
             Path: /api/listing # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -490,7 +489,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -510,8 +509,8 @@ Resources:
             Path: /api/listing/update # Ensure api is proxied with /api/*
             Method: put
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -521,7 +520,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -541,8 +540,8 @@ Resources:
             Path: /api/user/payment # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -552,7 +551,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -572,8 +571,8 @@ Resources:
             Path: /api/user/address # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -583,7 +582,7 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -615,36 +614,36 @@ Resources:
     Properties:
       Bucket: !Ref ImageBucket
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Sid: PublicReadGetObject
             Effect: Allow
-            Principal: "*"
+            Principal: '*'
             Action:
               - s3:GetObject
-            Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
+            Resource: !Sub 'arn:aws:s3:::${ImageBucket}/*'
 
   ImageUploadLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
-      Path: "/"
+      Path: '/'
       Policies:
         - PolicyName: S3BucketAccessPolicy
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
                   - s3:GetObject
                   - s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
+                Resource: !Sub 'arn:aws:s3:::${ImageBucket}/*'
   UploadImageFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -678,8 +677,8 @@ Resources:
             Path: /api/listing/{id} # Ensure api is proxied with /api/*
             Method: get
       VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
@@ -689,7 +688,37 @@ Resources:
               Effect: Allow
               Action:
                 - rds-db:connect
-              Resource: "*"
+              Resource: '*'
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  DeleteListingByIdFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/delete-listing-id/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/listing/delete/{ListingId} # Ensure api is proxied with /api/*
+            Method: delete
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -698,49 +727,49 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   GetUserApi:
-    Description: "API Gateway endpoint URL for Prod stage for GetUser function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/user/:token"
+    Description: 'API Gateway endpoint URL for Prod stage for GetUser function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/user/:token'
   GetUserFunction:
-    Description: "GetUser Lambda Function ARN"
+    Description: 'GetUser Lambda Function ARN'
     Value: !Sub GetUserFunction.Arn
   GetUserIamRole:
-    Description: "Implicit IAM Role created for GetUser function"
+    Description: 'Implicit IAM Role created for GetUser function'
     Value: !Sub GetUserFunctionRole.Arn
   ListingsApi:
-    Description: "API Gateway endpoint URL for Prod stage for Listings function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listings/"
+    Description: 'API Gateway endpoint URL for Prod stage for Listings function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listings/'
   ListingsFunction:
-    Description: "Listings Lambda Function ARN"
+    Description: 'Listings Lambda Function ARN'
     Value: !GetAtt ListingsFunction.Arn
   ListingsFunctionIamRole:
-    Description: "Implicit IAM Role created for Listings function"
+    Description: 'Implicit IAM Role created for Listings function'
     Value: !GetAtt ListingsFunctionRole.Arn
   SignUpApi:
-    Description: "API Gateway endpoint URL for Prod stage for SignUp function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/signup/"
+    Description: 'API Gateway endpoint URL for Prod stage for SignUp function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/signup/'
   SignUpFunction:
-    Description: "SignUp Lambda Function ARN"
+    Description: 'SignUp Lambda Function ARN'
     Value: !GetAtt SignUpFunction.Arn
   SignUpFunctionIamRole:
-    Description: "Implicit IAM Role created for SignUp function"
+    Description: 'Implicit IAM Role created for SignUp function'
     Value: !GetAtt SignUpFunctionRole.Arn
   ListingApi:
-    Description: "API Gateway endpoint URL for Prod stage for Listings function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listing/:listingid"
+    Description: 'API Gateway endpoint URL for Prod stage for Listings function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/listing/:listingid'
   ListingFunction:
-    Description: "Listing Lambda Function ARN"
+    Description: 'Listing Lambda Function ARN'
     Value: !GetAtt ListingFunction.Arn
   ListingFunctionIamRole:
-    Description: "Implicit IAM Role created for Listing function"
+    Description: 'Implicit IAM Role created for Listing function'
     Value: !GetAtt ListingFunctionRole.Arn
   LoginApi:
-    Description: "API Gateway endpoint URL for Prod stage for Login function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/login/:gmail"
+    Description: 'API Gateway endpoint URL for Prod stage for Login function'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/login/:gmail'
   LoginFunction:
-    Description: "Login Lambda Function ARN"
+    Description: 'Login Lambda Function ARN'
     Value: !GetAtt LoginFunction.Arn
   LoginFunctionIamRole:
-    Description: "Implicit IAM Role created for Login function"
+    Description: 'Implicit IAM Role created for Login function'
     Value: !GetAtt LoginFunctionRole.Arn
   Website:
     Value: !GetAtt CloudFrontDistribution.DomainName
