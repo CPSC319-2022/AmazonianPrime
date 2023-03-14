@@ -16,9 +16,6 @@ import AddressGrid from '../common/AddressGrid';
 
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
-  const payment = useAppSelector((state) => state.payment.value);
-  const paymentAddress = useAppSelector((state) => state.paymentAddress.value);
-  const shippingAddress = useAppSelector((state) => state.shippingAddress.value);
 
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
 
