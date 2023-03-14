@@ -61,9 +61,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  console.log(createTable);
-
-let createCountryTableQuery = `CREATE TABLE Country (
+  let createCountryTableQuery = `CREATE TABLE Country (
     CityName varchar(255) NOT NULL, 
     Province varchar(255) NOT NULL, 
     StreetAddress varchar(255) NOT NULL, 
@@ -101,8 +99,6 @@ let createCountryTableQuery = `CREATE TABLE Country (
     });
   });
 
-  console.log(createTableAddress);
-
   let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
     PaymentID int NOT NULL AUTO_INCREMENT, 
     UserID int NOT NULL, 
@@ -125,50 +121,7 @@ let createCountryTableQuery = `CREATE TABLE Country (
     });
   });
 
-  console.log(createTablePaymentDetails);
-
-  let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
-    BankingID int NOT NULL AUTO_INCREMENT, 
-    UserID int NOT NULL,
-    AddressID int NOT NULL,
-    InstitutionNum int NOT NULL, 
-    AccountNum int NOT NULL, 
-    TransitNum int NOT NULL, 
-    NameOnCard varchar(255) NOT NULL,
-    PRIMARY KEY (BankingID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
-  );`;
-
-  const createTableBankingDetails = await new Promise((resolve, reject) => {
-    con.query(createBankingDetailsTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create banking details table!");
-      }
-      resolve(res);
-    });
-  });
-
-  console.log(createTableBankingDetails);
-
-  let createShippingAddressTableQuery = `CREATE TABLE ShippingAddress (
-    UserID int NOT NULL,
-    AddressID int NOT NULL,
-    PRIMARY KEY (UserID, AddressID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
-  );`;
-
-  const createTableShippingAddress = await new Promise((resolve, reject) => {
-    con.query(createShippingAddressTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create shipping address table!");
-      }
-      resolve(res);
-    });
-  });
-
-  console.log(createTableShippingAddress);
+  console.log(createTable);
 
   let createListingTableQuery = `CREATE TABLE Listing (
     ListingID int NOT NULL AUTO_INCREMENT, 
