@@ -1,7 +1,7 @@
 import './BuyerRegistration.scss';
 import { Button, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useSignupMutation } from '../../redux/api/user';
+import { useSignupMutation, useAddAddressMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
 import { setPayment } from '../../redux/reducers/paymentSlice';
 import { setPaymentAddress } from '../../redux/reducers/paymentAddressSlice';
@@ -42,14 +42,8 @@ function BuyerRegistration() {
   const [shippingCountryInput, setShippingCountryInput] = useState('');
 
   const dispatch = useAppDispatch();
-  const [updateProfile, result] = useSignupMutation();
-
-  let updatedUser = {
-    UserId: user?.UserID,
-    FirstName: user?.FirstName,
-    LastName: user?.LastName,
-    Department: '',
-  };
+  const [updateProfile, addProfileResult] = useSignupMutation();
+  const [updateAddress, addAddressResult] = useAddAddressMutation();
 
   let paymentInfo = {
     UserID: user?.UserID,
@@ -64,31 +58,35 @@ function BuyerRegistration() {
   };
 
   function register() {
+    let updatedUser = {
+      UserId: user?.UserID,
+      FirstName: user?.FirstName,
+      LastName: user?.LastName,
+      Department: '',
+    };
+
+    let billingAddressInfo = {
+      UserID: user?.UserID,
+      CityName: billingCityInput,
+      Province: billingProvinceInput,
+      StreetAddress: billingAddressInput,
+      PostalCode: billingPostalCodeInput,
+      Country: billingCountryInput,
+      IsBillingAddr: true,
+      IsShipAddr: useBillingAddressForShipping,
+    }
+
+    updateProfile(updatedUser);
+    
+    if (useBillingAddressForShipping) {
+      updateAddress(billingAddressInfo)
+    }
+
     //dispatch(setUser(updatedUser));
     //updateProfile(updatedUser);
-    console.log(departmentInput);
-    console.log(firstNameInput, lastNameInput, creditCardInput, cvvInput, expiryDateInput);
-    console.log(
-      billingAddressInput,
-      billingCityInput,
-      billingCountryInput,
-      billingPostalCodeInput,
-      billingProvinceInput,
-    );
-    console.log(
-      shippingAddressInput,
-      shippingCityInput,
-      shippingCountryInput,
-      shippingPostalCodeInput,
-      shippingProvinceInput,
-    );
   }
 
   function handleShippingCheckbox() {
-    if (paymentAddress) {
-      const { IsShipAddr, ...rest } = paymentAddress;
-      dispatch(setPaymentAddress({ ...rest, IsShipAddr: !useBillingAddressForShipping }));
-    }
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
 
