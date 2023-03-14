@@ -134,7 +134,7 @@ let createCountryTableQuery = `CREATE TABLE Country (
     InstitutionNum int NOT NULL, 
     AccountNum int NOT NULL, 
     TransitNum int NOT NULL, 
-    NameOnCard varchar(255),
+    NameOnCard varchar(255) NOT NULL,
     PRIMARY KEY (BankingID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
