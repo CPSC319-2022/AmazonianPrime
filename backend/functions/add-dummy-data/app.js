@@ -27,7 +27,7 @@ exports.lambdaHandler = async (event, context) => {
     let insertUsers = await new Promise((resolve, reject) => {
       con.query(queryString, function (err, res) {
         if (err) {
-          reject("Error insert into users");
+          reject("Error inserting dummy data into Users");
         }
         resolve(res);
       });
@@ -42,7 +42,7 @@ exports.lambdaHandler = async (event, context) => {
     let insertListing = await new Promise((resolve, reject) => {
       con.query(queryString, function (err, res) {
         if (err) {
-          reject("Error insert into listings");
+          reject("Error inserting dummy data into Listings");
         }
         resolve(res);
       });
@@ -57,7 +57,7 @@ exports.lambdaHandler = async (event, context) => {
     let insertCountry = await new Promise((resolve, reject) => {
       con.query(queryString, function (err, res) {
         if (err) {
-          reject("Error insert into country");
+          reject("Error inserting dummy data into Country");
         }
         resolve(res);
       });
@@ -72,7 +72,7 @@ exports.lambdaHandler = async (event, context) => {
     let insertAddress = await new Promise((resolve, reject) => {
       con.query(queryString, function (err, res) {
         if (err) {
-          reject("Error insert into address");
+          reject("Error inserting dummy data into Address");
         }
         resolve(res);
       });
@@ -87,7 +87,7 @@ exports.lambdaHandler = async (event, context) => {
     let insertPaymentDetails = await new Promise((resolve, reject) => {
       con.query(queryString, function (err, res) {
         if (err) {
-          reject("Error insert into users");
+          reject("Error inserting dummy data into PaymentDetails");
         }
         resolve(res);
       });
@@ -102,7 +102,7 @@ exports.lambdaHandler = async (event, context) => {
     let insertPaymentMethod = await new Promise((resolve, reject) => {
       con.query(queryString, function (err, res) {
         if (err) {
-          reject("Error insert into users");
+          reject("Error inserting dummy data into PaymentMethod");
         }
         resolve(res);
       });
@@ -115,7 +115,7 @@ exports.lambdaHandler = async (event, context) => {
   const getAllUsers = await new Promise((resolve, reject) => {
     con.query(getAllUsersQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the address from database!");
+        reject("Couldn't get all Users from database!");
       }
       resolve(res);
     });
