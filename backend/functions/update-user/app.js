@@ -44,7 +44,7 @@ exports.lambdaHandler = async (event, context) => {
         resolve(res);
       });
     });
-  }
+ 
 
   return {
     statusCode: 200,
