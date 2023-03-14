@@ -45,14 +45,14 @@ exports.lambdaHandler = async (event, context) => {
 
   let createUserTableQuery = `CREATE TABLE Users (
     UserID int NOT NULL AUTO_INCREMENT,
-    FirstName varchar(255),
-    LastName varchar(255),
-    Email varchar(255) UNIQUE,
+    FirstName varchar(255) NOT NULL,
+    LastName varchar(255) NOT NULL,
+    Email varchar(255) UNIQUE NOT NULL,
     Department varchar(255),
     IsAdmin Boolean,
     PRIMARY KEY (UserID)
   );`;
-  const createTable = await new Promise((resolve, reject) => {
+  const createTableUsers = await new Promise((resolve, reject) => {
     con.query(createUserTableQuery, function (err, res) {
       if (err) {
         reject("Couldn't create users table!");
@@ -61,14 +61,14 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  console.log(createTable);
+  console.log(createTableUsers);
 
-let createCountryTableQuery = `CREATE TABLE Country (
+  let createCountryTableQuery = `CREATE TABLE Country (
     CityName varchar(255) NOT NULL, 
     Province varchar(255) NOT NULL, 
     StreetAddress varchar(255) NOT NULL, 
-    PostalCode varchar(255), 
-    Country varchar(255),
+    PostalCode varchar(255) NOT NULL, 
+    Country varchar(255) NOT NULL,
     PRIMARY KEY (CityName, Province, StreetAddress)
   );`;
 
@@ -85,9 +85,9 @@ let createCountryTableQuery = `CREATE TABLE Country (
 
   let createAddressTableQuery = `CREATE TABLE Address (
     AddressID int NOT NULL AUTO_INCREMENT, 
-    CityName varchar(255), 
-    Province varchar(255), 
-    StreetAddress varchar(255), 
+    CityName varchar(255) NOT NULL, 
+    Province varchar(255) NOT NULL, 
+    StreetAddress varchar(255) NOT NULL, 
     PRIMARY KEY (AddressID),
     FOREIGN KEY (CityName, Province, StreetAddress) REFERENCES Country(CityName, Province, StreetAddress)
   );`;
@@ -105,12 +105,12 @@ let createCountryTableQuery = `CREATE TABLE Country (
 
   let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
     PaymentID int NOT NULL AUTO_INCREMENT, 
-    UserID int, 
-    AddressID int, 
-    CreditCardNum int, 
-    ExpiryDate varchar(10), 
-    CVV int, 
-    CardHolderName varchar(255),
+    UserID int NOT NULL, 
+    AddressID int NOT NULL, 
+    CreditCardNum int NOT NULL, 
+    ExpiryDate varchar(10) NOT NULL, 
+    CVV int NOT NULL, 
+    CardHolderName varchar(255) NOT NULL,
     PRIMARY KEY (PaymentID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
@@ -172,13 +172,16 @@ let createCountryTableQuery = `CREATE TABLE Country (
 
   let createListingTableQuery = `CREATE TABLE Listing (
     ListingID int NOT NULL AUTO_INCREMENT, 
-    UserID int, 
-    ListingName varchar(255), 
+    UserID int NOT NULL, 
+    ListingName varchar(255) NOT NULL, 
     Description TEXT, 
-    Cost DECIMAL(6,2), 
-    Quantity int, 
-    Category varchar(255), 
-    ItemCondition varchar(255), 
+    Cost DECIMAL(6,2) NOT NULL, 
+    Quantity int NOT NULL, 
+    Category varchar(255) NOT NULL, 
+    Size varchar(20),
+    Brand varchar(255),
+    Colour varchar(255),
+    ItemCondition varchar(255) NOT NULL, 
     PostedTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     IsActiveListing Boolean,
     PRIMARY KEY (ListingID),
@@ -199,7 +202,7 @@ let createCountryTableQuery = `CREATE TABLE Country (
   let createListingImageTableQuery = `CREATE TABLE ListingImage (
     PictureID int NOT NULL AUTO_INCREMENT,
     ListingID int NOT NULL, 
-    S3ImagePath varchar(255),
+    S3ImagePath varchar(255) NOT NULL,
     PRIMARY KEY (PictureID),
     FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`;

@@ -1,5 +1,5 @@
-const dbConnection = require("dbConnection.js");
-var mysql = require("mysql");
+const dbConnection = require('dbConnection.js');
+var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -14,28 +14,35 @@ var mysql = require("mysql");
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
-  const { UserID, AddressID, InstitutionNum, AccountNum, TransitNum } =
-    JSON.parse(event.body);
+  const {
+    UserID,
+    AddressID,
+    InstitutionNum,
+    AccountNum,
+    TransitNum,
+    NameOnCard,
+  } = JSON.parse(event.body);
 
   if (
-      !UserID ||
-      !AddressID ||
-      !InstitutionNum ||
-      !AccountNum ||
-      !TransitNum
-    ) {
-      return {
-        statusCode: 400,
-        body: 'Missing required fields',
-      };
-    }
+    !UserID ||
+    !AddressID ||
+    !InstitutionNum ||
+    !AccountNum ||
+    !TransitNum ||
+    !NameOnCard
+  ) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
 
-  const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum})`;
+  const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum}, "${NameOnCard}")`;
 
   const addBankingDetails = await new Promise((resolve, reject) => {
     con.query(addBankingDetailsQuery, function (err, res) {
@@ -46,7 +53,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const BankingID = addBankingDetails["insertId"];
+  const BankingID = addBankingDetails['insertId'];
 
   const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE BankingID = "${BankingID}"`;
 

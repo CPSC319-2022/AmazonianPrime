@@ -22,6 +22,20 @@ exports.lambdaHandler = async (event, context) => {
   const { UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName } =
     JSON.parse(event.body);
 
+  if (
+    !UserID ||
+    !AddressID ||
+    !CreditCardNum ||
+    !ExpiryDate ||
+    !CVV ||
+    !CardHolderName
+  ) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
+
   const addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${UserID}, ${AddressID}, ${CreditCardNum}, "${ExpiryDate}", ${CVV}, "${CardHolderName}")`;
 
   const addPayment = await new Promise((resolve, reject) => {
@@ -34,17 +48,6 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   const PaymentID = addPayment['insertId'];
-
-  const addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${UserID}, ${PaymentID})`;
-
-  const addPaymentMethod = await new Promise((resolve, reject) => {
-    con.query(addPaymentMethodQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't add the user to database!");
-      }
-      resolve(res);
-    });
-  });
 
   const getPaymentByIDQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentID}"`;
 
