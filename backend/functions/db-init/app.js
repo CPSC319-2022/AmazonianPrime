@@ -61,45 +61,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
-    PaymentID int NOT NULL AUTO_INCREMENT, 
-    UserID int, 
-    AddressID int, 
-    CreditCardNum int, 
-    ExpiryDate varchar(10), 
-    CVV int, 
-    CardHolderName varchar(255),
-    PRIMARY KEY (PaymentID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-  );`;
+  console.log(createTable);
 
-  const createTablePaymentDetails = await new Promise((resolve, reject) => {
-    con.query(createPaymentDetailsTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create payment details table!");
-      }
-      resolve(res);
-    });
-  });
-
-  let createPaymentsMethodTableQuery = `CREATE TABLE PaymentMethod (
-    PaymentID int NOT NULL, 
-    UserID int NOT NULL, 
-    PRIMARY KEY (PaymentID, UserID),
-    FOREIGN KEY (PaymentID) REFERENCES PaymentDetails(PaymentID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-  );`;
-
-  const createTablePaymentMethod = await new Promise((resolve, reject) => {
-    con.query(createPaymentsMethodTableQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't create payment method table!");
-      }
-      resolve(res);
-    });
-  });
-
-  let createCountryTableQuery = `CREATE TABLE Country (
+let createCountryTableQuery = `CREATE TABLE Country (
     CityName varchar(255) NOT NULL, 
     Province varchar(255) NOT NULL, 
     StreetAddress varchar(255) NOT NULL, 
@@ -117,16 +81,14 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
+  console.log(createTableCountry);
+
   let createAddressTableQuery = `CREATE TABLE Address (
     AddressID int NOT NULL AUTO_INCREMENT, 
-    UserID int, 
     CityName varchar(255), 
     Province varchar(255), 
     StreetAddress varchar(255), 
-    IsBillingAddress Boolean, 
-    IsShippingAddress Boolean, 
     PRIMARY KEY (AddressID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (CityName, Province, StreetAddress) REFERENCES Country(CityName, Province, StreetAddress)
   );`;
 
@@ -139,7 +101,74 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  console.log(createTable);
+  console.log(createTableAddress);
+
+  let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
+    PaymentID int NOT NULL AUTO_INCREMENT, 
+    UserID int, 
+    AddressID int, 
+    CreditCardNum int, 
+    ExpiryDate varchar(10), 
+    CVV int, 
+    CardHolderName varchar(255),
+    PRIMARY KEY (PaymentID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+  );`;
+
+  const createTablePaymentDetails = await new Promise((resolve, reject) => {
+    con.query(createPaymentDetailsTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create payment details table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createTablePaymentDetails);
+
+  let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
+    BankingID int NOT NULL AUTO_INCREMENT, 
+    UserID int NOT NULL,
+    AddressID int NOT NULL,
+    InstitutionNum int NOT NULL, 
+    AccountNum int NOT NULL, 
+    TransitNum int NOT NULL, 
+    NameOnCard varchar(255) NOT NULL,
+    PRIMARY KEY (BankingID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+  );`;
+
+  const createTableBankingDetails = await new Promise((resolve, reject) => {
+    con.query(createBankingDetailsTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create banking details table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createTableBankingDetails);
+
+  let createShippingAddressTableQuery = `CREATE TABLE ShippingAddress (
+    UserID int NOT NULL,
+    AddressID int NOT NULL,
+    PRIMARY KEY (UserID, AddressID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+  );`;
+
+  const createTableShippingAddress = await new Promise((resolve, reject) => {
+    con.query(createShippingAddressTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create shipping address table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createTableShippingAddress);
 
   let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
     BankingID int NOT NULL AUTO_INCREMENT, 
