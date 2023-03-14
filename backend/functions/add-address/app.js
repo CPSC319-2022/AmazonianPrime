@@ -19,13 +19,9 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const {
-    CityName,
-    Province,
-    StreetAddress,
-    PostalCode,
-    Country,
-  } = JSON.parse(event.body);
+  const { CityName, Province, StreetAddress, PostalCode, Country } = JSON.parse(
+    event.body,
+  );
 
   const checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${CityName}" AND Province = "${Province}" AND StreetAddress = "${StreetAddress}"`;
 
