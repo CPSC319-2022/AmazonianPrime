@@ -1,12 +1,11 @@
 import { TextField, Grid } from '@mui/material';
-import { useAppDispatch } from '../../redux/store';
 
 interface AddressGridProps {
-  setAddressInput: Function;
-  setCityInput: Function;
-  setProvinceInput: Function;
-  setPostalCodeInput: Function;
-  setCountryInput: Function;
+  setAddressInput: (e: string) => void;
+  setCityInput: (e: string) => void;
+  setProvinceInput: (e: string) => void;
+  setPostalCodeInput: (e: string) => void;
+  setCountryInput: (e: string) => void;
 }
 
 const AddressGrid: React.FC<AddressGridProps> = ({
@@ -16,20 +15,6 @@ const AddressGrid: React.FC<AddressGridProps> = ({
   setPostalCodeInput,
   setCountryInput,
 }) => {
-  const dispatch = useAppDispatch();
-
-  let newAddress: {
-    StreetAddress: any;
-    CityName: any;
-    Province: any;
-    PostalCode: any;
-    Country: any;
-    AddressID?: string | undefined;
-    UserID?: string | undefined;
-    IsBillingAddr?: boolean;
-    IsShipAddr?: boolean;
-  };
-
   return (
     <div className="address-grid">
       <Grid container spacing={1.5}>

@@ -53,7 +53,7 @@ function BuyerRegistration() {
     }
     if (addAddressResult.data.IsShipAddr) {
       dispatch(setShippingAddress(addAddressResult.data));
-    }  
+    }
   }
 
   if (addPaymentResult.data) {
@@ -61,7 +61,7 @@ function BuyerRegistration() {
   }
 
   async function register() {
-    let updatedUser = {
+    const updatedUser = {
       UserID: user?.UserID,
       FirstName: user?.FirstName,
       LastName: user?.LastName,
@@ -77,7 +77,7 @@ function BuyerRegistration() {
       Country: billingCountryInput,
       IsBillingAddr: true,
       IsShipAddr: useBillingAddressForShipping,
-    }
+    };
 
     const shippingAddressInfo = {
       UserID: user?.UserID,
@@ -88,7 +88,7 @@ function BuyerRegistration() {
       Country: shippingCountryInput,
       IsBillingAddr: false,
       IsShipAddr: true,
-    }
+    };
 
     updateProfile(updatedUser);
 
@@ -104,11 +104,11 @@ function BuyerRegistration() {
       CreditCardNum: creditCardInput,
       ExpiryDate: expiryDateInput,
       CVV: cvvInput,
-      CardHolderName: firstNameInput + " " + lastNameInput
+      CardHolderName: firstNameInput + ' ' + lastNameInput,
     };
 
     updatePayment(paymentInfo);
-    
+
     dispatch(setUser(updatedUser));
   }
 

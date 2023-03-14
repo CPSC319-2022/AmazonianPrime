@@ -52,4 +52,5 @@ export const userApi = createApi({
   }),
 });
 
-export const { useLoginQuery, useLazyLoginQuery, useSignupMutation, useAddAddressMutation, useAddPaymentMutation } = userApi;
+export const { useLoginQuery, useLazyLoginQuery, useSignupMutation, useAddAddressMutation, useAddPaymentMutation } =
+  userApi;

@@ -3,17 +3,17 @@ import './PaymentGrid.scss';
 import AddressGrid from './AddressGrid';
 
 interface PaymentGridProps {
-  setFirstNameInput: Function;
-  setLastNameInput: Function;
-  setCreditCardInput: Function;
-  setExpiryDateInput: Function;
-  setCVVInput: Function;
+  setFirstNameInput: (e: string) => void;
+  setLastNameInput: (e: string) => void;
+  setCreditCardInput: (e: string) => void;
+  setExpiryDateInput: (e: string) => void;
+  setCVVInput: (e: string) => void;
 
-  setBillingAddressInput: Function;
-  setBillingCityInput: Function;
-  setBillingProvinceInput: Function;
-  setBillingPostalCodeInput: Function;
-  setBillingCountryInput: Function;
+  setBillingAddressInput: (e: string) => void;
+  setBillingCityInput: (e: string) => void;
+  setBillingProvinceInput: (e: string) => void;
+  setBillingPostalCodeInput: (e: string) => void;
+  setBillingCountryInput: (e: string) => void;
 }
 
 const PaymentGrid: React.FC<PaymentGridProps> = ({
