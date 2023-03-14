@@ -64,9 +64,9 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const addAddressQueries = [`INSERT INTO Address (AddressID, UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES (1, 1, "Vanvouver", "BC", "100 St", true, true)`,
-  `INSERT INTO Address (AddressID, UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES (2, 2, "Richmond", "BC", "1000 St", false, true)`,
-  `INSERT INTO Address (AddressID, UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES (3, 3, "Toronto", "ON", "2000 St", true, false)`];
+  const addAddressQueries = [`INSERT INTO Address (AddressID, CityName, Province, StreetAddress) VALUES (1, "Vanvouver", "BC", "100 St")`,
+  `INSERT INTO Address (AddressID, CityName, Province, StreetAddress) VALUES (2, "Richmond", "BC", "1000 St")`,
+  `INSERT INTO Address (AddressID, CityName, Province, StreetAddress) VALUES (3, "Toronto", "ON", "2000 St")`];
   
   addAddressQueries.forEach(async (queryString) => {
     let insertAddress = await new Promise((resolve, reject) => {
@@ -93,22 +93,6 @@ exports.lambdaHandler = async (event, context) => {
       });
     });
   });
-
-  const addPaymentMethodQueries = [`INSERT INTO PaymentMethod (PaymentID, UserID) VALUES (1, 1)`,
-  `INSERT INTO PaymentMethod (PaymentID, UserID) VALUES (2, 2)`,
-  `INSERT INTO PaymentMethod (PaymentID, UserID) VALUES (3, 3)`];
-  
-  addPaymentMethodQueries.forEach(async (queryString) => {
-    let insertPaymentMethod = await new Promise((resolve, reject) => {
-      con.query(queryString, function (err, res) {
-        if (err) {
-          reject("Error inserting dummy data into PaymentMethod");
-        }
-        resolve(res);
-      });
-    });
-  });
-
   
   const getAllUsersQuery = `SELECT * FROM Users`;
 
