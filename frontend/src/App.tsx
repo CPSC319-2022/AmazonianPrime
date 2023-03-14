@@ -24,7 +24,7 @@ const AppWrapper = () => {
     } else if (!user?.Department) {
       return <BuyerRegistration />;
     } else {
-      return <BuyerRegistration />;
+      return <LandingPage />;
     }
   };
 
