@@ -59,10 +59,10 @@ exports.lambdaHandler = async (event, context) => {
 
     const listingID = createListing['insertId'];
 
-    const getListingByIdQuery = `SELECT * FROM Listing WHERE ListingID = "${listingID}"`;
+    const getListingByIDQuery = `SELECT * FROM Listing WHERE ListingID = "${listingID}"`;
 
     const getListing = await new Promise((resolve, reject) => {
-      con.query(getListingByIdQuery, function (err, res) {
+      con.query(getListingByIDQuery, function (err, res) {
         if (err) {
           reject("Couldn't get the listing from database!");
         }
