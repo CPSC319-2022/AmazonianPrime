@@ -129,11 +129,11 @@ let createCountryTableQuery = `CREATE TABLE Country (
 
   let createBankingDetailsTableQuery = `CREATE TABLE BankingDetails (
     BankingID int NOT NULL AUTO_INCREMENT, 
-    UserID int,
-    AddressID int,
+    UserID int NOT NULL,
+    AddressID int NOT NULL,
     InstitutionNum int NOT NULL, 
-    AccountNum int, 
-    TransitNum int, 
+    AccountNum int NOT NULL, 
+    TransitNum int NOT NULL, 
     NameOnCard varchar(255),
     PRIMARY KEY (BankingID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
