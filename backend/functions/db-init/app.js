@@ -152,8 +152,8 @@ let createCountryTableQuery = `CREATE TABLE Country (
   console.log(createTableBankingDetails);
 
   let createShippingAddressTableQuery = `CREATE TABLE ShippingAddress (
-    UserID int,
-    AddressID int,
+    UserID int NOT NULL,
+    AddressID int NOT NULL,
     PRIMARY KEY (UserID, AddressID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
