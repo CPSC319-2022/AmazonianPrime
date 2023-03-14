@@ -35,17 +35,6 @@ exports.lambdaHandler = async (event, context) => {
 
   const PaymentID = addPayment['insertId'];
 
-  const addPaymentMethodQuery = `INSERT INTO PaymentMethod(UserID, PaymentID) VALUES(${UserID}, ${PaymentID})`;
-
-  const addPaymentMethod = await new Promise((resolve, reject) => {
-    con.query(addPaymentMethodQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't add the user to database!");
-      }
-      resolve(res);
-    });
-  });
-
   const getPaymentByIDQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentID}"`;
 
   const getPayment = await new Promise((resolve, reject) => {
