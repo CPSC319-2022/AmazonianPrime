@@ -86,7 +86,7 @@ function CreateListingModal() {
       Description: descriptionRef.current?.value,
       Cost: Number(costRef.current?.value),
       Quantity: quantity,
-      Category: category,
+      Category: category.replace("&", "And"),
       ItemCondition: condition,
     }).unwrap();
     setIsLoading(false);
