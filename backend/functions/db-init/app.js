@@ -218,6 +218,57 @@ exports.lambdaHandler = async (event, context) => {
     
   console.log(createListingImageTable);
 
+  let createOrderTableQuery = `CREATE TABLE Order (
+      OrderID int NOT NULL AUTO_INCREMENT,
+      UserID int NOT NULL,
+      AddressID int NOT NULL,
+      ShippingStatus varchar(50) NOT NULL,
+      OrderTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (OrderID),
+      FOREIGN KEY (UserID) REFERENCES Users(UserID),
+      FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+  );`
+
+  const createOrderTable = await new Promise((resolve, reject) => {
+    con.query(createOrderTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create listing image table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createOrderTable);
+
+  let createOrderItemTableQuery = `CREATE TABLE OrderItem (
+      OrderID int NOT NULL AUTO_INCREMENT,
+      ListingID int NOT NULL,
+      Quantity int NOT NULL,
+      PRIMARY KEY (OrderID),
+      FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
+      FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
+  );`
+
+  const createOrderItemTable = await new Promise((resolve, reject) => {
+    con.query(createOrderItemTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create listing image table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createOrderItemTable);
+
+  let createShoppingCartItemTableQuery = `CREATE TABLE ShoppingCartItem(
+      ShoppingCartItemID int NOT NULL AUTO_INCREMENT,
+      UserID int NOT NULL,
+      ListingID int  NOT NULL,
+      Quantity int  NOT NULL,
+      PRIMARY KEY (ShoppingCartItemID),
+      FOREIGN KEY (UserID) REFERENCES Users(UserID),
+      FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
+  );`
 
   return {
     status: 'SUCCESS',
