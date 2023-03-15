@@ -1,4 +1,28 @@
 @import '../../variables';
 
-.cart-page {
+.cart-page.cart-page {
+    width: unset;
+    margin: 2em;
+}
+
+.cart__top-content.cart__top-content {
+    margin-bottom: 2em;
+}
+
+.cart-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 2em;
+}
+
+.cart-icon {
+    margin-right: 0.5em;
+}
+.cart__welcome-message {
+    font-size: 1.1em;
+}
+
+.cart__items-quantity {
+    margin-top: 1.25em;
 }
