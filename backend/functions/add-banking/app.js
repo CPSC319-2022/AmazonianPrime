@@ -19,16 +19,22 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const { UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName } =
-    JSON.parse(event.body);
+  const {
+    UserID,
+    AddressID,
+    InstitutionNum,
+    AccountNum,
+    TransitNum,
+    NameOnCard,
+  } = JSON.parse(event.body);
 
   if (
     !UserID ||
     !AddressID ||
-    !CreditCardNum ||
-    !ExpiryDate ||
-    !CVV ||
-    !CardHolderName
+    !InstitutionNum ||
+    !AccountNum ||
+    !TransitNum ||
+    !NameOnCard
   ) {
     return {
       statusCode: 400,
@@ -36,25 +42,25 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const addPaymentQuery = `INSERT INTO PaymentDetails(UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES(${UserID}, ${AddressID}, ${CreditCardNum}, "${ExpiryDate}", ${CVV}, "${CardHolderName}")`;
+  const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum}, "${NameOnCard}")`;
 
-  const addPayment = await new Promise((resolve, reject) => {
-    con.query(addPaymentQuery, function (err, res) {
+  const addBankingDetails = await new Promise((resolve, reject) => {
+    con.query(addBankingDetailsQuery, function (err, res) {
       if (err) {
-        reject("Couldn't add the user to database!");
+        reject("Couldn't add the banking detail to database!");
       }
       resolve(res);
     });
   });
 
-  const PaymentID = addPayment['insertId'];
+  const BankingID = addBankingDetails['insertId'];
 
-  const getPaymentByIDQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = "${PaymentID}"`;
+  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE BankingID = "${BankingID}"`;
 
-  const getPayment = await new Promise((resolve, reject) => {
-    con.query(getPaymentByIDQuery, function (err, res) {
+  const getBanking = await new Promise((resolve, reject) => {
+    con.query(getBankingByIdQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the address from database!");
+        reject("Couldn't get the banking details from database!");
       }
       resolve(res);
     });
@@ -62,6 +68,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(getPayment[0]),
+    body: JSON.stringify(getBanking[0]),
   };
 };
