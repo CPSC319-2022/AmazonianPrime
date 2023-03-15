@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store/index';
 import { modifyRegisterUserModalVisibility, modifyIsSellerRegistered } from '../../redux/reducers/sellerModalSlice';
 import { useRef, useState } from 'react';
+import AddressGrid from '../common/AddressGrid';
 
 function RegisterSellerModal() {
   const isSellerModalOpen = useSelector((state: RootState) => state.sellerModal.isSellerModalOpen);
@@ -126,6 +127,8 @@ function RegisterSellerModal() {
               </div>
             </div>
           </div>
+          <span>Billing Address</span>
+          <AddressGrid/>
         </DialogContent>
         <DialogActions>
           <div className="seller-modal__button-container">
