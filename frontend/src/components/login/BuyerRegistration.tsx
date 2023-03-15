@@ -63,8 +63,6 @@ function BuyerRegistration() {
       StreetAddress: billingAddressInput,
       PostalCode: billingPostalCodeInput,
       Country: billingCountryInput,
-      IsBillingAddr: true,
-      IsShipAddr: useBillingAddressForShipping,
     };
 
     const shippingAddressInfo = {
@@ -74,8 +72,6 @@ function BuyerRegistration() {
       StreetAddress: shippingAddressInput,
       PostalCode: shippingPostalCodeInput,
       Country: shippingCountryInput,
-      IsBillingAddr: false,
-      IsShipAddr: true,
     };
 
     dispatch(setPaymentAddress(billingAddressInfo));
