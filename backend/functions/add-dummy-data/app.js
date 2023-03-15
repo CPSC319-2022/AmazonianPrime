@@ -104,6 +104,23 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
+  const addBankingDetailsQueries = [
+    `INSERT INTO BankingDetails (BankingID, UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard) VALUES (1, 1, 1, 001, 001, 001, "John Doe")`,
+    `INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (2, 2, 2, 002, 002, 002, "Alice Ather")`,
+    `INSERT INTO PaymentDetails (PaymentID, UserID, AddressID, CreditCardNum, ExpiryDate, CVV, CardHolderName) VALUES (3, 3, 3, 003, 003, 003, "Bob Carlson")`,
+  ];
+
+  addBankingDetailsQueries.forEach(async (queryString) => {
+    let insertBankingDetails = await new Promise((resolve, reject) => {
+      con.query(queryString, function (err, res) {
+        if (err) {
+          reject('Error inserting dummy data into BankingDetails');
+        }
+        resolve(res);
+      });
+    });
+  });
+
   const getAllUsersQuery = `SELECT * FROM Users`;
 
   const getAllUsers = await new Promise((resolve, reject) => {
