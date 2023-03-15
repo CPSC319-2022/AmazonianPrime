@@ -13,9 +13,9 @@ export const userApi = createApi({
     signup: builder.mutation<User, Partial<User>>({
       query(body) {
         return {
-          url: `user/update`,
+          url: `user`,
           credentials: 'include',
-          method: 'POST',
+          method: 'PUT',
           body,
           headers: {
             'Content-Type': 'application/json',

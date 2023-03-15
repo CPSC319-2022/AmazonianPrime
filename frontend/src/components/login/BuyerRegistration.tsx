@@ -44,15 +44,6 @@ function BuyerRegistration() {
   const [updateAddress, addAddressResult] = useAddAddressMutation();
   const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
-  if (addAddressResult.data) {
-    if (addAddressResult.data.IsBillingAddr) {
-      dispatch(setPaymentAddress(addAddressResult.data));
-    }
-    if (addAddressResult.data.IsShipAddr) {
-      dispatch(setShippingAddress(addAddressResult.data));
-    }
-  }
-
   if (addPaymentResult.data) {
     dispatch(setPayment(addPaymentResult.data));
   }
@@ -87,12 +78,17 @@ function BuyerRegistration() {
       IsShipAddr: true,
     };
 
+    dispatch(setPaymentAddress(billingAddressInfo));
+    dispatch(setShippingAddress(billingAddressInfo));
+    dispatch(setUser(updatedUser));
+
     updateProfile(updatedUser);
 
     const address = await updateAddress(billingAddressInfo).unwrap();
 
     if (!useBillingAddressForShipping) {
       updateAddress(shippingAddressInfo);
+      dispatch(setShippingAddress(shippingAddressInfo));
     }
 
     const paymentInfo = {
@@ -105,8 +101,6 @@ function BuyerRegistration() {
     };
 
     updatePayment(paymentInfo);
-
-    dispatch(setUser(updatedUser));
   }
 
   function handleShippingCheckbox() {

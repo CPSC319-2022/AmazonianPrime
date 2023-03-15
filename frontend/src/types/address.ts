@@ -6,6 +6,4 @@ export interface Address {
   StreetAddress: string;
   PostalCode: string;
   Country: string;
-  IsBillingAddr: boolean;
-  IsShipAddr: boolean;
 }
