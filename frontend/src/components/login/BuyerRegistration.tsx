@@ -1,36 +1,31 @@
 import './BuyerRegistration.scss';
 import { Button, TextField, Grid } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useSignupMutation } from '../../redux/api/user';
 import { setUser } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import PaymentGrid from '../common/PaymentGrid';
 import AddressGrid from '../common/AddressGrid';
+import { useUpdateUserMutation } from '../../redux/api/user';
 
 function BuyerRegistration() {
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
   const dispatch = useAppDispatch();
-  const [updateProfile, result] = useSignupMutation();
-
+  const user = useAppSelector((state) => state.user.value);
+  const [updateUser, result] = useUpdateUserMutation();
+ 
   if (result.data) {
     dispatch(setUser(result.data));
   }
 
-  // TODO: Populate with user input
-  // const updatedUser = {
-  //   UserId: '2',
-  //   FirstName: 'John',
-  //   LastName: 'Doe',
-  //   Department: 'Sample',
-  // };
-
-  function register() {
-    // updateProfile(updatedUser);
-    dispatch(setUser({ Department: 'AWS' }));
+  async function register() {
+    window.scrollTo(0, 0);
+    if (user) {
+      await updateUser(user).unwrap();
+    }
   }
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);

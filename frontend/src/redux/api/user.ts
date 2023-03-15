@@ -8,12 +8,12 @@ export const userApi = createApi({
     login: builder.query<User, string>({
       query: (gmail: string) => `user/${gmail}`,
     }),
-    signup: builder.mutation<User, Partial<User>>({
+    updateUser: builder.mutation<User, Partial<User>>({
       query(body) {
         return {
           url: `user`,
           credentials: 'include',
-          method: 'POST',
+          method: 'PUT',
           body,
           headers: {
             'Content-Type': 'application/json',
@@ -24,4 +24,4 @@ export const userApi = createApi({
   }),
 });
 
-export const { useLoginQuery, useLazyLoginQuery, useSignupMutation } = userApi;
+export const { useLoginQuery, useLazyLoginQuery, useUpdateUserMutation } = userApi;

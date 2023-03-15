@@ -11,19 +11,19 @@ function PaymentGrid() {
       <div className="payment-grid__grid">
         <Grid container spacing={1.5}>
           <Grid item xs={6}>
-            <TextField fullWidth required label="First Name" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="First Name" defaultValue="" size="small" />
           </Grid>
           <Grid item xs={6}>
-            <TextField fullWidth required label="Last Name" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="Last Name" defaultValue="" size="small" />
           </Grid>
           <Grid item xs={6}>
-            <TextField fullWidth required label="Card Number" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="Card Number" defaultValue="" size="small" />
           </Grid>
           <Grid item xs={3}>
-            <TextField fullWidth required label="CVC" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="CVC" defaultValue="" size="small" />
           </Grid>
           <Grid item xs={3}>
-            <TextField fullWidth required label="MM / YY" defaultValue="" variant="filled" />
+            <TextField fullWidth required label="MM / YY" defaultValue=""  size="small"/>
           </Grid>
         </Grid>
       </div>

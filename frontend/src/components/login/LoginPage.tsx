@@ -9,6 +9,8 @@ declare var google: any;
 
 function LoginPage() {
   function handleGoogleSignIn(response: any) {
+    console.log(response.credential)
+    sessionStorage.setItem('jwt', response.credential);
     triggerGetQuery(response.credential);
   }
 
@@ -29,7 +31,9 @@ function LoginPage() {
 
   const dispatch = useAppDispatch();
   const [triggerGetQuery, result, lastPromiseInfo] = useLazyLoginQuery();
+
   if (result.data) {
+    console.log(result.data)
     dispatch(setUser(result.data));
   }
 
