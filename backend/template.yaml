@@ -463,7 +463,36 @@ Resources:
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
-
+  UpdateShoppingCartFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/add-to-cart/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/{userid}/shopping-cart # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
   CreateListingFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
