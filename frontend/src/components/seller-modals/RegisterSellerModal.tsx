@@ -21,7 +21,7 @@ function RegisterSellerModal() {
   const isSellerModalOpen = useSelector((state: RootState) => state.sellerModal.isSellerModalOpen);
   const isSellerRegistered = useSelector((state: RootState) => state.sellerModal.isSellerRegistered);
   const [openErrorToast, setOpenErrorToast] = useState('');
-  const firstName = useRef<any>(null);
+  const fullName = useRef<any>(null);
   const lastName = useRef<any>(null);
   const accountNumber = useRef<any>(null);
   const institutionNumber = useRef<any>(null);
@@ -35,13 +35,8 @@ function RegisterSellerModal() {
   }
 
   const handleSave = () => {
-    console.log(firstName);
-    console.log(lastName);
-    console.log(accountNumber);
-    console.log(institutionNumber);
-    console.log(transitNumber);
     if (
-      !firstName?.current?.value ||
+      !fullName?.current?.value ||
       !lastName?.current?.value ||
       !accountNumber?.current?.value ||
       !institutionNumber?.current?.value ||
@@ -92,20 +87,12 @@ function RegisterSellerModal() {
               <div className="seller-modal__banking-details-row">
                 <TextField
                   autoComplete="off"
-                  inputRef={firstName}
+                  inputRef={fullName}
                   className="seller-modal__fname"
                   size="small"
                   required
                   id="outlined-required"
-                  label="First Name"
-                />
-                <TextField
-                  autoComplete="off"
-                  inputRef={lastName}
-                  size="small"
-                  required
-                  id="outlined-required"
-                  label="Last Name"
+                  label="Full Name"
                 />
               </div>
               <TextField
