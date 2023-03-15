@@ -23,6 +23,9 @@ function DetailsMetaData() {
       <Grid container rowSpacing={0} className="product-details__small-text">
         {getDetailsRow('Condition', listing.ItemCondition)}
         {getDetailsRow('Category', listing.Category)}
+        {getDetailsRow('Brand', listing.Brand ? listing.Brand : 'N/A')}
+        {getDetailsRow('Colour', listing.Colour ? listing.Colour : 'N/A')}
+        {getDetailsRow('Size', listing.Size ? listing.Size : 'N/A')}
         <Grid item xs={3}>
           <p className="product-details__details__grey-text">Quantity</p>
         </Grid>

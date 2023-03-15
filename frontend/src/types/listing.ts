@@ -12,5 +12,8 @@ export interface Listing {
   ItemCondition: string;
   PostedTimestamp: string;
   IsActiveListing: boolean;
+  Brand?: string;
+  Colour?: string;
+  Size?: string;
   Images: string[];
 }

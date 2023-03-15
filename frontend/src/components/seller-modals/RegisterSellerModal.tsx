@@ -40,21 +40,31 @@ function RegisterSellerModal() {
     console.log(accountNumber);
     console.log(institutionNumber);
     console.log(transitNumber);
-    if (!firstName?.current?.value || !lastName?.current?.value || !accountNumber?.current?.value || !institutionNumber?.current?.value || !transitNumber?.current?.value) {
-      setOpenErrorToast("Please fill out all required fields!");
+    if (
+      !firstName?.current?.value ||
+      !lastName?.current?.value ||
+      !accountNumber?.current?.value ||
+      !institutionNumber?.current?.value ||
+      !transitNumber?.current?.value
+    ) {
+      setOpenErrorToast('Please fill out all required fields!');
       return;
     }
-    if (accountNumber && accountNumber?.current?.value?.length < 7 ) {
-      setOpenErrorToast("The account number must be at least 7 characters!");
+    if (accountNumber && accountNumber?.current?.value?.length < 7) {
+      setOpenErrorToast('The account number must be at least 7 characters!');
       return;
     }
-    if (!Number(accountNumber?.current?.value) || !Number(institutionNumber?.current?.value) || !Number(transitNumber?.current?.value)) {
-      setOpenErrorToast("Only numbers can be added to the Account, Institution, and Transit Numbers.");
+    if (
+      !Number(accountNumber?.current?.value) ||
+      !Number(institutionNumber?.current?.value) ||
+      !Number(transitNumber?.current?.value)
+    ) {
+      setOpenErrorToast('Only numbers can be added to the Account, Institution, and Transit Numbers.');
       return;
     }
     setOpenErrorToast('');
     handleClose(true);
-  }
+  };
 
   const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -65,11 +75,11 @@ function RegisterSellerModal() {
 
   return (
     <div>
-        <Snackbar open={!!openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
-          <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
-            {openErrorToast}
-          </Alert>
-        </Snackbar>
+      <Snackbar open={!!openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
+          {openErrorToast}
+        </Alert>
+      </Snackbar>
       <Dialog open={isSellerModalOpen && !isSellerRegistered} onClose={() => handleClose(false)}>
         <DialogTitle>Register Before Selling</DialogTitle>
         <DialogContent>
@@ -81,7 +91,7 @@ function RegisterSellerModal() {
             <div className="seller-modal__banking-details">
               <div className="seller-modal__banking-details-row">
                 <TextField
-                  autoComplete='off'
+                  autoComplete="off"
                   inputRef={firstName}
                   className="seller-modal__fname"
                   size="small"
@@ -89,10 +99,17 @@ function RegisterSellerModal() {
                   id="outlined-required"
                   label="First Name"
                 />
-                <TextField autoComplete='off' inputRef={lastName} size="small" required id="outlined-required" label="Last Name" />
+                <TextField
+                  autoComplete="off"
+                  inputRef={lastName}
+                  size="small"
+                  required
+                  id="outlined-required"
+                  label="Last Name"
+                />
               </div>
               <TextField
-                autoComplete='off'
+                autoComplete="off"
                 inputRef={accountNumber}
                 inputProps={{ maxLength: 12 }}
                 helperText="7 to 12-digit number"
@@ -104,7 +121,7 @@ function RegisterSellerModal() {
               />
               <div className="seller-modal__banking-details-row">
                 <TextField
-                  autoComplete='off'
+                  autoComplete="off"
                   inputRef={institutionNumber}
                   inputProps={{ maxLength: 3 }}
                   className="seller-modal__banking-details-inst-no"
@@ -115,7 +132,7 @@ function RegisterSellerModal() {
                   helperText="3 digit number"
                 />
                 <TextField
-                  autoComplete='off'
+                  autoComplete="off"
                   inputProps={{ maxLength: 5 }}
                   inputRef={transitNumber}
                   size="small"
@@ -128,17 +145,12 @@ function RegisterSellerModal() {
             </div>
           </div>
           <span>Billing Address</span>
-          <AddressGrid/>
+          <AddressGrid />
         </DialogContent>
         <DialogActions>
           <div className="seller-modal__button-container">
             <Button onClick={() => handleClose(false)}>Cancel</Button>
-            <Button
-              className="seller-modal__save-button"
-              color="secondary"
-              variant="contained"
-              onClick={handleSave}
-            >
+            <Button className="seller-modal__save-button" color="secondary" variant="contained" onClick={handleSave}>
               Save
             </Button>
           </div>

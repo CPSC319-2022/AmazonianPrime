@@ -11,7 +11,12 @@ import {
   Alert,
   Snackbar,
   IconButton,
+  SelectChangeEvent,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ClearIcon from '@mui/icons-material/Clear';
 import SellIcon from '@mui/icons-material/Sell';
 import './CreateListingModal.scss';
@@ -31,6 +36,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 
 const fileTypes = ['JPG', 'PNG', 'JPEG'];
 const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used Fair', 'Fair'];
+const metrics = ['None', 'Meter(s)', 'Centimeter(s)', 'Foot/Feet'];
 
 function CreateListingModal() {
   const isCreateListingModalOpen = useSelector((state: RootState) => state.sellerModal.isCreateListingModalOpen);
@@ -38,11 +44,16 @@ function CreateListingModal() {
   const [category, setCategory] = useState(categories[1]);
   const [condition, setCondition] = useState(conditions[0]);
   const [images, setImages] = useState<any>([]);
+  const [showMore, setShowMore] = useState(false);
   const [openErrorToast, setOpenErrorToast] = useState('');
+  const [metric, setMetric] = useState(metrics[0]);
   const [isLoading, setIsLoading] = useState(false);
   const titleRef = useRef<any>(null);
   const descriptionRef = useRef<any>(null);
   const costRef = useRef<any>(null);
+  const colourRef = useRef<any>(null);
+  const brandRef = useRef<any>(null);
+  const sizeRef = useRef<any>(null);
   const [createListing] = useCreateListingMutation();
   const history = useBreadcrumbHistory();
   const navigate = useNavigate();
@@ -53,6 +64,8 @@ function CreateListingModal() {
     setCategory(categories[1]);
     setCondition(conditions[0]);
     setImages([]);
+    setShowMore(false);
+    setMetric(metric[0]);
   }, [isCreateListingModalOpen]);
 
   const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -86,8 +99,11 @@ function CreateListingModal() {
       Description: descriptionRef.current?.value,
       Cost: Number(costRef.current?.value),
       Quantity: quantity,
-      Category: category.replace("&", "And"),
+      Category: category.replace('&', 'And'),
       ItemCondition: condition,
+      Brand: brandRef.current?.value,
+      Colour: colourRef.current?.value,
+      Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
     }).unwrap();
     setIsLoading(false);
     handleModalClose();
@@ -114,6 +130,53 @@ function CreateListingModal() {
     setImages(newImagesArr);
   };
 
+  const renderOptional = () => {
+    if (!showMore) {
+      return null;
+    }
+    return (
+      <div>
+        <div className="create-listing__optional-container">
+          <TextField inputRef={brandRef} label="Brand" className="create-listing__optional" size="small" />
+          <TextField inputRef={colourRef} label="Colour" className="create-listing__optional" size="small" />
+        </div>
+        <TextField className="create-listing__optional-container" inputRef={sizeRef} label="Size" size="small" />
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel>Metric</InputLabel>
+          <Select
+            value={metric}
+            size="small"
+            onChange={(event: SelectChangeEvent) => setMetric(event.target.value)}
+            label="Age"
+          >
+            {metrics.map((value: string) => (
+              <MenuItem value={value}>{value}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
+    );
+  };
+
+  const moreDetailsButton = (
+    <div className="listing-modal__more-details-container" onClick={() => setShowMore(true)}>
+      <ExpandMoreIcon />
+      <div className="listing-modal__more-details">
+        <span className="listing-modal__more-details-main">More Details</span>
+        <span className="listing-modal__more-details-sub">Additional information about your listing.</span>
+      </div>
+    </div>
+  );
+
+  const lessDetailsButton = (
+    <div className="listing-modal__more-details-container" onClick={() => setShowMore(false)}>
+      <ExpandLessIcon />
+      <div className="listing-modal__more-details">
+        <span className="listing-modal__more-details-main">Less Details</span>
+      </div>
+    </div>
+  );
+
   return (
     <div>
       <Dialog open={isCreateListingModalOpen} onClose={() => handleModalClose()} fullWidth maxWidth="lg">
@@ -127,7 +190,14 @@ function CreateListingModal() {
           <div className="create-listing__content">
             <div className="create-listing__content-left" style={{ width: images.length > 0 ? '50%' : '80%' }}>
               <div className="create-listing__content-row">
-                <TextField autoComplete='off' size="small" required id="outlined-required" label="Listing Title" inputRef={titleRef} />
+                <TextField
+                  autoComplete="off"
+                  size="small"
+                  required
+                  id="outlined-required"
+                  label="Listing Title"
+                  inputRef={titleRef}
+                />
                 <div className="create-listing__category">
                   <span className="create-listing__quantity">Category</span>
                   <Select size="small" value={category} onChange={(event) => setCategory(event.target.value)}>
@@ -174,13 +244,14 @@ function CreateListingModal() {
               </div>
               <TextField
                 required
-                defaultValue={1}
                 inputRef={costRef}
                 label="$"
                 className="create-listing__cost"
                 size="small"
                 type="number"
               />
+              <div>{!showMore ? moreDetailsButton : lessDetailsButton}</div>
+              {renderOptional()}
             </div>
             <div className="create-listing__content-right">
               <Grid container>
