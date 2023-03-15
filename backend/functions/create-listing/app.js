@@ -88,7 +88,7 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
-
+  let results = []
   for (const image of Images) {
     let imageBuffer;
     try {
@@ -132,27 +132,12 @@ exports.lambdaHandler = async (event, context) => {
         resolve(res);
       });
     });
-
-    const PictureID = addImage['insertId'];
-    const getListingImageByIdQuery = `SELECT * FROM ListingImage WHERE PictureID = ${PictureID}`;
-    const getListing = await new Promise((resolve, reject) => {
-      con.query(getListingImageByIdQuery, function (err, res) {
-        if (err) {
-          console.log("Failed on line 153")
-          reject(err)
-          return {
-            status:400,
-            body: JSON.stringify(err)
-          }
-        }
-        resolve(res);
-      });
-    });
-
-
+    results.push(result)
   }
   return {
     statusCode: 200,
-    body: JSON.stringify({message: "Addition was succesful"}),
+    body: JSON.stringify({Listing: getListing[0],
+                                  ListingImage: results}),
+
   };
 };
