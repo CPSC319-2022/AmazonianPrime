@@ -218,7 +218,7 @@ exports.lambdaHandler = async (event, context) => {
     
   console.log(createListingImageTable);
 
-  let createOrderTableQuery = `CREATE TABLE Order (
+  let createOrderTableQuery = `CREATE TABLE Orders (
       OrderID int NOT NULL AUTO_INCREMENT,
       UserID int NOT NULL,
       AddressID int NOT NULL,
@@ -232,7 +232,7 @@ exports.lambdaHandler = async (event, context) => {
   const createOrderTable = await new Promise((resolve, reject) => {
     con.query(createOrderTableQuery, function (err, res) {
       if (err) {
-        reject("Couldn't create listing image table!");
+        reject("Couldn't create order table!");
       }
       resolve(res);
     });
@@ -243,16 +243,16 @@ exports.lambdaHandler = async (event, context) => {
   let createOrderItemTableQuery = `CREATE TABLE OrderItem (
       OrderID int NOT NULL AUTO_INCREMENT,
       ListingID int NOT NULL,
-      Quantity int NOT NULL,
+      OrderQuantity int NOT NULL,
       PRIMARY KEY (OrderID),
-      FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
+      FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`
 
   const createOrderItemTable = await new Promise((resolve, reject) => {
     con.query(createOrderItemTableQuery, function (err, res) {
       if (err) {
-        reject("Couldn't create listing image table!");
+        reject("Couldn't create orders item table!");
       }
       resolve(res);
     });
@@ -269,6 +269,17 @@ exports.lambdaHandler = async (event, context) => {
       FOREIGN KEY (UserID) REFERENCES Users(UserID),
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`
+
+  const createShoppingCartItemTable = await new Promise((resolve, reject) => {
+    con.query(createShoppingCartItemTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create shopping cart item table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createShoppingCartItemTable);
 
   return {
     status: 'SUCCESS',
