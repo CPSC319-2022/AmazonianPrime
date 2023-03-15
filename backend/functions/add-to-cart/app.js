@@ -19,7 +19,7 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const UserID = event.pathParameters.UserID;
+  const UserID = event.pathParameters.userid;
 
   const { ListingID, Quantity } = JSON.parse(event.body);
 
