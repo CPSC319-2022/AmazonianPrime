@@ -227,7 +227,7 @@ exports.lambdaHandler = async (event, context) => {
       PRIMARY KEY (OrderID),
       FOREIGN KEY (UserID) REFERENCES Users(UserID),
       FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
-  );`
+  );`;
 
   const createOrderTable = await new Promise((resolve, reject) => {
     con.query(createOrderTableQuery, function (err, res) {
@@ -247,7 +247,7 @@ exports.lambdaHandler = async (event, context) => {
       PRIMARY KEY (OrderID),
       FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
-  );`
+  );`;
 
   const createOrderItemTable = await new Promise((resolve, reject) => {
     con.query(createOrderItemTableQuery, function (err, res) {
@@ -268,7 +268,7 @@ exports.lambdaHandler = async (event, context) => {
       PRIMARY KEY (ShoppingCartItemID),
       FOREIGN KEY (UserID) REFERENCES Users(UserID),
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
-  );`
+  );`;
 
   const createShoppingCartItemTable = await new Promise((resolve, reject) => {
     con.query(createShoppingCartItemTableQuery, function (err, res) {
