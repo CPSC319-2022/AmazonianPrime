@@ -15,7 +15,7 @@ exports.lambdaHandler = async (event, context) => {
   random_number = getRandomInt(100); // Current stock price is mocked as a random integer between 0 and 100
   response = {
     statusCode: 200,
-    body: "Your number is: " + random_number,
+    body: 'Your number is: ' + random_number,
   };
   return response;
 };

@@ -1,5 +1,5 @@
-const dbConnection = require("dbConnection.js");
-var mysql = require("mysql");
+const dbConnection = require('dbConnection.js');
+var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -14,14 +14,14 @@ var mysql = require("mysql");
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
-  const listingId = event.pathParameters.id;
+  const listingID = event.pathParameters.id;
 
-  const getImagesQuery = `SELECT S3ImagePath FROM ListingImage WHERE ListingImage.ListingID = ${listingId} LIMIT 5`;
+  const getImagesQuery = `SELECT S3ImagePath FROM ListingImage WHERE ListingImage.ListingID = ${listingID} LIMIT 5`;
 
   const getImages = await new Promise((resolve, reject) => {
     con.query(getImagesQuery, function (err, res) {
@@ -34,13 +34,13 @@ exports.lambdaHandler = async (event, context) => {
 
   // Still unsure how to extract the base64 images from the S3ImagePaths, but it will be done here!
   const imageArray = getImages.map((entry) => {
-    return entry["S3ImagePath"];
+    return entry['S3ImagePath'];
   });
 
-  const getListingByIdQuery = `SELECT * FROM Listing, Users WHERE Listing.UserID = Users.UserID AND Listing.ListingID = ${listingId}`;
+  const getListingByIDQuery = `SELECT * FROM Listing, Users WHERE Listing.UserID = Users.UserID AND Listing.ListingID = ${listingID}`;
 
-  const getListingById = await new Promise((resolve, reject) => {
-    con.query(getListingByIdQuery, function (err, res) {
+  const getListingByID = await new Promise((resolve, reject) => {
+    con.query(getListingByIDQuery, function (err, res) {
       if (err) {
         reject("Couldn't get the listing from database!");
       }
@@ -48,7 +48,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  // if (getListingById.length < 1) {
+  // if (getListingByID.length < 1) {
   //   return {
   //     statusCode: 304,
   //     body: "No Listings Found!",
@@ -56,7 +56,7 @@ exports.lambdaHandler = async (event, context) => {
   // }
 
   const { FirstName, LastName, Email, Department, ...ListingData } =
-    getListingById[0];
+    getListingByID[0];
 
   return {
     statusCode: 200,

@@ -23,7 +23,7 @@ function ToolBar() {
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
 
   const user = useAppSelector((state) => state.user.value);
-  if (!user) return null;
+  if (!user?.Department) return null;
   return (
     <>
       <div ref={stickyRef} className={classes}>

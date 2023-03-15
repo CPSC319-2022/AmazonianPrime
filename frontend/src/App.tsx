@@ -11,6 +11,7 @@ import OrdersPage from './components/orders/OrdersPage';
 import CartPage from './components/cart/CartPage';
 import MyListings from './components/my-listings/MyListings';
 import BrowsePage from './components/browse-page/BrowsePage';
+import BuyerRegistration from './components/login/BuyerRegistration';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
@@ -20,6 +21,8 @@ const AppWrapper = () => {
   const renderHomePage = (): ReactNode => {
     if (!user && !isLoggedIn) {
       return <LoginPage />;
+    } else if (!user?.Department) {
+      return <BuyerRegistration />;
     } else {
       return <LandingPage />;
     }

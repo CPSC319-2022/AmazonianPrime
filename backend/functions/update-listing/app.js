@@ -1,5 +1,5 @@
-const dbConnection = require("dbConnection.js");
-var mysql = require("mysql");
+const dbConnection = require('dbConnection.js');
+var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -14,22 +14,44 @@ var mysql = require("mysql");
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
-    "user",
-    "Password1234",
-    "databaseAmazonianPrime"
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
   const {
-    listingID,
-    listingName,
-    description,
-    cost,
-    quantity,
-    category,
-    condition,
+    ListingID,
+    ListingName,
+    Description,
+    Cost,
+    Quantity,
+    Category,
+    Size,
+    Brand,
+    Colour,
+    ItemCondition,
   } = JSON.parse(event.body);
 
-  const updateListingQuery = `UPDATE Listing SET ListingName="${listingName}", Description="${description}", Cost=${cost}, Quantity=${quantity}, Category="${category}", ItemCondition="${condition}" WHERE ListingID = ${listingID}`;
+  if (
+    !ListingID ||
+    !ListingName ||
+    !Description ||
+    !Cost ||
+    !Quantity ||
+    !Category ||
+    !ItemCondition
+  ) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
+
+  const updateListingQuery = `UPDATE Listing SET ListingName="${ListingName}", Description="${Description}", Cost=${Cost}, Quantity=${Quantity}, Category="${Category}", ${
+    Size !== undefined ? `Size = "${Size}", ` : ''
+  }${Brand !== undefined ? `Brand = "${Brand}", ` : ''}${
+    Colour !== undefined ? `Colour = "${Colour}", ` : ''
+  }ItemCondition="${ItemCondition}" WHERE ListingID = ${ListingID}`;
 
   const updateListing = await new Promise((resolve, reject) => {
     con.query(updateListingQuery, function (err, res) {

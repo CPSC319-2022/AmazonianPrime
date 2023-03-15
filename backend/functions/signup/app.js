@@ -17,18 +17,18 @@ exports.lambdaHandler = async (event, context) => {
       statusCode: 200,
       headers: {
         // CORS: https://stackoverflow.com/questions/67065130/how-to-enable-cors-with-aws-sam
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Origin": "*", // Allow from anywhere
-        "Access-Control-Allow-Methods": "GET", // Allow only GET request
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': '*', // Allow from anywhere
+        'Access-Control-Allow-Methods': 'GET', // Allow only GET request
       },
       body: JSON.stringify({
-        FirstName: "John",
-        LastName: "Darwin",
+        FirstName: 'John',
+        LastName: 'Darwin',
         address: {
-          city: "Vancouver",
-          province: "BC",
-          streetAddress: "2366 Main Mall",
-          postalCode: "V6T 1Z4",
+          city: 'Vancouver',
+          province: 'BC',
+          streetAddress: '2366 Main Mall',
+          postalCode: 'V6T 1Z4',
           // 2366 Main Mall, Vancouver, BC V6T 1Z4
         },
       }),
