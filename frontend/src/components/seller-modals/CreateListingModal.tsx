@@ -127,7 +127,7 @@ function CreateListingModal() {
           <div className="create-listing__content">
             <div className="create-listing__content-left" style={{ width: images.length > 0 ? '50%' : '80%' }}>
               <div className="create-listing__content-row">
-                <TextField size="small" required id="outlined-required" label="Listing Title" inputRef={titleRef} />
+                <TextField autoComplete='off' size="small" required id="outlined-required" label="Listing Title" inputRef={titleRef} />
                 <div className="create-listing__category">
                   <span className="create-listing__quantity">Category</span>
                   <Select size="small" value={category} onChange={(event) => setCategory(event.target.value)}>

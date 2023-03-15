@@ -1,3 +1,17 @@
 .seller-modal__button-container {
   margin: 0 15px 10px;
 }
+
+.seller-modal__banking-details {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5em 0;
+}
+
+.seller-modal__fname.seller-modal__fname, .seller-modal__banking-details-inst-no.seller-modal__banking-details-inst-no {
+  margin-right: 0.5em;
+}
+
+.seller-modal__banking-details-row.seller-modal__banking-details-row {
+  margin-bottom: 0.5em;
+}
