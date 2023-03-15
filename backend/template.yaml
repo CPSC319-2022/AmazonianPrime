@@ -15,9 +15,9 @@ Globals:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'content-type'"
       AllowOrigin: "'*'"
-Parameters:
-  PipelineRole:
-    Type: String
+#Parameters:
+#  PipelineRole:
+#    Type: String
 
 Resources:
   FrontendBucketPolicy:
@@ -33,16 +33,16 @@ Resources:
             Resource: !Sub
               - "arn:aws:s3:::${Bucket}/*"
               - Bucket: !Ref FrontendBucket
-          - Effect: Allow
-            Principal:
-              AWS:
-                - !Ref PipelineRole
-            Action:
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-            Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
+#          - Effect: Allow
+#            Principal:
+#              AWS:
+#                - !Ref PipelineRole
+#            Action:
+#              - "s3:PutObject"
+#              - "s3:DeleteObject"
+#            Resource: !Sub
+#              - "arn:aws:s3:::${Bucket}/*"
+#              - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -655,7 +655,7 @@ Resources:
               - s3:GetObject
             Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
 
-  ImageUploadLambdaRole:
+  CreateListingFunctionLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -681,7 +681,7 @@ Resources:
     Properties:
       CodeUri: functions/upload-function/
       Handler: app.lambdaHandler
-      Role: !GetAtt ImageUploadLambdaRole.Arn
+      Role: !GetAtt CreateListingFunctionLambdaRole.Arn
       Runtime: nodejs14.x
       Environment:
         Variables:
@@ -751,7 +751,36 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
-              Resource: '*'
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/create-order/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/orders/create/{UserId} # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
