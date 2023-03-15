@@ -215,7 +215,7 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
-    
+
   console.log(createListingImageTable);
 
   let createOrderTableQuery = `CREATE TABLE Orders (
@@ -252,7 +252,7 @@ exports.lambdaHandler = async (event, context) => {
   const createOrderItemTable = await new Promise((resolve, reject) => {
     con.query(createOrderItemTableQuery, function (err, res) {
       if (err) {
-        reject("Couldn't create orders item table!");
+        reject("Couldn't create order item table!");
       }
       resolve(res);
     });
