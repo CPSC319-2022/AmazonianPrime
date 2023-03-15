@@ -88,7 +88,7 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
-  let results = []
+  let ImagesUrl = []
   for (const image of Images) {
     let imageBuffer;
     try {
@@ -118,7 +118,7 @@ exports.lambdaHandler = async (event, context) => {
         body: JSON.stringify(err)
       }
     }
-
+    ImagesUrl.push(result.Location)
 
     const addListingQuery = `INSERT INTO ListingImage (ListingID, S3ImagePath)
                                  VALUES (?, ?);`;
@@ -132,12 +132,11 @@ exports.lambdaHandler = async (event, context) => {
         resolve(res);
       });
     });
-    results.push(result)
   }
+  getListing[0]['Images'] = ImagesUrl;
   return {
     statusCode: 200,
-    body: JSON.stringify({Listing: getListing[0],
-                                  ListingImage: results}),
+    body: JSON.stringify({Listing: getListing[0]}),
 
   };
 };
