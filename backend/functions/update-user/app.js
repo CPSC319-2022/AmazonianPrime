@@ -40,18 +40,17 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   console.log(updateUsers);
-   
+
   let getUser;
   const getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${UserID}"`;
-    getUser = await new Promise((resolve, reject) => {
-      con.query(getUserByIdQuery, function (err, res) {
-        if (err) {
-          reject("Couldn't get the user from database!");
-        }
-        resolve(res);
-      });
+  getUser = await new Promise((resolve, reject) => {
+    con.query(getUserByIdQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't get the user from database!");
+      }
+      resolve(res);
     });
- 
+  });
 
   return {
     statusCode: 200,
