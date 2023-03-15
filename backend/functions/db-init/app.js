@@ -63,7 +63,7 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(createTable);
 
-let createCountryTableQuery = `CREATE TABLE Country (
+  let createCountryTableQuery = `CREATE TABLE Country (
     CityName varchar(255) NOT NULL, 
     Province varchar(255) NOT NULL, 
     StreetAddress varchar(255) NOT NULL, 
