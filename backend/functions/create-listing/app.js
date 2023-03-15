@@ -1,16 +1,15 @@
 const AWS = require('aws-sdk');
-const {v4: uuid} = require('uuid');
+const { v4: uuid } = require('uuid');
 const dbConnection = require('dbConnection.js');
 const s3 = new AWS.S3();
 const bucketName = process.env.S3_BUCKET_NAME;
 
 exports.lambdaHandler = async (event, context) => {
-
   const con = await dbConnection.connectDB(
-      process.env.DatabaseAddress,
-      'user',
-      'Password1234',
-      'databaseAmazonianPrime',
+    process.env.DatabaseAddress,
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
   );
 
   const {
@@ -28,15 +27,15 @@ exports.lambdaHandler = async (event, context) => {
   } = JSON.parse(event.body);
 
   if (
-      !UserID ||
-      !ListingName ||
-      !Description ||
-      !Cost ||
-      !Quantity ||
-      !Category ||
-      !ItemCondition ||
-      !Array.isArray(Images) ||
-      Images.length === 0
+    !UserID ||
+    !ListingName ||
+    !Description ||
+    !Cost ||
+    !Quantity ||
+    !Category ||
+    !ItemCondition ||
+    !Array.isArray(Images) ||
+    Images.length === 0
   ) {
     return {
       statusCode: 400,
@@ -44,15 +43,14 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
   const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ${
-      Size !== undefined ? 'Size, ' : ''
+    Size !== undefined ? 'Size, ' : ''
   }${Brand !== undefined ? 'Brand, ' : ''}${
-      Colour !== undefined ? 'Colour, ' : ''
+    Colour !== undefined ? 'Colour, ' : ''
   }ItemCondition, IsActiveListing) VALUES(${UserID}, "${ListingName}", "${Description}", ${Cost}, ${Quantity}, "${Category}", ${
-      Size !== undefined ? `"${Size}",` : ''
+    Size !== undefined ? `"${Size}",` : ''
   } ${Brand !== undefined ? `"${Brand}",` : ''} ${
-      Colour !== undefined ? `"${Colour}",` : ''
+    Colour !== undefined ? `"${Colour}",` : ''
   } "${ItemCondition}", true)`;
-
 
   let createListing;
   try {
@@ -64,41 +62,41 @@ exports.lambdaHandler = async (event, context) => {
         resolve(res);
       });
     });
-  } catch(err){
+  } catch (err) {
     return {
       statusCode: 400,
-      body: JSON.stringify({error: err})
-    }
+      body: JSON.stringify({ error: err }),
+    };
   }
 
   const ListingID = createListing['insertId'];
-  console.log("ListingID: " + ListingID)
+  console.log('ListingID: ' + ListingID);
 
   const getListingByIdQuery = `SELECT * FROM Listing WHERE ListingID = "${ListingID}"`;
 
   const getListing = await new Promise((resolve, reject) => {
     con.query(getListingByIdQuery, function (err, res) {
       if (err) {
-        console.log("Failed on line 93")
+        console.log('Failed on line 93');
         return {
-          status:400,
-          body: JSON.stringify(err)
-        }
+          status: 400,
+          body: JSON.stringify(err),
+        };
       }
       resolve(res);
     });
   });
-  let ImagesUrl = []
+  let ImagesUrl = [];
   for (const image of Images) {
     let imageBuffer;
     try {
       imageBuffer = Buffer.from(image, 'base64');
     } catch (error) {
-      console.log("Failed on line 109")
+      console.log('Failed on line 109');
       return {
         statusCode: 400,
-        body: JSON.stringify({error: error})
-      }
+        body: JSON.stringify({ error: error }),
+      };
     }
 
     const key = `${uuid()}.jpeg`;
@@ -112,31 +110,34 @@ exports.lambdaHandler = async (event, context) => {
       result = await s3.upload(params).promise();
       console.log('Upload successful: ', result);
     } catch (err) {
-      console.log("Failed on line 126")
-      return{
+      console.log('Failed on line 126');
+      return {
         statusCode: 400,
-        body: JSON.stringify(err)
-      }
+        body: JSON.stringify(err),
+      };
     }
-    ImagesUrl.push(result.Location)
+    ImagesUrl.push(result.Location);
 
     const addListingQuery = `INSERT INTO ListingImage (ListingID, S3ImagePath)
                                  VALUES (?, ?);`;
-    console.log("adding to DB ")
+    console.log('adding to DB ');
     const addImage = await new Promise((resolve, reject) => {
-      con.query(addListingQuery, [ListingID, result.Location], function (err, res) {
-        if (err) {
-          console.log("Failed on line 140")
-          reject(err);
-        }
-        resolve(res);
-      });
+      con.query(
+        addListingQuery,
+        [ListingID, result.Location],
+        function (err, res) {
+          if (err) {
+            console.log('Failed on line 140');
+            reject(err);
+          }
+          resolve(res);
+        },
+      );
     });
   }
   getListing[0]['Images'] = ImagesUrl;
   return {
     statusCode: 200,
-    body: JSON.stringify({Listing: getListing[0]}),
-
+    body: JSON.stringify({ Listing: getListing[0] }),
   };
 };
