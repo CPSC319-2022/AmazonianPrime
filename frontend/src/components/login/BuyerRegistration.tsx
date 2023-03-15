@@ -1,10 +1,10 @@
 import './BuyerRegistration.scss';
-import { Button, TextField, Grid } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useSignupMutation } from '../../redux/api/user';
-import { setUser } from '../../redux/reducers/userSlice';
+import { useSignupMutation, useAddAddressMutation, useAddPaymentMutation } from '../../redux/api/user';
+import { setUser, setPayment, setPaymentAddress, setShippingAddress } from '../../redux/reducers/userSlice';
 import { useState } from 'react';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -12,26 +12,90 @@ import PaymentGrid from '../common/PaymentGrid';
 import AddressGrid from '../common/AddressGrid';
 
 function BuyerRegistration() {
+  const user = useAppSelector((state) => state.user.value);
+
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
+
+  const [departmentInput, setDepartmentInput] = useState('');
+
+  const [firstNameInput, setFirstNameInput] = useState('');
+  const [lastNameInput, setLastNameInput] = useState('');
+  const [creditCardInput, setCreditCardInput] = useState('');
+  const [expiryDateInput, setExpiryDateInput] = useState('');
+  const [cvvInput, setCVVInput] = useState('');
+
+  const [billingAddressInput, setBillingAddressInput] = useState('');
+  const [billingCityInput, setBillingCityInput] = useState('');
+  const [billingProvinceInput, setBillingProvinceInput] = useState('');
+  const [billingPostalCodeInput, setBillingPostalCodeInput] = useState('');
+  const [billingCountryInput, setBillingCountryInput] = useState('');
+
+  const [shippingAddressInput, setShippingAddressInput] = useState('');
+  const [shippingCityInput, setShippingCityInput] = useState('');
+  const [shippingProvinceInput, setShippingProvinceInput] = useState('');
+  const [shippingPostalCodeInput, setShippingPostalCodeInput] = useState('');
+  const [shippingCountryInput, setShippingCountryInput] = useState('');
+
   const dispatch = useAppDispatch();
-  const [updateProfile, result] = useSignupMutation();
+  const [updateProfile, updateProfileResult] = useSignupMutation();
+  const [updateAddress, addAddressResult] = useAddAddressMutation();
+  const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
-  if (result.data) {
-    dispatch(setUser(result.data));
+  if (addPaymentResult.data) {
+    dispatch(setPayment(addPaymentResult.data));
   }
 
-  // TODO: Populate with user input
-  // const updatedUser = {
-  //   UserId: '2',
-  //   FirstName: 'John',
-  //   LastName: 'Doe',
-  //   Department: 'Sample',
-  // };
+  async function register() {
+    const updatedUser = {
+      UserID: user?.UserID,
+      FirstName: user?.FirstName,
+      LastName: user?.LastName,
+      Department: departmentInput,
+    };
 
-  function register() {
-    // updateProfile(updatedUser);
-    dispatch(setUser({ Department: 'AWS' }));
+    const billingAddressInfo = {
+      UserID: user?.UserID,
+      CityName: billingCityInput,
+      Province: billingProvinceInput,
+      StreetAddress: billingAddressInput,
+      PostalCode: billingPostalCodeInput,
+      Country: billingCountryInput,
+    };
+
+    const shippingAddressInfo = {
+      UserID: user?.UserID,
+      CityName: shippingCityInput,
+      Province: shippingProvinceInput,
+      StreetAddress: shippingAddressInput,
+      PostalCode: shippingPostalCodeInput,
+      Country: shippingCountryInput,
+    };
+
+    dispatch(setPaymentAddress(billingAddressInfo));
+    dispatch(setShippingAddress(billingAddressInfo));
+    dispatch(setUser(updatedUser));
+
+    updateProfile(updatedUser);
+
+    const address = await updateAddress(billingAddressInfo).unwrap();
+
+    if (!useBillingAddressForShipping) {
+      updateAddress(shippingAddressInfo);
+      dispatch(setShippingAddress(shippingAddressInfo));
+    }
+
+    const paymentInfo = {
+      UserID: user?.UserID,
+      AddressID: address?.AddressID,
+      CreditCardNum: creditCardInput,
+      ExpiryDate: expiryDateInput,
+      CVV: cvvInput,
+      CardHolderName: firstNameInput + ' ' + lastNameInput,
+    };
+
+    updatePayment(paymentInfo);
   }
+
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
@@ -49,8 +113,31 @@ function BuyerRegistration() {
               please give us some more information about yourself.
             </span>
           </div>
+          <div className="buyer-registration-page__department-prompt">
+            <span>Department</span>
+          </div>
+          <TextField
+            fullWidth
+            required
+            label="Department"
+            defaultValue=""
+            variant="filled"
+            className="department-input"
+            onChange={(e) => setDepartmentInput(e.target.value)}
+          />
           <div className="buyer-registration-page__forms">
-            <PaymentGrid />
+            <PaymentGrid
+              setFirstNameInput={setFirstNameInput}
+              setLastNameInput={setLastNameInput}
+              setCreditCardInput={setCreditCardInput}
+              setExpiryDateInput={setExpiryDateInput}
+              setCVVInput={setCVVInput}
+              setBillingAddressInput={setBillingAddressInput}
+              setBillingCityInput={setBillingCityInput}
+              setBillingProvinceInput={setBillingProvinceInput}
+              setBillingPostalCodeInput={setBillingPostalCodeInput}
+              setBillingCountryInput={setBillingCountryInput}
+            />
             <div className="buyer-registration-page__shipping-prompt">
               <span>Shipping Address</span>
             </div>
@@ -62,17 +149,19 @@ function BuyerRegistration() {
                 />
               </FormGroup>
             </div>
-            {!useBillingAddressForShipping && <AddressGrid />}
+            {!useBillingAddressForShipping && (
+              <AddressGrid
+                setAddressInput={setShippingAddressInput}
+                setCityInput={setShippingCityInput}
+                setProvinceInput={setShippingProvinceInput}
+                setPostalCodeInput={setShippingPostalCodeInput}
+                setCountryInput={setShippingCountryInput}
+              />
+            )}
           </div>
         </div>
         <div className="buyer-registration-page__action-buttons">
-          <Button
-            color="secondary"
-            variant="contained"
-            className="buyer-registration-page__continue-button"
-            endIcon={<TrendingFlatIcon />}
-            onClick={() => register()}
-          >
+          <Button color="secondary" variant="contained" endIcon={<TrendingFlatIcon />} onClick={() => register()}>
             Start shopping
           </Button>
         </div>
