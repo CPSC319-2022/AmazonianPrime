@@ -20,15 +20,13 @@ exports.lambdaHandler = async (event, context) => {
   );
 
   const UserID = event.pathParameters.userid;
-  const offset = event.queryStringParameters.offset;
-  const limit = event.queryStringParameters.limit;
-
-  const getCartQuery = `SELECT * FROM ShoppingCartItem WHERE UserID = ${UserID} LIMIT ${limit} OFFSET ${offset}`;
+  
+  const getCartQuery = `SELECT * FROM Listing WHERE ListingID IN (SELECT ListingID FROM ShoppingCartItem WHERE UserID = ${UserID})`;
 
   const getShoppingCart = await new Promise((resolve, reject) => {
     con.query(getCartQuery, function (err, res) {
       if (err) {
-        reject('Error getting listings');
+        reject(err);
       }
       resolve(res);
     });
@@ -38,6 +36,9 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(getShoppingCart),
+    body: JSON.stringify({
+      "ShoppingCartListings": getShoppingCart,
+      "UserID": UserID
+    }),
   };
 };

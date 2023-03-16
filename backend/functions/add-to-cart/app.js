@@ -33,12 +33,12 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const addToCartQuery = `INSERT INTO ShoppingCartItem(UserID, ListingID, Quantity) VALUES(${UserID}, ${ListingID}, ${Quantity}")`;
+  const addToCartQuery = `INSERT INTO ShoppingCartItem(UserID, ListingID, Quantity) VALUES(${UserID}, ${ListingID}, ${Quantity})`;
 
   const addToCart = await new Promise((resolve, reject) => {
     con.query(addToCartQuery, function (err, res) {
       if (err) {
-        reject("Couldn't add the listing to shopping cart in database!");
+        reject(err);
       }
       resolve(res);
     });
@@ -51,7 +51,7 @@ exports.lambdaHandler = async (event, context) => {
   const getShoppingCartItemByID = await new Promise((resolve, reject) => {
     con.query(getShoppingCartItemByIDQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the shopping cart item from database!");
+        reject(err);
       }
       resolve(res);
     });

@@ -34,7 +34,7 @@ exports.lambdaHandler = async (event, context) => {
   const deleteItemFromCart = await new Promise((resolve, reject) => {
     con.query(deleteItemFromCartQuery, function (err, res) {
       if (err) {
-        reject("Couldn't delete the requested listing from shopping cart!");
+        reject(err);
       }
       resolve(res);
     });
