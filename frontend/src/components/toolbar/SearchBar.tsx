@@ -9,15 +9,18 @@ import React, { useEffect, useMemo } from 'react';
 import { categories } from '../common/Categories';
 import useMenu from '../common/useMenu';
 import { getFriendlyCategoryString, getSlugCategory } from '../common/convertSlugCategory';
+import { useDispatch } from 'react-redux';
+import { setIsLoadingListings } from '../../redux/reducers/listingsSlice';
 
 function SearchBar() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const category = searchParams.get('category');
   const [activeCategory, setActiveCategory] = React.useState(categories[0]);
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const formattedSearchQuery = useMemo(() => searchQuery.split(' ').join('+'), [searchQuery]);
+  const formattedSearchQuery = useMemo(() => searchQuery.split(' ').join('-'), [searchQuery]);
   const redirectURL = `browse?category=${getSlugCategory(activeCategory)}&q=${formattedSearchQuery}&page=1`;
   const handleClick = (newCategory: string) => {
     handleCloseMenu();
@@ -38,6 +41,7 @@ function SearchBar() {
     if (formattedSearchQuery.length === 0) {
       return;
     }
+    dispatch(setIsLoadingListings({ isLoadingListings: true }));
     setSearchQuery('');
     navigate(redirectURL);
   };

@@ -6,11 +6,15 @@ import { categories } from '../common/Categories';
 import Menu from '../common/Menu';
 import useMenu from '../common/useMenu';
 import { getSlugCategory } from '../common/convertSlugCategory';
+import { useDispatch } from 'react-redux';
+import { setIsLoadingListings } from '../../redux/reducers/listingsSlice';
 
 function CategoriesButton() {
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleRedirect = (category: string) => {
+    dispatch(setIsLoadingListings({ isLoadingListings: true }));
     handleCloseMenu();
     navigate(`browse?category=${getSlugCategory(category)}&page=1`);
   };

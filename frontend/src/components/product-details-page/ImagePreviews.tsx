@@ -41,7 +41,7 @@ export const ImagePreviews: React.FC<ImagePreviewsProps> = ({ isLoading }) => {
       ) : (
         <>
           <div className="image-preview__previews">
-            {listing?.images.map((image, index) => (
+            {listing?.Images.map((image, index) => (
               <div
                 onClick={() => {
                   setActiveImageIndex(index);
@@ -66,7 +66,7 @@ export const ImagePreviews: React.FC<ImagePreviewsProps> = ({ isLoading }) => {
           <div className="image-preview__active-item-container">
             <img
               className="image-preview__active-item"
-              src={`data:image/jpeg;base64,${listing?.images[hoverIndex ?? activeImageIndex]}`}
+              src={`data:image/jpeg;base64,${listing?.Images[hoverIndex ?? activeImageIndex]}`}
               height="550px"
               width="100%"
             />
