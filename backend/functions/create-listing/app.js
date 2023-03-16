@@ -138,6 +138,6 @@ exports.lambdaHandler = async (event, context) => {
   getListing[0]['Images'] = ImagesUrl;
   return {
     statusCode: 200,
-    body: JSON.stringify({ Listing: getListing[0] }),
+    body: JSON.stringify(getListing[0]),
   };
 };
