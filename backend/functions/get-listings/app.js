@@ -52,7 +52,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   }
 
-  const getListingsQuery = `SELECT * FROM Listing JOIN (SELECT DISTINCT ListingID, S3ImagePath FROM ListingImage) AS Images ON Listing.ListingID = Images.ListingID JOIN Users on Listing.UserID = Users.UserID ${whereClause !== undefined ? `WHERE ${whereClause} `: ''}LIMIT ${limit} OFFSET ${offset}`;
+  const getListingsQuery = `SELECT * FROM Listing LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath FROM ListingImage WHERE S3ImagePath IN (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images ON Listing.ListingID = Images.ImageListingID JOIN Users on Listing.UserID = Users.UserID `;
 
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
@@ -65,7 +65,7 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(getListings);
 
-  const getNumberOfListings = `SELECT COUNT(*) FROM Listing, Users ${whereClause !== undefined ? `WHERE ${whereClause} `: ''};`;
+  const getNumberOfListings = `SELECT COUNT(*) FROM Listing ${whereClause !== undefined ? `WHERE ${whereClause} `: ''};`;
 
   const getListingsCount = await new Promise((resolve, reject) => {
     con.query(getNumberOfListings, function (err, res) {
