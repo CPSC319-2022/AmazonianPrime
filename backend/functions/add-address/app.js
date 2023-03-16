@@ -19,16 +19,16 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const {
-    UserID,
-    CityName,
-    Province,
-    StreetAddress,
-    PostalCode,
-    Country,
-    IsBillingAddr,
-    IsShipAddr,
-  } = JSON.parse(event.body);
+  const { CityName, Province, StreetAddress, PostalCode, Country } = JSON.parse(
+    event.body,
+  );
+
+  if (!CityName || !Province || !StreetAddress || !PostalCode || !Country) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
 
   const checkCountryQuery = `SELECT * FROM Country WHERE CityName = "${CityName}" AND Province = "${Province}" AND StreetAddress = "${StreetAddress}"`;
 
@@ -53,7 +53,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   }
 
-  const addAddressQuery = `INSERT INTO Address(UserID, CityName, Province, StreetAddress, IsBillingAddress, IsShippingAddress) VALUES(${UserID}, "${CityName}", "${Province}", "${StreetAddress}", ${IsBillingAddr}, ${IsShipAddr})`;
+  const addAddressQuery = `INSERT INTO Address(CityName, Province, StreetAddress) VALUES("${CityName}", "${Province}", "${StreetAddress}")`;
 
   const addAddress = await new Promise((resolve, reject) => {
     con.query(addAddressQuery, function (err, res) {
@@ -66,7 +66,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const AddressID = addAddress['insertId'];
 
-  const getAddressByIDQuery = `SELECT * FROM Address WHERE AddressID = "${AddressID}"`;
+  const getAddressByIDQuery = `SELECT * FROM Address, Country WHERE AddressID = "${AddressID}" AND Address.CityName = Country.CityName AND Address.Province = Country.Province AND Address.StreetAddress = Country.StreetAddress`;
 
   const getAddress = await new Promise((resolve, reject) => {
     con.query(getAddressByIDQuery, function (err, res) {
