@@ -22,13 +22,18 @@ function BrowsePage() {
     page: Number(page) ?? 1,
     name: searchQuery,
   });
-
   useEffect(() => {
     dispatch(setIsLoadingListings({ isLoadingListings: isLoading }));
+  }, [isLoading]);
+
+  useEffect(() => {
     if (data) {
       dispatch(setListings(data));
+      dispatch(setIsLoadingListings({ isLoadingListings: false }));
+    } else {
+      dispatch(setIsLoadingListings({ isLoadingListings: true }));
     }
-  }, [data, isLoading]);
+  }, [data]);
 
   if (!page || !category) {
     navigate('/');
@@ -36,6 +41,7 @@ function BrowsePage() {
   }
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+    dispatch(setIsLoadingListings({ isLoadingListings: true }));
     navigate(`?category=${category}${searchQuery && `&q=${searchQuery}`}&page=${value}`);
   };
 

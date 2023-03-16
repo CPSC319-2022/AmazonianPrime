@@ -19,20 +19,11 @@ const AppWrapper = () => {
   const isLoggedIn = sessionStorage.getItem('user');
 
   const renderHomePage = (): ReactNode => {
-    if (!user && !isLoggedIn) {
-      return <LoginPage />;
-    } else if (!user?.Department) {
-      return <BuyerRegistration />;
-    } else {
-      return <LandingPage />;
-    }
+    return <BuyerRegistration />;
   };
 
   return (
     <ThemeProvider theme={Theme}>
-      {
-        // TODO: remove this logic
-      }
       <NavBar />
       <Routes>
         <Route path="/" element={renderHomePage()} />

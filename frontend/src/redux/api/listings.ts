@@ -23,6 +23,22 @@ export const listingsApi = createApi({
       },
       providesTags: ['Listings'],
     }),
+    deleteListing: builder.mutation<any, { ListingID: number; UserID: string }>({
+      query({ ListingID, UserID }) {
+        return {
+          url: `listing/delete/${ListingID}`,
+          credentials: 'include',
+          method: 'DELETE',
+          body: {
+            UserID,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['Listings'],
+    }),
     getListingsByUserId: builder.query<PaginatedListingPreviews[], { page: number; listingUserId: string }>({
       query: ({ page, listingUserId }) => {
         return `listing?${`listingUserId=\"${listingUserId}\"`}&limit=${LIMIT}&offset=${LIMIT * (page - 1)}`;
@@ -54,4 +70,5 @@ export const {
   useCreateListingMutation,
   useGetListingsQuery,
   useGetListingsByUserIdQuery,
+  useDeleteListingMutation,
 } = listingsApi;

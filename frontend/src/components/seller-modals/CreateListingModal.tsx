@@ -27,7 +27,7 @@ import { useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import { FileUploader } from 'react-drag-drop-files';
 import { categories } from '../common/Categories';
-import { convertBase64 } from '../common/imageToBase64';
+import { blobToBase64 } from '../common/imageToBase64';
 import { useCreateListingMutation } from '../../redux/api/listings';
 import { useNavigate } from 'react-router';
 import useBreadcrumbHistory from '../common/useBreadcrumbHistory';
@@ -91,8 +91,9 @@ function CreateListingModal() {
     }
     setIsLoading(true);
     // TODO: handle redirect to newly created listing page with submitted info
-    const base64Array = await Promise.all(images.map(async (image: any) => await convertBase64(image)));
-    // console.log(base64Array);
+    const base64Array = await Promise.all(
+      images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image))),
+    );
     const listingResult = await createListing({
       UserID: 1,
       ListingName: titleRef.current?.value,
@@ -103,6 +104,7 @@ function CreateListingModal() {
       ItemCondition: condition,
       Brand: brandRef.current?.value,
       Colour: colourRef.current?.value,
+      Images: base64Array,
       Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
     }).unwrap();
     setIsLoading(false);

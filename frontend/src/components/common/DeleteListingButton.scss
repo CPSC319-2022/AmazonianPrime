@@ -1,0 +1,15 @@
+@import '../../variables';
+.pdp__delete-listing {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  color: $primary-color;
+  span {
+    border-bottom: 1px solid #1b2a5a;
+    font-size: 0.9em;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
