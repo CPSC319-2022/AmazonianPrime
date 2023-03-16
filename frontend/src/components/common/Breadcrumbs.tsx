@@ -10,7 +10,7 @@ function Breadcrumbs() {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   const { listingId } = useParams();
   const category = searchParams.get('category') ?? location.state?.category;
-  const searchQuery = searchParams.get('q')?.replace('+', ' ') ?? location.state?.searchQuery;
+  const searchQuery = searchParams.get('q')?.replace('-', ' ') ?? location.state?.searchQuery;
   const page = location.state?.page;
 
   let breadCrumbs = [];
@@ -40,11 +40,11 @@ function Breadcrumbs() {
       },
     ];
   }
-  if (listingId && listing?.listingName) {
+  if (listingId && listing?.ListingName) {
     breadCrumbs = [
       ...breadCrumbs,
       {
-        link: listing.listingName,
+        link: listing.ListingName,
         navigate: '',
       },
     ];

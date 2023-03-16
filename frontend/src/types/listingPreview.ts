@@ -1,11 +1,5 @@
-import { User } from './user';
+import { Listing } from './listing';
 
-export interface ListingPreview {
-  id: string;
-  imagePreview: string;
-  listingName: string;
-  cost: string;
-  condition: string;
-  description: string;
-  user: User;
+export interface ListingPreview extends Omit<Listing, 'Images'> {
+  ImagePreview: string;
 }

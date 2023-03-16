@@ -9,7 +9,7 @@ import './ListingPreview.scss';
 import { ListingPreviewSkeleton } from './ListingPreviewSkeleton';
 
 interface ListingPreviewProps {
-  listing: ListingPreviewType;
+  listing: ListingPreviewType | null;
   imageHeight?: string;
   imageWidth?: string;
   showRemoveListingButton?: boolean;
@@ -29,22 +29,22 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
   if (!listing) {
     return <ListingPreviewSkeleton imageHeight={height} imageWidth={width} />;
   }
-  const { imagePreview, listingName, cost, user, id } = listing;
+  const { ImagePreview, ListingName, Cost, User, ListingID } = listing;
 
   return (
     <div tabIndex={0} className="listing-preview">
       <img
         onClick={() => {
           dispath(setPartialListingDetails(listing));
-          navigate(`/listing/${id}`, { state: { ...history } });
+          navigate(`/listing/${ListingID}`, { state: { ...history } });
         }}
         className="listing-preview__image"
-        src={`data:image/jpeg;base64,${imagePreview}`}
+        src={`data:image/jpeg;base64,${ImagePreview}`}
         height={imageHeight ?? height}
         width={width}
       />
-      <span className="listing-preview__cost">${cost}</span>
-      <div>{listingName}</div>
+      <span className="listing-preview__cost">${Cost}</span>
+      <div className="listing-preview__name">{ListingName}</div>
       {showRemoveListingButton ? (
         <Button
           color="secondary"
@@ -58,7 +58,7 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
         </Button>
       ) : (
         <div>
-          {user.FirstName}&nbsp;{user.LastName?.charAt(0)}.
+          {User?.FirstName}&nbsp;{User?.LastName?.charAt(0)}.
         </div>
       )}
     </div>

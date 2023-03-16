@@ -1,9 +1,9 @@
 import './BuyerRegistration.scss';
-import { Button, TextField } from '@mui/material';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import { useSignupMutation, useAddAddressMutation, useAddPaymentMutation } from '../../redux/api/user';
 import { setUser, setPayment, setPaymentAddress, setShippingAddress } from '../../redux/reducers/userSlice';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,6 +11,17 @@ import Checkbox from '@mui/material/Checkbox';
 import PaymentGrid from '../common/PaymentGrid';
 import AddressGrid from '../common/AddressGrid';
 
+const departments = [
+  'Marketing',
+  'Sales',
+  'Development',
+  'UX Design',
+  'Human Resources',
+  'Legal',
+  'DevOps',
+  'IT',
+  'Security',
+];
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
 
@@ -21,7 +32,7 @@ function BuyerRegistration() {
   const [firstNameInput, setFirstNameInput] = useState('');
   const [lastNameInput, setLastNameInput] = useState('');
   const [creditCardInput, setCreditCardInput] = useState('');
-  const [expiryDateInput, setExpiryDateInput] = useState('');
+  const expiryDateInput = useRef<any>(null);
   const [cvvInput, setCVVInput] = useState('');
 
   const [billingAddressInput, setBillingAddressInput] = useState('');
@@ -36,6 +47,9 @@ function BuyerRegistration() {
   const [shippingPostalCodeInput, setShippingPostalCodeInput] = useState('');
   const [shippingCountryInput, setShippingCountryInput] = useState('');
 
+  const profileFirstNameInput = useRef<any>(null);
+  const profileLastNameInput = useRef<any>(null);
+
   const dispatch = useAppDispatch();
   const [updateProfile, updateProfileResult] = useSignupMutation();
   const [updateAddress, addAddressResult] = useAddAddressMutation();
@@ -48,8 +62,8 @@ function BuyerRegistration() {
   async function register() {
     const updatedUser = {
       UserID: user?.UserID,
-      FirstName: user?.FirstName,
-      LastName: user?.LastName,
+      FirstName: profileFirstNameInput.current?.value || user?.FirstName,
+      LastName: profileLastNameInput.current?.value || user?.LastName,
       Department: departmentInput,
     };
 
@@ -88,7 +102,7 @@ function BuyerRegistration() {
       UserID: user?.UserID,
       AddressID: address?.AddressID,
       CreditCardNum: creditCardInput,
-      ExpiryDate: expiryDateInput,
+      ExpiryDate: expiryDateInput.current?.value,
       CVV: cvvInput,
       CardHolderName: firstNameInput + ' ' + lastNameInput,
     };
@@ -114,23 +128,56 @@ function BuyerRegistration() {
             </span>
           </div>
           <div className="buyer-registration-page__department-prompt">
-            <span>Department</span>
+            <span>Profile</span>
           </div>
-          <TextField
-            fullWidth
-            required
-            label="Department"
-            defaultValue=""
-            variant="filled"
-            className="department-input"
-            onChange={(e) => setDepartmentInput(e.target.value)}
-          />
+          <div>
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Preferred First Name"
+                  defaultValue={user?.FirstName}
+                  fullWidth
+                  size="small"
+                  inputRef={profileFirstNameInput}
+                  className="buyer-registration-page__name-input"
+                  onChange={(e) => setDepartmentInput(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Last Name"
+                  defaultValue={user?.LastName}
+                  fullWidth
+                  size="small"
+                  inputRef={profileLastNameInput}
+                  className="buyer-registration-page__name-input"
+                  onChange={(e) => setDepartmentInput(e.target.value)}
+                />
+              </Grid>
+            </Grid>
+          </div>
+          <FormControl className="buyer-registration-page__department-input" size="small">
+            <InputLabel id="demo-simple-select-label">Department</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={departmentInput}
+              label="Department"
+              onChange={(e) => setDepartmentInput(e.target.value)}
+            >
+              {departments.map((dept) => (
+                <MenuItem value={dept}>{dept}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <div className="buyer-registration-page__forms">
             <PaymentGrid
               setFirstNameInput={setFirstNameInput}
               setLastNameInput={setLastNameInput}
               setCreditCardInput={setCreditCardInput}
-              setExpiryDateInput={setExpiryDateInput}
+              expiryDateInput={expiryDateInput}
               setCVVInput={setCVVInput}
               setBillingAddressInput={setBillingAddressInput}
               setBillingCityInput={setBillingCityInput}

@@ -62,7 +62,7 @@ exports.lambdaHandler = async (event, context) => {
     statusCode: 200,
     body: JSON.stringify({
       ...ListingData,
-      User: { FirstName, LastName },
+      User: { FirstName, LastName, Email, Department },
       Images: imageArray,
     }),
   };
