@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { User } from '../../types/user';
 import { Payment } from '../../types/payment';
 import { Address } from '../../types/address';
+import { Banking } from '../../types/banking';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -49,8 +50,27 @@ export const userApi = createApi({
         };
       },
     }),
+    addBanking: builder.mutation<Banking, Partial<Banking>>({
+      query(body) {
+        return {
+          url: `user/banking`,
+          credentials: 'include',
+          method: 'POST',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useLoginQuery, useLazyLoginQuery, useSignupMutation, useAddAddressMutation, useAddPaymentMutation } =
-  userApi;
+export const {
+  useLoginQuery,
+  useLazyLoginQuery,
+  useSignupMutation,
+  useAddAddressMutation,
+  useAddPaymentMutation,
+  useAddBankingMutation,
+} = userApi;

@@ -11,33 +11,45 @@ import {
   Snackbar,
 } from '@mui/material';
 import './RegisterSellerModal.scss';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store/index';
+import { RootState, useAppSelector } from '../../redux/store/index';
 import { modifyRegisterUserModalVisibility, modifyIsSellerRegistered } from '../../redux/reducers/sellerModalSlice';
 import { useRef, useState } from 'react';
 import AddressGrid from '../common/AddressGrid';
+import { useAddAddressMutation, useAddBankingMutation } from '../../redux/api/user';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 function RegisterSellerModal() {
+  const [billingAddressInput, setBillingAddressInput] = useState('');
+  const [billingCityInput, setBillingCityInput] = useState('');
+  const [billingProvinceInput, setBillingProvinceInput] = useState('');
+  const [billingPostalCodeInput, setBillingPostalCodeInput] = useState('');
+  const [billingCountryInput, setBillingCountryInput] = useState('');
+
+  const [updateAddress] = useAddAddressMutation();
+  const [updateBanking] = useAddBankingMutation();
+  const user = useAppSelector((state) => state.user.value);
   const isSellerModalOpen = useSelector((state: RootState) => state.sellerModal.isSellerModalOpen);
   const isSellerRegistered = useSelector((state: RootState) => state.sellerModal.isSellerRegistered);
   const [openErrorToast, setOpenErrorToast] = useState('');
   const fullName = useRef<any>(null);
-  const lastName = useRef<any>(null);
   const accountNumber = useRef<any>(null);
   const institutionNumber = useRef<any>(null);
   const transitNumber = useRef<any>(null);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleClose(value: boolean) {
     setOpenErrorToast('');
     dispatch(modifyIsSellerRegistered(value));
     dispatch(modifyRegisterUserModalVisibility(false));
+    setIsLoading(false);
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (
       !fullName?.current?.value ||
-      !lastName?.current?.value ||
       !accountNumber?.current?.value ||
       !institutionNumber?.current?.value ||
       !transitNumber?.current?.value
@@ -58,6 +70,28 @@ function RegisterSellerModal() {
       return;
     }
     setOpenErrorToast('');
+    setIsLoading(true);
+    const billingAddressInfo = {
+      UserID: user?.UserID,
+      CityName: billingCityInput,
+      Province: billingProvinceInput,
+      StreetAddress: billingAddressInput,
+      PostalCode: billingPostalCodeInput,
+      Country: billingCountryInput,
+    };
+    const address = await updateAddress(billingAddressInfo).unwrap();
+
+    const bankingInfo = {
+      UserID: user?.UserID,
+      AddressID: address?.AddressID,
+      InstitutionNum: Number(institutionNumber?.current?.value),
+      AccountNum: Number(accountNumber?.current?.value),
+      TransitNum: Number(transitNumber?.current?.value),
+      NameOnCard: fullName?.current?.value,
+    };
+
+    const bank = await updateBanking(bankingInfo).unwrap();
+    setIsLoading(false);
     handleClose(true);
   };
 
@@ -132,14 +166,30 @@ function RegisterSellerModal() {
             </div>
           </div>
           <span>Billing Address</span>
-          <AddressGrid />
+          <div className="seller__address">
+            <AddressGrid
+              setAddressInput={setBillingAddressInput}
+              setCityInput={setBillingCityInput}
+              setProvinceInput={setBillingProvinceInput}
+              setPostalCodeInput={setBillingPostalCodeInput}
+              setCountryInput={setBillingCountryInput}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
           <div className="seller-modal__button-container">
             <Button onClick={() => handleClose(false)}>Cancel</Button>
-            <Button className="seller-modal__save-button" color="secondary" variant="contained" onClick={handleSave}>
+            <LoadingButton
+              loading={isLoading}
+              loadingPosition="start"
+              startIcon={<DoneAllIcon />}
+              className="seller-modal__save-button"
+              color="secondary"
+              variant="contained"
+              onClick={handleSave}
+            >
               Save
-            </Button>
+            </LoadingButton>
           </div>
         </DialogActions>
       </Dialog>

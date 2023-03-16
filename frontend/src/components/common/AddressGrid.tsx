@@ -17,14 +17,14 @@ const AddressGrid: React.FC<AddressGridProps> = ({
 }) => {
   return (
     <div className="address-grid">
-      <Grid container spacing={1.5}>
+      <Grid container spacing={1}>
         <Grid item xs={12}>
           <TextField
             fullWidth
             required
             label="Street Address"
             defaultValue=""
-            variant="filled"
+            size="small"
             onChange={(e) => setAddressInput(e.target.value)}
           />
         </Grid>
@@ -34,7 +34,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             required
             label="City"
             defaultValue=""
-            variant="filled"
+            size="small"
             onChange={(e) => setCityInput(e.target.value)}
           />
         </Grid>
@@ -44,7 +44,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             required
             label="Province"
             defaultValue=""
-            variant="filled"
+            size="small"
             onChange={(e) => setProvinceInput(e.target.value)}
           />
         </Grid>
@@ -54,7 +54,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             required
             label="Postal Code"
             defaultValue=""
-            variant="filled"
+            size="small"
             onChange={(e) => setPostalCodeInput(e.target.value)}
           />
         </Grid>
@@ -64,7 +64,7 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             required
             label="Country"
             defaultValue=""
-            variant="filled"
+            size="small"
             onChange={(e) => setCountryInput(e.target.value)}
           />
         </Grid>

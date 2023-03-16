@@ -5,6 +5,10 @@
 .seller-modal__banking-details {
   display: flex;
   flex-direction: column;
+}
+
+.seller__address,
+.seller-modal__banking-details {
   margin: 0.5em 0;
 }
 

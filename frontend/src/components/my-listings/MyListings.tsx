@@ -2,7 +2,7 @@ import { Breadcrumbs, Grid, Pagination, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useGetRecentListingsQuery } from '../../redux/api/listings';
+import { useGetListingsByUserIdQuery, useGetRecentListingsQuery } from '../../redux/api/listings';
 import { setIsLoadingListings, setRecentListings } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import Gallery from '../common/Gallery';
@@ -15,8 +15,12 @@ function MyListings() {
   const navigate = useNavigate();
   // TODO: use NEW query and redux storage (pending backend)
   // TODO: should update redux
-  const { data, isLoading } = useGetRecentListingsQuery();
+  const user = useAppSelector((state) => state.user.value);
   const page = searchParams.get('page');
+  const { data, isLoading } = useGetListingsByUserIdQuery({
+    page: Number(page) ?? 1,
+    listingUserId: user?.UserID || '',
+  });
   const paginatedListings = useAppSelector((state) => state.listings.recentListings);
   useEffect(() => {
     dispatch(setIsLoadingListings({ isLoadingListings: isLoading }));
@@ -32,7 +36,6 @@ function MyListings() {
     return <div>Empty Data</div>;
   }
   const { Data, TotalListings } = paginatedListings;
-  const tempData = [...paginatedListings.Data, ...paginatedListings.Data, ...paginatedListings.Data];
   return (
     <div className="browse">
       <Breadcrumbs aria-label="breadcrumb" className="my-listings__breadcrumbs">
@@ -40,7 +43,7 @@ function MyListings() {
       </Breadcrumbs>
       <Gallery
         totalListingsLength={Number(TotalListings)}
-        listings={tempData}
+        listings={Data}
         handlePageChange={handlePageChange}
         showRemoveListingButton
       />

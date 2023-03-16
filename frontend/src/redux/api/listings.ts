@@ -23,6 +23,12 @@ export const listingsApi = createApi({
       },
       providesTags: ['Listings'],
     }),
+    getListingsByUserId: builder.query<PaginatedListingPreviews[], { page: number; listingUserId: string }>({
+      query: ({ page, listingUserId }) => {
+        return `listing?${`listingUserId=\"${listingUserId}\"`}&limit=${LIMIT}&offset=${LIMIT * (page - 1)}`;
+      },
+      providesTags: ['Listings'],
+    }),
     getListingById: builder.query<Listing, string>({
       query: (listingId: string) => `listing/${listingId}`,
     }),
@@ -42,5 +48,10 @@ export const listingsApi = createApi({
   }),
 });
 
-export const { useGetRecentListingsQuery, useGetListingByIdQuery, useCreateListingMutation, useGetListingsQuery } =
-  listingsApi;
+export const {
+  useGetRecentListingsQuery,
+  useGetListingByIdQuery,
+  useCreateListingMutation,
+  useGetListingsQuery,
+  useGetListingsByUserIdQuery,
+} = listingsApi;
