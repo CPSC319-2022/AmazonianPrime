@@ -372,8 +372,8 @@ Resources:
         Listings:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/user/update # Ensure api is proxied with /api/*
-            Method: post
+            Path: /api/user # Ensure api is proxied with /api/*
+            Method: put
       VpcConfig:
         SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
         SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]

@@ -21,6 +21,13 @@ exports.lambdaHandler = async (event, context) => {
 
   const { UserID, FirstName, LastName, Department } = JSON.parse(event.body);
 
+  if (!UserID || !FirstName || !LastName || !Department) {
+    return {
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
+
   const updateUserQuery = `UPDATE Users SET FirstName="${FirstName}", LastName= "${LastName}", Department= "${Department}" WHERE UserID = ${UserID} `;
 
   const updateUsers = await new Promise((resolve, reject) => {
@@ -34,8 +41,19 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(updateUsers);
 
+  let getUser;
+  const getUserByIdQuery = `SELECT * FROM Users WHERE UserID = "${UserID}"`;
+  getUser = await new Promise((resolve, reject) => {
+    con.query(getUserByIdQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't get the user from database!");
+      }
+      resolve(res);
+    });
+  });
+
   return {
     statusCode: 200,
-    body: JSON.stringify(updateUsers),
+    body: JSON.stringify(getUser[0]),
   };
 };

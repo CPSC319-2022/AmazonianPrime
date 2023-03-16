@@ -60,6 +60,10 @@
   }
 }
 
+.buyer-registration-page__forms {
+  padding-top: 12px;
+}
+
 .buyer-registration-page__shipping-prompt {
   padding-top: 20px;
   font-weight: 400;
@@ -68,4 +72,10 @@
 
 .buyer-registration-page__shipping-contents {
   padding: 5px;
+}
+
+.buyer-registration-page__department-prompt {
+  padding-bottom: 12px;
+  font-weight: 400;
+  font-size: 18px;
 }
