@@ -15,11 +15,16 @@ import BuyerRegistration from './components/login/BuyerRegistration';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
-  // TEMP
   const isLoggedIn = sessionStorage.getItem('user');
 
   const renderHomePage = (): ReactNode => {
-    return <BuyerRegistration />;
+    if (!user && !isLoggedIn) {
+      return <LoginPage />;
+    } else if (!user?.Department) {
+      return <BuyerRegistration />;
+    } else {
+      return <LandingPage />;
+    }
   };
 
   return (
