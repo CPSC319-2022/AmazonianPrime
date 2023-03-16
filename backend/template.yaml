@@ -254,7 +254,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Allow Lambda Connection to RDS"
-      SecurityGroupEgress:
+      SecurityGroupIngress:
         [
           {
             "IpProtocol": "tcp",
@@ -263,9 +263,34 @@ Resources:
             "CidrIp": "0.0.0.0/0",
           },
         ]
+      SecurityGroupEgress:
+        - IpProtocol: all
+          CidrIp: 0.0.0.0/0
       VpcId:
         Ref: "rdsEC2VPC"
       Tags: [{ "Key": "Name", "Value": "lambdaSecurityGroup" }]
+  rdsEC2VPCRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref rdsEC2VPC
+# TODO add subnet association to rdsEC2VPCRouteTable, and enable all outbound traffic in lambdaSecurityGroup
+  rdsEC2VPCRouteTableAssociation1:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref rdsEC2VPCRouteTable
+  rdsEC2VPCRouteTableAssociation2:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref rdsEC2VPCRouteTable
+  S3VPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
+      VpcId: !Ref rdsEC2VPC
+      RouteTableIds:
+        - !Ref rdsEC2VPCRouteTable
   # ---- Database Functions ------
   DBInitFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -463,38 +488,6 @@ Resources:
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
-
-  CreateListingFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/create-listing/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      Events:
-        http:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/listing # Ensure api is proxied with /api/*
-            Method: post
-      VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
-
   UpdateListingFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -676,24 +669,56 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                 Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
-  UploadImageFunction:
+        - PolicyName: EC2AccessPolicy
+          PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                Resource: "*"
+        - PolicyName: CloudWatchPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+  CreateListingFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: functions/upload-function/
+      CodeUri: functions/create-listing/
       Handler: app.lambdaHandler
       Role: !GetAtt ImageUploadLambdaRole.Arn
       Runtime: nodejs14.x
       Environment:
         Variables:
           S3_BUCKET_NAME: !Ref ImageBucket
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
       Architectures:
         - x86_64
       Events:
-        ImageUpload:
+        http:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/image/ # Ensure api is proxied with /api/*
+            Path: /api/listing # Ensure api is proxied with /api/*
             Method: post
+      VpcConfig:
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
   GetListingByIdFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
