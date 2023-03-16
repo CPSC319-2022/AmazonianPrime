@@ -42,13 +42,12 @@ exports.lambdaHandler = async (event, context) => {
   if (listingUserID != null && listingUserID !== undefined) {
     options.push(`Listing.UserID = ${listingUserID}`);
   }
-  options.push(`Listing.UserID = Users.UserID`);
 
   const whereClause = options.reduce((a, b) => {
     return a + ' AND ' + b;
   });
 
-  const getListingsQuery = `SELECT * FROM Listing, Users WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
+  const getListingsQuery = `SELECT * FROM Listing JOIN (SELECT DISTINCT ListingID, S3ImagePath FROM ListingImage) AS Images ON Listing.ListingID = Images.ListingID JOIN Users on Listing.UserID = Users.UserID WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
 
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
@@ -74,11 +73,11 @@ exports.lambdaHandler = async (event, context) => {
 
   // Need to figure out how to extract the image preview as well for each image here. Perhaps
   const output = getListings.map((entry) => {
-    const { FirstName, LastName, Email, Department, ...ListingData } = entry;
+    const { FirstName, LastName, Email, Department, S3ImagePath, ...ListingData } = entry;
     return {
       ...ListingData,
       User: { FirstName, LastName, Email, Department },
-      ImagePreview: '',
+      ImagePreview: S3ImagePath,
     };
   });
 
