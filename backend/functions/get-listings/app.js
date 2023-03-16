@@ -42,12 +42,17 @@ exports.lambdaHandler = async (event, context) => {
   if (listingUserID != null && listingUserID !== undefined) {
     options.push(`Listing.UserID = ${listingUserID}`);
   }
+  options.push(`Quantity > 0`);
 
-  const whereClause = options.reduce((a, b) => {
-    return a + ' AND ' + b;
-  });
+  let whereClause;
 
-  const getListingsQuery = `SELECT * FROM Listing JOIN (SELECT DISTINCT ListingID, S3ImagePath FROM ListingImage) AS Images ON Listing.ListingID = Images.ListingID JOIN Users on Listing.UserID = Users.UserID WHERE ${whereClause} LIMIT ${limit} OFFSET ${offset}`;
+  if (options.length > 0){
+    whereClause = options.reduce((a, b) => {
+      return a + ' AND ' + b;
+    });
+  }
+
+  const getListingsQuery = `SELECT * FROM Listing JOIN (SELECT DISTINCT ListingID, S3ImagePath FROM ListingImage) AS Images ON Listing.ListingID = Images.ListingID JOIN Users on Listing.UserID = Users.UserID ${whereClause !== undefined ? `WHERE ${whereClause} `: ''}LIMIT ${limit} OFFSET ${offset}`;
 
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
@@ -60,7 +65,7 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(getListings);
 
-  const getNumberOfListings = `SELECT COUNT(*) FROM Listing, Users WHERE ${whereClause};`;
+  const getNumberOfListings = `SELECT COUNT(*) FROM Listing, Users ${whereClause !== undefined ? `WHERE ${whereClause} `: ''};`;
 
   const getListingsCount = await new Promise((resolve, reject) => {
     con.query(getNumberOfListings, function (err, res) {
