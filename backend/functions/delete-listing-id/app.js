@@ -85,9 +85,9 @@ exports.lambdaHandler = async (event, context) => {
       body: `The user is not authorized to remove the listing`,
     };
   }
-  
+
   const deleteListingImagesQuery = `DELETE FROM ListingImage WHERE ListingID = ${ListingID}`;
-  
+
   const deleteListingImage = await new Promise((resolve, reject) => {
     con.query(deleteListingImagesQuery, function (err, res) {
       if (err) {
