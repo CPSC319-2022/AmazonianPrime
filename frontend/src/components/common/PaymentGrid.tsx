@@ -67,20 +67,25 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
               required
               label="Card Number"
               defaultValue=""
-              inputProps={{ maxLength: 19 }}
               size="small"
               type="number"
+              onInput={(e: any) => {
+                e.target.value = Math.max(0, parseInt(e.target.value, 10)).toString().slice(0, 19);
+              }}
               onChange={(e) => setCreditCardInput(e.target.value)}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
               fullWidth
-              inputProps={{ maxLength: 4 }}
               required
               size="small"
               label="CVV"
               defaultValue=""
+              type="number"
+              onInput={(e: any) => {
+                e.target.value = Math.max(0, parseInt(e.target.value, 10)).toString().slice(0, 4);
+              }}
               onChange={(e) => setCVVInput(e.target.value)}
             />
           </Grid>

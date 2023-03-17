@@ -2,10 +2,15 @@ import { Breadcrumbs, Grid, Pagination, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useGetListingsByUserIdQuery, useGetRecentListingsQuery } from '../../redux/api/listings';
+import {
+  useDeleteListingMutation,
+  useGetListingsByUserIdQuery,
+  useGetRecentListingsQuery,
+} from '../../redux/api/listings';
 import { setIsLoadingListings, setRecentListings } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import Gallery from '../common/Gallery';
+import NoContent from '../common/NoContent';
 import ListingPreview from '../listing/ListingPreview';
 import './MyListings.scss';
 
@@ -32,18 +37,17 @@ function MyListings() {
     navigate(`?page=${value}`);
   };
 
-  if (!paginatedListings || paginatedListings.Data.length === 0) {
-    return <div>Empty Data</div>;
+  if (!isLoading && (!paginatedListings || paginatedListings.Data.length === 0)) {
+    return <NoContent message="Looks like you haven't sold anything yet!" />;
   }
-  const { Data, TotalListings } = paginatedListings;
   return (
     <div className="browse">
       <Breadcrumbs aria-label="breadcrumb" className="my-listings__breadcrumbs">
         <Typography color="text.primary">My Listings</Typography>
       </Breadcrumbs>
       <Gallery
-        totalListingsLength={Number(TotalListings)}
-        listings={Data}
+        totalListingsLength={Number(paginatedListings?.TotalListings)}
+        listings={paginatedListings?.Data}
         handlePageChange={handlePageChange}
         showRemoveListingButton
       />
