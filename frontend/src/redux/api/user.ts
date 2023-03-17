@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { User } from '../../types/user';
+import { Payment } from '../../types/payment';
+import { Address } from '../../types/address';
+import { Banking } from '../../types/banking';
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -13,6 +16,45 @@ export const userApi = createApi({
         return {
           url: `user`,
           credentials: 'include',
+          method: 'PUT',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
+    addAddress: builder.mutation<Address, Partial<Address>>({
+      query(body) {
+        return {
+          url: `user/address`,
+          credentials: 'include',
+          method: 'POST',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
+    addPayment: builder.mutation<Payment, Partial<Payment>>({
+      query(body) {
+        return {
+          url: `user/payment`,
+          credentials: 'include',
+          method: 'POST',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
+    addBanking: builder.mutation<Banking, Partial<Banking>>({
+      query(body) {
+        return {
+          url: `user/banking`,
+          credentials: 'include',
           method: 'POST',
           body,
           headers: {
@@ -24,4 +66,11 @@ export const userApi = createApi({
   }),
 });
 
-export const { useLoginQuery, useLazyLoginQuery, useSignupMutation } = userApi;
+export const {
+  useLoginQuery,
+  useLazyLoginQuery,
+  useSignupMutation,
+  useAddAddressMutation,
+  useAddPaymentMutation,
+  useAddBankingMutation,
+} = userApi;

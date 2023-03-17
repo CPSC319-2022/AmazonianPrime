@@ -5,17 +5,24 @@
 
 .gallery__container {
   margin: 0 3.5em;
+  margin-bottom: 3em;
 }
 
 .gallery__container__grid-item.gallery__container__grid-item {
   width: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  flex-shrink: 1;
 }
 
 .gallery__pagination {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 3em;
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  padding: 0.5em 0 1em 0;
 }
