@@ -1,27 +1,40 @@
 import './BuyerRegistration.scss';
-import { Button, TextField } from '@mui/material';
+import { Alert, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import { useSignupMutation, useAddAddressMutation, useAddPaymentMutation } from '../../redux/api/user';
 import { setUser, setPayment, setPaymentAddress, setShippingAddress } from '../../redux/reducers/userSlice';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import PaymentGrid from '../common/PaymentGrid';
 import AddressGrid from '../common/AddressGrid';
+import { LoadingButton } from '@mui/lab';
 
+const departments = [
+  'Marketing',
+  'Sales',
+  'Development',
+  'UX Design',
+  'Human Resources',
+  'Legal',
+  'DevOps',
+  'IT',
+  'Security',
+];
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
 
   const [useBillingAddressForShipping, setUseBillingAddressForShipping] = useState(true);
+  const [loading, setIsLoading] = useState(false);
 
   const [departmentInput, setDepartmentInput] = useState('');
 
   const [firstNameInput, setFirstNameInput] = useState('');
   const [lastNameInput, setLastNameInput] = useState('');
   const [creditCardInput, setCreditCardInput] = useState('');
-  const [expiryDateInput, setExpiryDateInput] = useState('');
+  const expiryDateInput = useRef<any>(null);
   const [cvvInput, setCVVInput] = useState('');
 
   const [billingAddressInput, setBillingAddressInput] = useState('');
@@ -36,9 +49,13 @@ function BuyerRegistration() {
   const [shippingPostalCodeInput, setShippingPostalCodeInput] = useState('');
   const [shippingCountryInput, setShippingCountryInput] = useState('');
 
+  const profileFirstNameInput = useRef<any>(null);
+  const profileLastNameInput = useRef<any>(null);
+  const [openErrorToast, setOpenErrorToast] = useState('');
+
   const dispatch = useAppDispatch();
   const [updateProfile, updateProfileResult] = useSignupMutation();
-  const [updateAddress, addAddressResult] = useAddAddressMutation();
+  const [addAddress, addAddressResult] = useAddAddressMutation();
   const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
   if (addPaymentResult.data) {
@@ -48,11 +65,15 @@ function BuyerRegistration() {
   async function register() {
     const updatedUser = {
       UserID: user?.UserID,
-      FirstName: user?.FirstName,
-      LastName: user?.LastName,
+      FirstName: profileFirstNameInput.current?.value || user?.FirstName,
+      LastName: profileLastNameInput.current?.value || user?.LastName,
       Department: departmentInput,
     };
 
+    if (!updatedUser.FirstName || !updatedUser.LastName || !updatedUser.Department) {
+      setOpenErrorToast('Please fill all required Profile fields!');
+      return;
+    }
     const billingAddressInfo = {
       UserID: user?.UserID,
       CityName: billingCityInput,
@@ -62,46 +83,94 @@ function BuyerRegistration() {
       Country: billingCountryInput,
     };
 
-    const shippingAddressInfo = {
-      UserID: user?.UserID,
-      CityName: shippingCityInput,
-      Province: shippingProvinceInput,
-      StreetAddress: shippingAddressInput,
-      PostalCode: shippingPostalCodeInput,
-      Country: shippingCountryInput,
-    };
+    if (
+      !billingAddressInfo.CityName ||
+      !billingAddressInfo.Province ||
+      !billingAddressInfo.StreetAddress ||
+      !billingAddressInfo.PostalCode ||
+      !billingAddressInfo.Country
+    ) {
+      setOpenErrorToast('Please fill all required Billing fields!');
+      return;
+    }
 
-    dispatch(setPaymentAddress(billingAddressInfo));
-    dispatch(setShippingAddress(billingAddressInfo));
-    dispatch(setUser(updatedUser));
+    const shippingAddressInfo = !useBillingAddressForShipping
+      ? {
+          UserID: user?.UserID,
+          CityName: shippingCityInput,
+          Province: shippingProvinceInput,
+          StreetAddress: shippingAddressInput,
+          PostalCode: shippingPostalCodeInput,
+          Country: shippingCountryInput,
+        }
+      : billingAddressInfo;
 
-    updateProfile(updatedUser);
-
-    const address = await updateAddress(billingAddressInfo).unwrap();
-
-    if (!useBillingAddressForShipping) {
-      updateAddress(shippingAddressInfo);
-      dispatch(setShippingAddress(shippingAddressInfo));
+    if (
+      !shippingAddressInfo.CityName ||
+      !shippingAddressInfo.Province ||
+      !shippingAddressInfo.StreetAddress ||
+      !shippingAddressInfo.PostalCode ||
+      !shippingAddressInfo.Country
+    ) {
+      setOpenErrorToast('Please fill all required Shipping fields!');
+      return;
     }
 
     const paymentInfo = {
       UserID: user?.UserID,
-      AddressID: address?.AddressID,
-      CreditCardNum: creditCardInput,
-      ExpiryDate: expiryDateInput,
+      AddressID: '',
+      CreditCardNum: Number(creditCardInput),
+      ExpiryDate: expiryDateInput.current?.value,
       CVV: cvvInput,
       CardHolderName: firstNameInput + ' ' + lastNameInput,
     };
 
-    updatePayment(paymentInfo);
+    if (!paymentInfo.CreditCardNum || !paymentInfo.ExpiryDate || !paymentInfo.CVV || !paymentInfo.CardHolderName) {
+      setOpenErrorToast('Please fill all required Payment fields!');
+      return;
+    }
+
+    setIsLoading(true);
+
+    updateProfile(updatedUser);
+
+    const billingAddress = await addAddress(billingAddressInfo).unwrap();
+
+    let shippingAddress = billingAddress;
+    if (!useBillingAddressForShipping) {
+      shippingAddress = await addAddress(shippingAddressInfo).unwrap();
+    }
+    // TODO MICHAEL: link the shipping address to DB
+
+    paymentInfo.AddressID = billingAddress.AddressID;
+    await updatePayment(paymentInfo);
+
+    // Update Redux
+    dispatch(setPaymentAddress(billingAddressInfo));
+    dispatch(setShippingAddress(shippingAddressInfo));
+    setIsLoading(false);
+    dispatch(setUser(updatedUser));
+    window.scrollTo(0, 0);
   }
 
   function handleShippingCheckbox() {
     setUseBillingAddressForShipping(!useBillingAddressForShipping);
   }
 
+  const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorToast('');
+  };
+
   return (
     <div className="buyer-registration-page">
+      <Snackbar open={!!openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
+          {openErrorToast}
+        </Alert>
+      </Snackbar>
       <div className="buyer-registration-page__box">
         <div className="buyer-registration-page__box-contents">
           <div className="buyer-registration-page__welcome">
@@ -114,23 +183,56 @@ function BuyerRegistration() {
             </span>
           </div>
           <div className="buyer-registration-page__department-prompt">
-            <span>Department</span>
+            <span>Profile</span>
           </div>
-          <TextField
-            fullWidth
-            required
-            label="Department"
-            defaultValue=""
-            variant="filled"
-            className="department-input"
-            onChange={(e) => setDepartmentInput(e.target.value)}
-          />
+          <div>
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Preferred First Name"
+                  defaultValue={user?.FirstName}
+                  fullWidth
+                  size="small"
+                  inputRef={profileFirstNameInput}
+                  className="buyer-registration-page__name-input"
+                  onChange={(e) => setFirstNameInput(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  label="Last Name"
+                  defaultValue={user?.LastName}
+                  fullWidth
+                  size="small"
+                  inputRef={profileLastNameInput}
+                  className="buyer-registration-page__name-input"
+                  onChange={(e) => setLastNameInput(e.target.value)}
+                />
+              </Grid>
+            </Grid>
+          </div>
+          <FormControl className="buyer-registration-page__department-input" size="small">
+            <InputLabel id="demo-simple-select-label">Department</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={departmentInput}
+              label="Department"
+              onChange={(e) => setDepartmentInput(e.target.value)}
+            >
+              {departments.map((dept) => (
+                <MenuItem value={dept}>{dept}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <div className="buyer-registration-page__forms">
             <PaymentGrid
               setFirstNameInput={setFirstNameInput}
               setLastNameInput={setLastNameInput}
               setCreditCardInput={setCreditCardInput}
-              setExpiryDateInput={setExpiryDateInput}
+              expiryDateInput={expiryDateInput}
               setCVVInput={setCVVInput}
               setBillingAddressInput={setBillingAddressInput}
               setBillingCityInput={setBillingCityInput}
@@ -161,9 +263,17 @@ function BuyerRegistration() {
           </div>
         </div>
         <div className="buyer-registration-page__action-buttons">
-          <Button color="secondary" variant="contained" endIcon={<TrendingFlatIcon />} onClick={() => register()}>
+          <LoadingButton
+            loading={loading}
+            className="seller-modal__save-button"
+            color="secondary"
+            loadingPosition="start"
+            variant="contained"
+            startIcon={<TrendingFlatIcon />}
+            onClick={() => register()}
+          >
             Start shopping
-          </Button>
+          </LoadingButton>
         </div>
       </div>
     </div>

@@ -9,6 +9,18 @@
   }
 }
 
+.listing-preview__name,
+.listing-preview__user {
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.listing-preview__name {
+  margin-bottom: 0.35em;
+}
+
 .listing-preview {
   margin: 1em;
   display: flex;
