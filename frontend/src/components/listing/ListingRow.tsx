@@ -10,7 +10,7 @@ import { ListingPreview as ListingPreviewType } from '../../types/listingPreview
 interface ListingRowProps {
   title: string;
   isLoading: boolean;
-  listings: ListingPreviewType[];
+  listings: ListingPreviewType[] | undefined;
 }
 
 const ListingRow: React.FC<ListingRowProps> = ({ title, listings, isLoading }) => {
@@ -19,7 +19,7 @@ const ListingRow: React.FC<ListingRowProps> = ({ title, listings, isLoading }) =
       <h2 className="listing-row__title">{title}</h2>
 
       <ScrollMenu scrollContainerClassName="listing-row__list" LeftArrow={LeftArrow} RightArrow={RightArrow}>
-        {(!isLoading ? listings : Array(10).fill(0)).map((listing, index) => (
+        {(!isLoading && listings ? listings : Array(10).fill(0)).map((listing, index) => (
           <ListingPreview listing={listing} key={index} />
         ))}
       </ScrollMenu>

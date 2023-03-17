@@ -15,7 +15,6 @@ import BuyerRegistration from './components/login/BuyerRegistration';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
-  // TEMP
   const isLoggedIn = sessionStorage.getItem('user');
 
   const renderHomePage = (): ReactNode => {
@@ -30,9 +29,6 @@ const AppWrapper = () => {
 
   return (
     <ThemeProvider theme={Theme}>
-      {
-        // TODO: remove this logic
-      }
       <NavBar />
       <Routes>
         <Route path="/" element={renderHomePage()} />
