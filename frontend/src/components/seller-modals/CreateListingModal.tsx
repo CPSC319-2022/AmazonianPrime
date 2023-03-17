@@ -76,8 +76,14 @@ function CreateListingModal() {
       return;
     }
     setOpenErrorToast('');
-    setResult(null);
     setIsLoading(false);
+  };
+
+  const handleSuccessCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setResult(null);
   };
   const dispatch = useDispatch();
 
@@ -201,8 +207,8 @@ function CreateListingModal() {
           We ran into an error creating your listing, please try again later!
         </Alert>
       </Snackbar>
-      <Snackbar open={result !== null} onClose={handleCloseToast} autoHideDuration={12000}>
-        <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%' }}>
+      <Snackbar open={result !== null} onClose={handleSuccessCloseToast} autoHideDuration={12000}>
+        <Alert onClose={handleSuccessCloseToast} severity="success" sx={{ width: '100%' }}>
           <span className="success-toast">
             <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
             <a href={`/listing/${result?.ListingID}`}>here</a>
