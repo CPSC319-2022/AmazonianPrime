@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router';
 import useBreadcrumbHistory from '../common/useBreadcrumbHistory';
 // @ts-ignore
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Listing } from '../../types/listing';
 
 const fileTypes = ['JPG', 'PNG', 'JPEG'];
 const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used Fair', 'Fair'];
@@ -43,6 +44,8 @@ function CreateListingModal() {
   const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState(categories[1]);
   const [condition, setCondition] = useState(conditions[0]);
+  const [result, setResult] = useState<Listing | null>(null);
+  const [error, setError] = useState<any>(false);
   const [images, setImages] = useState<any>([]);
   const [showMore, setShowMore] = useState(false);
   const [openErrorToast, setOpenErrorToast] = useState('');
@@ -73,10 +76,14 @@ function CreateListingModal() {
       return;
     }
     setOpenErrorToast('');
+    setResult(null);
+    setIsLoading(false);
   };
   const dispatch = useDispatch();
 
   async function handleSubmit() {
+    handleModalClose();
+    setIsLoading(true);
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
@@ -89,11 +96,14 @@ function CreateListingModal() {
       setOpenErrorToast('Please provide a brief description!');
       return;
     }
-    setIsLoading(true);
-    // TODO: handle redirect to newly created listing page with submitted info
+
     const base64Array = await Promise.all(
       images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image))),
-    );
+    ).catch(() => setError(true));
+
+    if (error) {
+      return;
+    }
     const listingResult = await createListing({
       UserID: 1,
       ListingName: titleRef.current?.value,
@@ -104,12 +114,12 @@ function CreateListingModal() {
       ItemCondition: condition,
       Brand: brandRef.current?.value,
       Colour: colourRef.current?.value,
-      Images: base64Array,
+      Images: base64Array || [],
       Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
-    }).unwrap();
-    setIsLoading(false);
-    handleModalClose();
-    navigate(`/listing/${listingResult.ListingID}`, { state: { ...history } });
+    })
+      .unwrap()
+      .then((resultObj) => setResult(resultObj))
+      .catch(() => setError(true));
   }
 
   function handleModalClose() {
@@ -181,6 +191,24 @@ function CreateListingModal() {
 
   return (
     <div>
+      <Snackbar open={isLoading && (!error || !result)} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
+          Hang tight while we create your listing!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={error && (!isLoading || !result)} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
+          We ran into an error creating your listing, please try again later!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={result !== null} onClose={handleCloseToast} autoHideDuration={12000}>
+        <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%' }}>
+          <span className="success-toast">
+            <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
+            <a href={`/listing/${result?.ListingID}`}>here</a>
+          </span>
+        </Alert>
+      </Snackbar>
       <Dialog open={isCreateListingModalOpen} onClose={() => handleModalClose()} fullWidth maxWidth="lg">
         <DialogTitle>Create A New Listing</DialogTitle>
         <Snackbar open={!!openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>

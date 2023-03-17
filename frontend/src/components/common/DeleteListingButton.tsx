@@ -29,7 +29,7 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({ listingId }) 
     <div>
       <Snackbar open={successToast && (!failToast || !queueToast)} autoHideDuration={6000} onClose={handleCloseToast}>
         <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%' }}>
-          Successfully deleted the listing.
+          Successfully deleted the listing!
         </Alert>
       </Snackbar>
       <Snackbar open={failToast && (!successToast || !queueToast)} autoHideDuration={6000} onClose={handleCloseToast}>
@@ -39,7 +39,7 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({ listingId }) 
       </Snackbar>
       <Snackbar open={queueToast && !successToast && !failToast} autoHideDuration={6000} onClose={handleCloseToast}>
         <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
-          Your listing will now be deleted.
+          Hang tight while we delete your listing!
         </Alert>
       </Snackbar>
       <div className="pdp__delete-listing">

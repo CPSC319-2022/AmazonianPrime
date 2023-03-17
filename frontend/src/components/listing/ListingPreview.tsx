@@ -30,8 +30,6 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
   const height = '250px';
   const width = imageWidth ?? '220px';
   const history = useBreadcrumbHistory();
-  const [deleteListing] = useDeleteListingMutation();
-  const user = useAppSelector((state) => state.user.value);
 
   if (!listing) {
     return <ListingPreviewSkeleton imageHeight={height} imageWidth={width} />;
@@ -43,7 +41,7 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
       <img
         onClick={() => {
           dispath(setPartialListingDetails(listing));
-          navigate(`/listing/${ListingID}`, { state: { ...history } });
+          navigate(`/listing/${ListingID}`, { state: { ...history, previousPage: window.location.pathname } });
         }}
         className="listing-preview__image"
         src={ImagePreview}

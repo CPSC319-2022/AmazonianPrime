@@ -3,6 +3,7 @@ import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { Link, Typography, Breadcrumbs as MUIBreadcrumbs } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
 import { getFriendlyCategoryString } from './convertSlugCategory';
+import { Paths } from '../../Paths';
 
 function Breadcrumbs() {
   const location = useLocation();
@@ -32,11 +33,18 @@ function Breadcrumbs() {
         },
       ];
     }
+  } else if (location.state?.previousPage === Paths.MyListings) {
+    breadCrumbs = [
+      {
+        link: 'My Listings',
+        navigate: `${Paths.MyListings}?page=${page ?? 1}`,
+      },
+    ];
   } else {
     breadCrumbs = [
       {
         link: 'Home',
-        navigate: '/',
+        navigate: Paths.Home,
       },
     ];
   }
