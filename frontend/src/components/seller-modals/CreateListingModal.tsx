@@ -88,8 +88,6 @@ function CreateListingModal() {
   const dispatch = useDispatch();
 
   async function handleSubmit() {
-    handleModalClose();
-    setIsLoading(true);
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
@@ -103,6 +101,8 @@ function CreateListingModal() {
       return;
     }
 
+    handleModalClose();
+    setIsLoading(true);
     const base64Array = await Promise.all(
       images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image))),
     ).catch(() => setError(true));
@@ -110,7 +110,7 @@ function CreateListingModal() {
     if (error) {
       return;
     }
-    const listingResult = await createListing({
+    await createListing({
       UserID: 1,
       ListingName: titleRef.current?.value,
       Description: descriptionRef.current?.value,
@@ -211,7 +211,7 @@ function CreateListingModal() {
         <Alert onClose={handleSuccessCloseToast} severity="success" sx={{ width: '100%' }}>
           <span className="success-toast">
             <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
-            <a href={`/listing/${result?.ListingID}`}>here</a>
+            <a href={`/listing/${result?.ListingID}`}>here.</a>
           </span>
         </Alert>
       </Snackbar>
