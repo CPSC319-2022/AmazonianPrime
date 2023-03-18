@@ -13,12 +13,6 @@ const userValidate = require('UserValidate.js')
  *
  */
 
-//   request shopping cart items and the user ID  (Assume quantity in shopping cart < listing)
-//  create orderID and create an order
-// TODO Process shipping cart item and
-// TODO Process every lisitng item to an order item
-// TODO A LIST of shopping cart items [listingID]
-// TODO
 exports.lambdaHandler = async (event, context) => {
     const con = await dbConnection.connectDB(
         process.env.DatabaseAddress,
@@ -34,16 +28,7 @@ exports.lambdaHandler = async (event, context) => {
         ShoppingCartItems,
         ShippingStatus
     } = JSON.parse(event.body);
-    /*
-    * ShoppingCartItem :
-    *
-      ShoppingCartItemID
-      UserID int NOT NULL,
-      ListingID int  NOT NULL,
-      Quantity int  NOT NULL,
-    *
-    *
-    * */
+
     if (
         !UserID ||
         !AddressID ||
