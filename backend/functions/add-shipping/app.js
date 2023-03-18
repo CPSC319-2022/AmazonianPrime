@@ -39,7 +39,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const getShippingByUserIdQuery = `SELECT * FROM ShippingAddress WHERE UserID = "${UserID}"`;
+  const getShippingByUserIdQuery = `SELECT * FROM ShippingAddress WHERE UserID = "${UserID}" AND AddressID = "${AddressID}"`;
 
   const getShipping = await new Promise((resolve, reject) => {
     con.query(getShippingByUserIdQuery, function (err, res) {
