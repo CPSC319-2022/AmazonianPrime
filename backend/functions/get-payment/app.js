@@ -35,6 +35,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(getPayment[0]),
+    body: JSON.stringify(getPayment)
   };
 };
