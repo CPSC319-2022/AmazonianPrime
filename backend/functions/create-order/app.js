@@ -1,5 +1,6 @@
 const dbConnection = require('dbConnection.js');
 var mysql = require('mysql');
+const userValidate = require('UserValidate.js')
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -11,6 +12,13 @@ var mysql = require('mysql');
  * @returns {Object} object - Object containing details of the stock buying transaction
  *
  */
+
+//   request shopping cart items and the user ID  (Assume quantity in shopping cart < listing)
+//  create orderID and create an order
+// TODO Process shipping cart item and
+// TODO Process every lisitng item to an order item
+// TODO A LIST of shopping cart items [listingID]
+// TODO
 exports.lambdaHandler = async (event, context) => {
     const con = await dbConnection.connectDB(
         process.env.DatabaseAddress,
@@ -19,61 +27,48 @@ exports.lambdaHandler = async (event, context) => {
         'databaseAmazonianPrime',
     );
 
-    const UserID = event.pathParameters.UserID;
-    console.log(UserID)
 
     const {
+        UserID,
         AddressID,
+        ShoppingCartItems,
         ShippingStatus
     } = JSON.parse(event.body);
-
+    /*
+    * ShoppingCartItem :
+    *
+      ShoppingCartItemID
+      UserID int NOT NULL,
+      ListingID int  NOT NULL,
+      Quantity int  NOT NULL,
+    *
+    *
+    * */
     if (
+        !UserID ||
         !AddressID ||
+        !ShoppingCartItems ||
+        !Array.isArray(ShoppingCartItems) ||
         !ShippingStatus
     ) {
         return {
             statusCode: 400,
-            body: 'Missing required fields',
-        };
+            body: 'Missing required fields'
+        }
     }
 
-    if (UserID === null || UserID == undefined) {
-        return {
-            statusCode: 400,
-            body: `Missing UserID. Please provide a UserID in the URL.`,
-        };
-    }
-
-    const getUserQuery = `SELECT * FROM Users WHERE UserID = ${parseInt(UserID)}`;
-
-    const getUser = await new Promise((resolve, reject) => {
-        con.query(getUserQuery, function (err, res) {
-            if (err) {
-                reject("Couldn't get the user from database!");
-            }
-            resolve(res);
-        });
-    });
-
-    if (getUser.length < 1) {
+    if (!userValidate.validateUser(UserID)) {
         return {
             statusCode: 404,
-            body: `User with UserID ${UserID} not found`,
-        };
+            body: 'User doesnt exist'
+        }
     }
 
-    if (getUser.length < 1) {
-        return {
-            statusCode: 404,
-            body: `Missing UserID. Please provide a UserID in the request body.`,
-        };
-    }
 
-    // If the user isn't an admin and the given userID doesn't match, don't delete listing
     const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, ShippingStatus)
-                          VALUES (${UserID}, ${AddressID}, ${ShippingStatus});`;
+                               VALUES (${UserID}, ${AddressID}, ${ShippingStatus});`;
 
-    const createOrdersUser = await new Promise((resolve, reject) => {
+    const createOrders = await new Promise((resolve, reject) => {
         con.query(createOrdersQuery, function (err, res) {
             if (err) {
                 reject(err);
@@ -82,8 +77,22 @@ exports.lambdaHandler = async (event, context) => {
         });
     });
 
+
+    for (item in ShoppingCartItems) {
+        const addOrderItemQuery = `INSERT INTO OrderItem (OrderID, ListingID, OrderQuantity)
+                                   VALUES (${createOrders['insertId']}, ${item.ListingID}, ${item.OrderQuantity});`;
+
+        const addOrderItem = await new Promise((resolve, reject) => {
+            con.query(addOrderItemQuery, function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
     return {
         statusCode: 200,
-        body: createOrdersUser,
+        body: createOrders,
     };
 };
