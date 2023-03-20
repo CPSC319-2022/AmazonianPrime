@@ -7,7 +7,8 @@ import { Snackbar, Alert } from '@mui/material';
 
 interface DeleteListingButtonProps {
   handleClick: any;
-  successMessage: string | null;
+  successMessage?: any;
+  queueMessage?: string;
   failMessage: string;
   showIcon?: boolean;
 }
@@ -15,15 +16,18 @@ interface DeleteListingButtonProps {
 const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
   successMessage,
   handleClick,
+  queueMessage,
   failMessage,
   showIcon = true,
 }) => {
   const [successToast, setSuccessToast] = useState(false);
+  const [queueToast, setQueueToast] = useState(false);
   const [failToast, setFailToast] = useState(false);
   const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
+    setQueueToast(false);
     setFailToast(false);
     setSuccessToast(false);
   };
@@ -37,6 +41,13 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
           </Alert>
         </Snackbar>
       )}
+      {queueMessage && (
+        <Snackbar open={queueToast && !(failToast || successToast)} autoHideDuration={6000} onClose={handleCloseToast}>
+          <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
+            {queueMessage}
+          </Alert>
+        </Snackbar>
+      )}
       <Snackbar open={failToast && !successToast} autoHideDuration={6000} onClose={handleCloseToast}>
         <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
           {failMessage}
@@ -46,10 +57,17 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
         {showIcon && <DeleteOutlineIcon sx={{ fontSize: 20 }} />}
         <span
           onClick={() => {
+            setQueueToast(true);
             handleClick()
               ?.unwrap()
-              .then(() => setSuccessToast(true))
-              .catch(() => setFailToast(true));
+              .then(() => {
+                setQueueToast(false);
+                setSuccessToast(true);
+              })
+              .catch(() => {
+                setQueueToast(false);
+                setFailToast(true);
+              });
           }}
         >
           Remove Listing

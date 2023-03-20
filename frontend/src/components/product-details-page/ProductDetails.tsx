@@ -140,7 +140,13 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
       {Number(user?.UserID) === listing.UserID ? (
         <DeleteListingButton
           failMessage="Failed to delete the listing. Please try again later."
-          successMessage="Successfully deleted the listing!"
+          successMessage={
+            <span className="link-toast">
+              <p>Successfully deleted your listing. View your other listings&nbsp;</p>
+              <a href="/my-listings?page=1">here</a>.
+            </span>
+          }
+          queueMessage="Hang tight while we delete your listing."
           handleClick={() => {
             return deleteListing({ ListingID: Number(listing.ListingID), UserID: user?.UserID || '' });
           }}

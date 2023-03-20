@@ -216,9 +216,9 @@ function CreateListingModal() {
       </Snackbar>
       <Snackbar open={result !== null} onClose={handleSuccessCloseToast} autoHideDuration={12000}>
         <Alert onClose={handleSuccessCloseToast} severity="success" sx={{ width: '100%' }}>
-          <span className="success-toast">
+          <span className="link-toast">
             <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
-            <a href={`/listing/${result?.ListingID}`}>here.</a>
+            <a href={`/listing/${result?.ListingID}`}>here</a>.
           </span>
         </Alert>
       </Snackbar>
