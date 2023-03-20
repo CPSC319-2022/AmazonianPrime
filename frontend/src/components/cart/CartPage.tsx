@@ -80,7 +80,7 @@ function CartPage() {
     return cartItems && cartItems.TotalQuantity > 0 && !isLoading ? (
       cartItems?.Items.map((order, index) => <CartItem key={index} order={order} />)
     ) : (
-      <NoContent message="Looks like you your Cart is empty!" fixedPosition={false} />
+      <NoContent message="Looks like your Cart is empty!" fixedPosition={false} />
     );
   };
 
