@@ -11,6 +11,10 @@
   align-items: start;
 }
 
+.address__grey {
+  color: $grey;
+}
+
 .address-change__button,
 .address-change__button-billing {
   margin-left: 0.5em;

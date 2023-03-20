@@ -8,15 +8,17 @@ export const AddressChange = () => {
         <span>1&nbsp;&nbsp;Shipping Address</span>
         {changeButton}
       </div>
-      <div>Doris Luong 2608-4485 Skyline Drive Burnaby, British Columbia V5C 0J2</div>
+      <div>1234 Test Drive Vancouver, British Columbia V5C 1J3</div>
       <div className="address-change__sections">
         <span>2&nbsp;&nbsp;Payment Method</span>
         {changeButton}
       </div>
-      <div>Credit Card ending in 5239</div>
       <div>
-        <span className="address-change__button-billing">Billing Address:</span> Doris Luong 2608-4485 Skyline Drive
-        Burnaby, British Columbia V5C 0J2
+        Credit Card ending in <span className="address__grey">5432</span>
+      </div>
+      <div>
+        <span className="address-change__button-billing">Billing Address:</span> 1234 Test Drive Vancouver, British
+        Columbia V5C 1J3
       </div>
     </div>
   );
