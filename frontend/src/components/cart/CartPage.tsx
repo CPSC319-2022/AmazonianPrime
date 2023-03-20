@@ -133,10 +133,10 @@ function CartPage() {
             })}
             <span className="cart__order-summary-half-border"></span>
             {getSummaryHeading(`Subtotal (${cartItems?.TotalQuantity} items) Before Tax`, `$${costToString(subtotal)}`)}
-            {getSummaryHeading('Estimated GST/HST', '$5.00')}
-            {getSummaryHeading('Estimated PST/RST/QST', '$5.00')}
+            {getSummaryHeading('Estimated GST/HST', '$0.00')}
+            {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
             <span className="cart__order-summary-border"></span>
-            {getSummaryHeading('Order Total', '$5.00', true)}
+            {getSummaryHeading('Order Total', `$${costToString(subtotal)}`, true)}
             {placeOrderButton()}
           </div>
         )}

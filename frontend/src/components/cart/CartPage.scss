@@ -50,17 +50,19 @@
   font-size: 2em;
   width: 100%;
 
+  .cart__listing-cost {
+    margin-left: auto;
+    color: $secondary-color;
+  }
+}
+
+.cart__listing-header {
   .cart__listing-name {
     &:hover {
       cursor: pointer;
       text-decoration-line: underline;
       text-decoration-thickness: 2px;
     }
-  }
-
-  .cart__listing-cost {
-    margin-left: auto;
-    color: $secondary-color;
   }
 }
 
@@ -69,11 +71,6 @@
   margin: 0 0.15em;
   .cart__listing-cost {
     color: black;
-  }
-  .cart__listing-name {
-    &:hover {
-      cursor: unset;
-    }
   }
 }
 
