@@ -12,6 +12,7 @@ import DeleteListingButton from '../common/DeleteListingButton';
 import { UserDisplayName } from '../common/UserDisplayName';
 import { useAddListingToCartMutation } from '../../redux/api/shoppingCart';
 import { costToString } from '../../utils/costToString';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductDetailsProps {
   isLoading: boolean;
@@ -21,6 +22,7 @@ interface ProductDetailsProps {
 
 export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => {
   const listing = useAppSelector((state) => state.listings.listingDetails);
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.user.value);
   const [addListingToCart] = useAddListingToCartMutation();
   const itemInCart = useAppSelector((state) => state.cart.items)?.Items.find(
@@ -43,6 +45,18 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
     return <NoContent message="There was no listing found, please try again later!" />;
   }
   const { ListingName, Cost, User, Description, PostedTimestamp, ListingID } = listing;
+  const addToCart = () => {
+    addListingToCart({
+      listing,
+      userId: user?.UserID || '',
+      body: {
+        ListingID,
+        Quantity: Number(quantityRef.current.value),
+      },
+    })
+      .unwrap()
+      .catch(() => setErrorToast(true));
+  };
 
   return (
     <div className="product-details">
@@ -75,23 +89,14 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           <LocalShippingIcon className="product-details__shipping-icon" />
           <p className="product-details__small-text">Offers shipping</p>
         </Grid>
-        {Number(user?.UserID) !== listing.UserID ? (
+        {Number(user?.UserID) !== listing.UserID && !itemInCart ? (
           <Grid item xs={12} className="product-details__buttons">
             <Button
               variant="contained"
               color="secondary"
-              onClick={() =>
-                addListingToCart({
-                  listing,
-                  userId: user?.UserID || '',
-                  body: {
-                    ListingID,
-                    Quantity: Number(quantityRef.current.value),
-                  },
-                })
-                  .unwrap()
-                  .catch(() => setErrorToast(true))
-              }
+              onClick={() => {
+                addToCart();
+              }}
               sx={{ paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
             >
               Add to Cart
@@ -100,6 +105,10 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
               variant="contained"
               color="secondary"
               sx={{ ml: 2, paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
+              onClick={() => {
+                addToCart();
+                navigate('/cart');
+              }}
             >
               Buy Now
             </Button>
@@ -107,9 +116,21 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
         ) : null}
       </Grid>
       {itemInCart && !errorToast && (
-        <span className="product-details__cart-description">
-          You currently have {itemInCart.Quantity} order(s) of this item in your cart.
-        </span>
+        <div>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              navigate('/cart');
+            }}
+            sx={{ paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
+          >
+            View Shopping Cart
+          </Button>
+          <span className="product-details__cart-description">
+            You currently have {itemInCart.Quantity} order(s) of this item in your cart.
+          </span>
+        </div>
       )}
       <DetailsMetaData quantityRef={quantityRef} />
       <div className="product-details__description-container">
