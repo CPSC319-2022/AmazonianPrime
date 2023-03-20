@@ -106,7 +106,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           </Grid>
         ) : null}
       </Grid>
-      {itemInCart && (
+      {itemInCart && !errorToast && (
         <span className="product-details__cart-description">
           You currently have {itemInCart.Quantity} order(s) of this item in your cart.
         </span>
