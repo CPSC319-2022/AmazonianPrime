@@ -39,36 +39,6 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  // return (
-  //   stepFunctions
-  //     .startExecution(params)
-  //     .promise()
-  //     .then(async (data) => {
-  //       // console.log("==> data: ", data);
-  //       // await new Promise((r) => setTimeout(r, 6000));
-  //       // return stepFunctions
-  //       //   .describeExecution({ executionArn: data.executionArn })
-  //       //   .promise();
-  //       return {
-  //         statusCode: 200,
-  //         message: JSON.stringify(data),
-  //       };
-  //     })
-  //     // .then((result) => {
-  //     //   return {
-  //     //     statusCode: 200,
-  //     //     message: JSON.stringify(result),
-  //     //   };
-  //     // })
-  //     .catch((err) => {
-  //       console.error("err: ", err);
-  //       return {
-  //         statusCode: 500,
-  //         message: JSON.stringify({ message: "facing error" }),
-  //       };
-  //     })
-  // );
-
   return {
     statusCode: 200,
     body:
@@ -79,28 +49,4 @@ exports.lambdaHandler = async (event, context) => {
       ", Describe Execution" +
       JSON.stringify(res2),
   };
-
-  // return stepFunctions
-  //   .startExecution(params)
-  //   .promise()
-  //   .then(async (data) => {
-  //     console.log("==> data: ", data);
-  //     await new Promise((r) => setTimeout(r, 6000));
-  //     return stepFunctions
-  //       .describeExecution({ executionArn: data.executionArn })
-  //       .promise();
-  //   })
-  //   .then((result) => {
-  //     return {
-  //       statusCode: 200,
-  //       message: JSON.stringify(result),
-  //     };
-  //   })
-  //   .catch((err) => {
-  //     console.error("err: ", err);
-  //     return {
-  //       statusCode: 500,
-  //       message: JSON.stringify({ message: "facing error" }),
-  //     };
-  //   });
 };

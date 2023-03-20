@@ -12,11 +12,16 @@
  */
 exports.lambdaHandler = async (event, context) => {
   // Check current price of the stock
-  random_number = Math.floor(Math.random() * 100); // Current stock price is mocked as a random integer between 0 and 100
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  // random_number = Math.floor(Math.random() * 100); // Current stock price is mocked as a random integer between 0 and 100
+  // await new Promise((resolve) => setTimeout(resolve, 2000));
+  // response = {
+  //   statusCode: 200,
+  //   body: 'Your number is: ' + random_number,
+  // };
+  // return response;
   response = {
     statusCode: 200,
-    body: 'Your number is: ' + random_number,
+    body: 'Your number is: ' + JSON.stringify(event),
   };
   return response;
 };
