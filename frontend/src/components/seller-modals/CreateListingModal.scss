@@ -88,6 +88,9 @@
 
 .create-listing__condition {
   margin-right: 1em;
+  p {
+    margin: 0;
+  }
 }
 
 .seller-modal__save-button.seller-modal__save-button {
@@ -102,9 +105,6 @@
   margin-top: 1em;
   display: flex;
   flex-direction: row;
-  &:hover {
-    cursor: pointer;
-  }
 }
 
 .success-toast {
@@ -124,6 +124,9 @@
 
   .listing-modal__more-details-main {
     font-size: 1.1em;
+    &:hover {
+      cursor: pointer;
+    }
   }
   .listing-modal__more-details-sub {
     font-size: 0.85em;

@@ -4,12 +4,12 @@
   flex-direction: row;
   align-items: center;
 
-  color: $primary-color;
+  color: $grey;
   span {
-    border-bottom: 1px solid #1b2a5a;
-    font-size: 0.9em;
+    font-size: 0.85em;
     &:hover {
       cursor: pointer;
+      text-decoration: underline;
     }
   }
 }
