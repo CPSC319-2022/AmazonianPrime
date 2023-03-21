@@ -42,30 +42,10 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const checkUserIDQuery = `SELECT * FROM BankingDetails WHERE UserID = ${UserID}`;
+  const updateBankingQuery = `UPDATE BankingDetails SET AddressID=${AddressID}, InstitutionNum=${InstitutionNum}, AccountNum=${AccountNum}, TransitNum=${TransitNum}, NameOnCard="${NameOnCard}" WHERE UserID = ${UserID} `;
 
-  const checkUserID = await new Promise((resolve, reject) => {
-    con.query(checkUserIDQuery, function (err, res) {
-      if (err) {
-        reject("Couldn't return the select from database!");
-      }
-      resolve(res);
-    });
-  });
-
-  if (checkUserID.length !== 0) {
-    return {
-      statusCode: 401,
-      body:
-        'the following banking details entry already exists for this user: ' +
-        JSON.stringify(checkUserID),
-    };
-  }
-
-  const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum}, "${NameOnCard}")`;
-
-  const addBankingDetails = await new Promise((resolve, reject) => {
-    con.query(addBankingDetailsQuery, function (err, res) {
+  const updateBankingDetails = await new Promise((resolve, reject) => {
+    con.query(updateBankingQuery, function (err, res) {
       if (err) {
         reject("Couldn't add the banking detail to database!");
       }
@@ -73,14 +53,14 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const BankingID = addBankingDetails['insertId'];
+  console.log(updateBankingDetails);
 
-  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE UserID = ${UserID}`;
-
-  const getBanking = await new Promise((resolve, reject) => {
+  let getBanking;
+  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE UserID = "${UserID}"`;
+  getBanking = await new Promise((resolve, reject) => {
     con.query(getBankingByIdQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the banking details from database!");
+        reject("Couldn't get the banking detail from database!");
       }
       resolve(res);
     });
