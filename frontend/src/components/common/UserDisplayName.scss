@@ -1,0 +1,27 @@
+.user-display_user-avatar {
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  border-radius: 50%;
+  font-size: 17px;
+  font-weight: 450;
+  color: #1b2a5a;
+  text-align: center;
+  background: #a5d8f3;
+  margin-right: 0.5em;
+}
+
+.user-display__user-name {
+  font-size: 14px;
+}
+
+.user-display__user-department {
+  font-size: 10px;
+  color: red;
+}
+
+.user-display__seller-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
