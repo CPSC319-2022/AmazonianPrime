@@ -41,6 +41,24 @@ exports.lambdaHandler = async (event, context) => {
       body: 'Missing required fields'
     };
   }
+  
+  const checkUserIDQuery = `SELECT * FROM BankingDetails WHERE UserID = ${UserID}`;
+  
+  const checkUserID = await new Promise((resolve, reject) => {
+    con.query(checkUserIDQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't return the select from database!");
+      }
+      resolve(res);
+    });
+  });
+  
+  if (checkUserID.length !== 0) {
+    return {
+      statusCode: 401,
+      body: "the following banking details entry already exists for this user: " + JSON.stringify(checkUserID)
+    };
+  }
 
   const addBankingDetailsQuery = `INSERT INTO BankingDetails(UserID, AddressID, InstitutionNum, AccountNum, TransitNum, NameOnCard) VALUES(${UserID}, ${AddressID}, ${InstitutionNum}, ${AccountNum}, ${TransitNum}, "${NameOnCard}")`;
 
@@ -55,7 +73,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const BankingID = addBankingDetails['insertId'];
 
-  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE BankingID = "${BankingID}"`;
+  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE UserID = ${UserID} AND AddressID = ${AddressID}`;
 
   const getBanking = await new Promise((resolve, reject) => {
     con.query(getBankingByIdQuery, function (err, res) {
@@ -68,6 +86,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(getBanking[0]),
+    body: JSON.stringify(getBanking[0])
   };
 };
