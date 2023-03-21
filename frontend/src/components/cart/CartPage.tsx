@@ -8,9 +8,13 @@ import useSticky from '../../utils/useSticky';
 import NoContent from '../common/NoContent';
 import { costToString } from '../../utils/costToString';
 import { CartItem } from './CartItem';
+import Breadcrumbs from '../common/Breadcrumbs';
+import { useState } from 'react';
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
+  const [selectedAddress, setSelectedAddress] = useState(0);
+  const [selectedPayment, setSelectedPayment] = useState(0);
   let subtotal = 0;
   const { sticky, stickyRef } = useSticky(45);
   const cartItems = useAppSelector((state) => state.cart.items);
@@ -85,63 +89,95 @@ function CartPage() {
   };
 
   return (
-    <Grid container className="cart-page">
-      <Grid item xs={8}>
-        <div className="cart__top-content">
-          <div>
-            <div className="cart-title">
-              <ShoppingCartIcon fontSize="large" className="cart-icon" />
-              <span>Shopping Cart</span>
+    <div>
+      <Breadcrumbs />
+
+      <Grid container className="cart-page">
+        <Grid item xs={8}>
+          <div className="cart__top-content">
+            <div>
+              <div className="cart__welcome-message">
+                {`Welcome ${user?.FirstName}, to your Shopping Cart. Please review each item before checking out. `}
+              </div>
             </div>
-            <div className="cart__welcome-message">
-              {`Welcome ${user?.FirstName}, to your Shopping Cart. Please review each item before checking out. `}
+            <AddressChange
+              selectedAddress={selectedAddress}
+              setSelectedAddress={setSelectedAddress}
+              addresses={[
+                '1234 Test Drive Vancouver, British Columbia V5C 1J3',
+                '5436 Test Drive Vancouver, British Columbia V5C 1J3',
+              ]}
+              selectedPayment={selectedPayment}
+              setSelectedPayment={setSelectedPayment}
+              payments={[
+                <>
+                  <div>
+                    Credit Card ending in <span className="address__grey">5432</span>
+                  </div>
+                  <div>
+                    <span className="address-change__button-billing">Billing Address&nbsp;</span>
+                    1234 Test Drive Vancouver, British Columbia V5C 1J3
+                  </div>
+                </>,
+                <>
+                  <div>
+                    Credit Card ending in <span className="address__grey">1234</span>
+                  </div>
+                  <div>
+                    <span className="address-change__button-billing">Billing Address&nbsp;</span>
+                    some other address
+                  </div>
+                </>,
+              ]}
+            />
+            <div className="cart__items-quantity">
+              3&nbsp;&nbsp;{`Review Items (${cartItems?.TotalQuantity || 0} items)`}
             </div>
           </div>
-          <AddressChange />
-          <div className="cart__items-quantity">
-            3&nbsp;&nbsp;{`Review Items (${cartItems?.TotalQuantity || 0} items)`}
-          </div>
-        </div>
-        {isLoading
-          ? Array(3)
-              .fill(0)
-              .map(() => cartItemSkeleton)
-          : renderCartItems()}
+          {isLoading
+            ? Array(3)
+                .fill(0)
+                .map(() => cartItemSkeleton)
+            : renderCartItems()}
+        </Grid>
+        <Grid item xs={4}>
+          {isLoading ? (
+            cartTotalSkeleton
+          ) : (
+            <div className={`cart__order-summary` + cartSummaryClass} ref={stickyRef}>
+              {orderSummaryText}
+              {cartItems.Items?.map((order) => {
+                const { Listing } = order;
+                if (!Listing) {
+                  return null;
+                }
+                const listingQuantityCost = order.Quantity * Listing.Cost;
+                subtotal += listingQuantityCost;
+                return (
+                  <div className="cart__listing-header-summary">
+                    <span className="cart__listing-name">
+                      {Listing?.ListingName}&nbsp;
+                      <span className="cart__listing-name-quantity">{`x${order.Quantity}`}</span>
+                    </span>
+                    <span className="cart__listing-cost">${costToString(listingQuantityCost)}</span>
+                  </div>
+                );
+              })}
+              <span className="cart__order-summary-half-border"></span>
+              {getSummaryHeading(
+                `Subtotal (${cartItems?.TotalQuantity} items) Before Tax`,
+                `$${costToString(subtotal)}`,
+              )}
+              {getSummaryHeading('Estimated GST/HST', '$0.00')}
+              {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
+              <span className="cart__order-summary-border"></span>
+              {getSummaryHeading('Order Total', `$${costToString(subtotal)}`, true)}
+              {placeOrderButton()}
+            </div>
+          )}
+        </Grid>
       </Grid>
-      <Grid item xs={4}>
-        {isLoading ? (
-          cartTotalSkeleton
-        ) : (
-          <div className={`cart__order-summary` + cartSummaryClass} ref={stickyRef}>
-            {orderSummaryText}
-            {cartItems.Items?.map((order) => {
-              const { Listing } = order;
-              if (!Listing) {
-                return null;
-              }
-              const listingQuantityCost = order.Quantity * Listing.Cost;
-              subtotal += listingQuantityCost;
-              return (
-                <div className="cart__listing-header-summary">
-                  <span className="cart__listing-name">
-                    {Listing?.ListingName}&nbsp;
-                    <span className="cart__listing-name-quantity">{`x${order.Quantity}`}</span>
-                  </span>
-                  <span className="cart__listing-cost">${costToString(listingQuantityCost)}</span>
-                </div>
-              );
-            })}
-            <span className="cart__order-summary-half-border"></span>
-            {getSummaryHeading(`Subtotal (${cartItems?.TotalQuantity} items) Before Tax`, `$${costToString(subtotal)}`)}
-            {getSummaryHeading('Estimated GST/HST', '$0.00')}
-            {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
-            <span className="cart__order-summary-border"></span>
-            {getSummaryHeading('Order Total', `$${costToString(subtotal)}`, true)}
-            {placeOrderButton()}
-          </div>
-        )}
-      </Grid>
-    </Grid>
+    </div>
   );
 }
 

@@ -1,0 +1,31 @@
+.seller-__button-container {
+  margin-top: 1em;
+  display: flex;
+}
+
+.seller-__banking-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.seller__address,
+.seller-__banking-details {
+  margin: 0.5em 0;
+}
+
+.seller-__fname.seller-__fname,
+.seller-__banking-details-inst-no.seller-__banking-details-inst-no {
+  margin-right: 0.5em;
+}
+
+.seller-__banking-details-row.seller-__banking-details-row {
+  margin-bottom: 0.5em;
+}
+
+.cancel__button.cancel__button {
+  margin-right: 0.65em;
+}
+
+.seller-buttons-left {
+  margin-left: auto;
+}

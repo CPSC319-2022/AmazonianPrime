@@ -11,18 +11,8 @@ import Checkbox from '@mui/material/Checkbox';
 import PaymentGrid from '../common/PaymentGrid';
 import AddressGrid from '../common/AddressGrid';
 import { LoadingButton } from '@mui/lab';
+import { UserSetting } from '../common/UserSettings';
 
-const departments = [
-  'Marketing',
-  'Sales',
-  'Development',
-  'UX Design',
-  'Human Resources',
-  'Legal',
-  'DevOps',
-  'IT',
-  'Security',
-];
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
 
@@ -185,48 +175,12 @@ function BuyerRegistration() {
           <div className="buyer-registration-page__department-prompt">
             <span>Profile</span>
           </div>
-          <div>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  label="Preferred First Name"
-                  defaultValue={user?.FirstName}
-                  fullWidth
-                  size="small"
-                  inputRef={profileFirstNameInput}
-                  className="buyer-registration-page__name-input"
-                  onChange={(e) => setFirstNameInput(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  label="Last Name"
-                  defaultValue={user?.LastName}
-                  fullWidth
-                  size="small"
-                  inputRef={profileLastNameInput}
-                  className="buyer-registration-page__name-input"
-                  onChange={(e) => setLastNameInput(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-          </div>
-          <FormControl className="buyer-registration-page__department-input" size="small">
-            <InputLabel id="demo-simple-select-label">Department</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={departmentInput}
-              label="Department"
-              onChange={(e) => setDepartmentInput(e.target.value)}
-            >
-              {departments.map((dept) => (
-                <MenuItem value={dept}>{dept}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <UserSetting
+            departmentInput={departmentInput}
+            setDepartmentInput={setDepartmentInput}
+            profileLastNameInput={profileLastNameInput}
+            profileFirstNameInput={profileFirstNameInput}
+          />
           <div className="buyer-registration-page__forms">
             <PaymentGrid
               setFirstNameInput={setFirstNameInput}

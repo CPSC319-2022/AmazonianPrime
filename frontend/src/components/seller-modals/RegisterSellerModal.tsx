@@ -19,6 +19,7 @@ import { useRef, useState } from 'react';
 import AddressGrid from '../common/AddressGrid';
 import { useAddAddressMutation, useAddBankingMutation } from '../../redux/api/user';
 import LoadingButton from '@mui/lab/LoadingButton';
+import RegisterSeller from '../common/RegisterSeller';
 
 function RegisterSellerModal() {
   const [billingAddressInput, setBillingAddressInput] = useState('');
@@ -104,94 +105,14 @@ function RegisterSellerModal() {
 
   return (
     <div>
-      <Snackbar open={!!openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
-          {openErrorToast}
-        </Alert>
-      </Snackbar>
       <Dialog open={isSellerModalOpen && !isSellerRegistered} onClose={() => handleClose(false)}>
         <DialogTitle>Register Before Selling</DialogTitle>
         <DialogContent>
-          <DialogContentText paddingBottom={4}>
+          <DialogContentText paddingBottom={1}>
             Before You Start Selling, Please Add Your Banking Details!
           </DialogContentText>
-          <div>
-            <span>Banking Details</span>
-            <div className="seller-modal__banking-details">
-              <div className="seller-modal__banking-details-row">
-                <TextField
-                  autoComplete="off"
-                  inputRef={fullName}
-                  className="seller-modal__fname"
-                  size="small"
-                  required
-                  id="outlined-required"
-                  label="Full Name"
-                />
-              </div>
-              <TextField
-                autoComplete="off"
-                inputRef={accountNumber}
-                inputProps={{ maxLength: 12 }}
-                helperText="7 to 12-digit number"
-                className="seller-modal__banking-details-row"
-                size="small"
-                required
-                id="outlined-required"
-                label="Account No."
-              />
-              <div className="seller-modal__banking-details-row">
-                <TextField
-                  autoComplete="off"
-                  inputRef={institutionNumber}
-                  inputProps={{ maxLength: 3 }}
-                  className="seller-modal__banking-details-inst-no"
-                  size="small"
-                  required
-                  id="outlined-required"
-                  label="Institution No."
-                  helperText="3 digit number"
-                />
-                <TextField
-                  autoComplete="off"
-                  inputProps={{ maxLength: 5 }}
-                  inputRef={transitNumber}
-                  size="small"
-                  required
-                  id="outlined-required"
-                  label="Transit No."
-                  helperText="5 digit number"
-                />
-              </div>
-            </div>
-          </div>
-          <span>Billing Address</span>
-          <div className="seller__address">
-            <AddressGrid
-              setAddressInput={setBillingAddressInput}
-              setCityInput={setBillingCityInput}
-              setProvinceInput={setBillingProvinceInput}
-              setPostalCodeInput={setBillingPostalCodeInput}
-              setCountryInput={setBillingCountryInput}
-            />
-          </div>
+          <RegisterSeller onCancel={handleClose} />
         </DialogContent>
-        <DialogActions>
-          <div className="seller-modal__button-container">
-            <Button onClick={() => handleClose(false)}>Cancel</Button>
-            <LoadingButton
-              loading={isLoading}
-              loadingPosition="start"
-              startIcon={<DoneAllIcon />}
-              className="seller-modal__save-button"
-              color="secondary"
-              variant="contained"
-              onClick={handleSave}
-            >
-              Save
-            </LoadingButton>
-          </div>
-        </DialogActions>
       </Dialog>
     </div>
   );

@@ -15,7 +15,16 @@
   color: $grey;
 }
 
+.change-content.change-content {
+  padding-bottom: 0;
+}
+
+.manage-profile__button.manage-profile__button {
+  margin: 0 1em 0.75em 0;
+}
+
 .address-change__button,
+.address-change__button-redirect,
 .address-change__button-billing {
   margin-left: 0.5em;
   font-size: 0.9em;
@@ -26,6 +35,18 @@
   }
 }
 
+.address-change__button-billing {
+  &:hover {
+    cursor: unset;
+    text-decoration: unset;
+  }
+}
+
+.address-change__button-redirect {
+  font-weight: 400;
+  color: $grey;
+  font-size: 0.8em;
+}
 .address-change__button-billing {
   margin-left: 0;
 }

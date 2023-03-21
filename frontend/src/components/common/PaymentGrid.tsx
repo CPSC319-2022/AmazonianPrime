@@ -61,7 +61,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
               onChange={(e) => setLastNameInput(e.target.value)}
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <TextField
               fullWidth
               required
