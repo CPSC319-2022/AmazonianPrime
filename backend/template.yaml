@@ -140,6 +140,21 @@ Resources:
           Properties:
             Path: /api/listing-old/{listingid} # Ensure api is proxied with /api/*
             Method: get
+
+  GetOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: listing/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/listing-old/{userid} # Ensure api is proxied with /api/*
+            Method: get
   LoginFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -488,100 +503,6 @@ Resources:
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
-  UpdateShoppingCartFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/add-to-cart/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      Events:
-        http:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/user/shopping-cart/{userid} # Ensure api is proxied with /api/*
-            Method: put
-      VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
-  GetShoppingCartFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/get-cart/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      Events:
-        http:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/user/shopping-cart/{userid} # Ensure api is proxied with /api/*
-            Method: get
-      VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
-  DeleteFromShoppingCartFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/remove-from-cart/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      Events:
-        http:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/user/shopping-cart/{userid} # Ensure api is proxied with /api/*
-            Method: delete
-            RequestParameters:
-              - method.request.querystring.listingId:
-                  Required: true
-                  Caching: false
-      VpcConfig:
-        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
-        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
   UpdateListingFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -742,7 +663,7 @@ Resources:
               - s3:GetObject
             Resource: !Sub "arn:aws:s3:::${ImageBucket}/*"
 
-  ImageUploadLambdaRole:
+  CreateListingFunctionLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -786,7 +707,7 @@ Resources:
     Properties:
       CodeUri: functions/create-listing/
       Handler: app.lambdaHandler
-      Role: !GetAtt ImageUploadLambdaRole.Arn
+      Role: !GetAtt CreateListingFunctionLambdaRole.Arn
       Runtime: nodejs14.x
       Environment:
         Variables:
@@ -870,7 +791,36 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
-              Resource: '*'
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/create-order/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/orders/create/{UserId} # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
