@@ -6,7 +6,7 @@ import { useDeleteListingMutation } from '../../redux/api/listings';
 import { setPartialListingDetails } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import { ListingPreview as ListingPreviewType } from '../../types/listingPreview';
-import useBreadcrumbHistory from '../common/useBreadcrumbHistory';
+import useBreadcrumbHistory from '../../utils/useBreadcrumbHistory';
 import './ListingPreview.scss';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { ListingPreviewSkeleton } from './ListingPreviewSkeleton';
@@ -30,6 +30,8 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
   const height = '250px';
   const width = imageWidth ?? '220px';
   const history = useBreadcrumbHistory();
+  const user = useAppSelector((state) => state.user.value);
+  const [deleteListing] = useDeleteListingMutation();
 
   if (!listing) {
     return <ListingPreviewSkeleton imageHeight={height} imageWidth={width} />;
@@ -51,7 +53,13 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
       <span className="listing-preview__cost">${Cost}</span>
       <div className="listing-preview__name">{ListingName}</div>
       {showRemoveListingButton ? (
-        <DeleteListingButton listingId={ListingID} />
+        <DeleteListingButton
+          failMessage="Failed to delete the listing. Please try again later."
+          successMessage="Successfully deleted the listing!"
+          handleClick={() => {
+            return deleteListing({ ListingID: Number(ListingID), UserID: user?.UserID || '' });
+          }}
+        />
       ) : (
         <div>
           {User?.FirstName}&nbsp;{User?.LastName?.charAt(0)}.

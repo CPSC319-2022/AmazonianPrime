@@ -1,7 +1,7 @@
 import { IconButton } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import useMenu from '../common/useMenu';
-import { getSlugCategory } from '../common/convertSlugCategory';
+import useMenu from '../../utils/useMenu';
+import { getSlugCategory } from '../../utils/convertSlugCategory';
 import { useNavigate } from 'react-router-dom';
 import Menu from '../common/Menu';
 

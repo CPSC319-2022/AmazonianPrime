@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useAppSelector } from '../../redux/store';
 import SellerModal from '../seller-modals/SellerModal';
-import useSticky from '../common/useSticky';
+import useSticky from '../../utils/useSticky';
 import CategoriesButton from './CategoriesButton';
 import { AccountButton } from './AccountButton';
 
@@ -23,6 +23,8 @@ function ToolBar() {
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
 
   const user = useAppSelector((state) => state.user.value);
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const size = cartItems?.TotalQuantity || 0 > 0 ? '20px' : 0;
   if (!user?.Department) return null;
   return (
     <>
@@ -49,9 +51,17 @@ function ToolBar() {
               <SearchBar />
             </Grid>
             <Grid item xs={2} container direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton color="primary" component="label" onClick={() => navigate('/cart')}>
-                <ShoppingCartIcon sx={{ fontSize: 30 }} />
-              </IconButton>
+              <div className="cart-container">
+                <IconButton color="primary" component="label" onClick={() => navigate('/cart')}>
+                  <ShoppingCartIcon sx={{ fontSize: 30 }} />
+                </IconButton>
+                <span
+                  className="cart-quantity"
+                  style={{ width: size, height: size, fontSize: cartItems?.TotalQuantity === 0 ? '0' : '15px' }}
+                >
+                  {cartItems?.TotalQuantity || (0 > 0 && cartItems?.TotalQuantity)}
+                </span>
+              </div>
               <AccountButton />
             </Grid>
           </Grid>
