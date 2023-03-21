@@ -75,7 +75,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const BankingID = addBankingDetails['insertId'];
 
-  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE UserID = ${UserID} AND AddressID = ${AddressID}`;
+  const getBankingByIdQuery = `SELECT * FROM BankingDetails WHERE UserID = ${UserID}`;
 
   const getBanking = await new Promise((resolve, reject) => {
     con.query(getBankingByIdQuery, function (err, res) {
