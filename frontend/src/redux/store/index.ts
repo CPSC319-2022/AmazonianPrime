@@ -4,6 +4,7 @@ import userReducer from '../reducers/userSlice';
 import listingsReducer from '../reducers/listingsSlice';
 import cartReducer from '../reducers/shoppingCartSlice';
 import sellerModalReducer from '../reducers/sellerModalSlice';
+import appReducer from '../reducers/appSlice';
 import { userApi } from '../api/user';
 import { listingsApi } from '../api/listings';
 import { shoppingCartApi } from '../api/shoppingCart';
@@ -13,6 +14,7 @@ const store = configureStore({
     // user
     user: userReducer,
     cart: cartReducer,
+    app: appReducer,
     [shoppingCartApi.reducerPath]: shoppingCartApi.reducer,
     sellerModal: sellerModalReducer,
     [userApi.reducerPath]: userApi.reducer,

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useDeleteListingMutation } from '../../redux/api/listings';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Snackbar, Alert } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { setFailMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 
 interface DeleteListingButtonProps {
   handleClick: any;
@@ -20,39 +22,24 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
   failMessage,
   showIcon = true,
 }) => {
-  const [successToast, setSuccessToast] = useState(false);
   const [queueToast, setQueueToast] = useState(false);
-  const [failToast, setFailToast] = useState(false);
+  const dispatch = useDispatch();
   const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setQueueToast(false);
-    setFailToast(false);
-    setSuccessToast(false);
   };
 
   return (
     <div>
-      {successMessage && (
-        <Snackbar open={successToast && !failToast} autoHideDuration={6000} onClose={handleCloseToast}>
-          <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%' }}>
-            {successMessage}
-          </Alert>
-        </Snackbar>
-      )}
       {queueMessage && (
-        <Snackbar open={queueToast && !(failToast || successToast)} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Snackbar open={queueToast} autoHideDuration={6000} onClose={handleCloseToast}>
           <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
             {queueMessage}
           </Alert>
         </Snackbar>
       )}
-      <Snackbar open={failToast && !successToast} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
-          {failMessage}
-        </Alert>
-      </Snackbar>
       <div className="pdp__delete-listing">
         {showIcon && <DeleteOutlineIcon sx={{ fontSize: 20 }} />}
         <span
@@ -62,11 +49,13 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
               ?.unwrap()
               .then(() => {
                 setQueueToast(false);
-                setSuccessToast(true);
+                dispatch(setFailMessage(null));
+                dispatch(setSuccessMessage(successMessage));
               })
-              .catch(() => {
+              .catch((e: any) => {
+                dispatch(setSuccessMessage(null));
                 setQueueToast(false);
-                setFailToast(true);
+                dispatch(setFailMessage(failMessage));
               });
           }}
         >

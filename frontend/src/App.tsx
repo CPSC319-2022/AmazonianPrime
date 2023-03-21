@@ -14,9 +14,13 @@ import BrowsePage from './components/browse-page/BrowsePage';
 import BuyerRegistration from './components/login/BuyerRegistration';
 import { useShoppingCartQuery } from './redux/api/shoppingCart';
 import { addItemsToCart, setIsLoadingCart } from './redux/reducers/shoppingCartSlice';
+import { Snackbar, Alert } from '@mui/material';
+import { setFailMessage, setSuccessMessage } from './redux/reducers/appSlice';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
+  const successMessage = useAppSelector((state) => state.app.successMessage);
+  const failMessage = useAppSelector((state) => state.app.failMessage);
   const dispatch = useAppDispatch();
   const isLoggedIn = sessionStorage.getItem('user');
   const { data, isLoading } = useShoppingCartQuery(user?.UserID || '');
@@ -42,9 +46,27 @@ const AppWrapper = () => {
     }
   }, [data]);
 
+  const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    dispatch(setFailMessage(null));
+    dispatch(setSuccessMessage(null));
+  };
+
   return (
     <ThemeProvider theme={Theme}>
       <NavBar />
+      <Snackbar open={successMessage !== null} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%' }}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={failMessage !== null} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
+          {failMessage}
+        </Alert>
+      </Snackbar>
       <Routes>
         <Route path="/" element={renderHomePage()} />
         <Route path="/listing/:listingId" element={<ProductDetailsPage />} />
