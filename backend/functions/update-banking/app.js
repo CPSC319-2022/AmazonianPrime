@@ -38,7 +38,7 @@ exports.lambdaHandler = async (event, context) => {
   ) {
     return {
       statusCode: 400,
-      body: 'Missing required fields'
+      body: 'Missing required fields',
     };
   }
 
