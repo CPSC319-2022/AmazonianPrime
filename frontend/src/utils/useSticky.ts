@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 // ref: https://saltares.com/sticky-nav-bar-on-scroll-with-react-hooks/
-const useSticky = () => {
+const useSticky = (offsetInput = 0) => {
   const stickyRef = useRef<any>(null);
   const [sticky, setSticky] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(offsetInput);
 
   useEffect(() => {
     if (!stickyRef.current) {

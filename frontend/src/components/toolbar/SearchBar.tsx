@@ -6,9 +6,9 @@ import { Button, IconButton } from '@mui/material';
 import Menu from '../common/Menu';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useMemo } from 'react';
-import { categories } from '../common/Categories';
-import useMenu from '../common/useMenu';
-import { getFriendlyCategoryString, getSlugCategory } from '../common/convertSlugCategory';
+import { categories } from '../../utils/Categories';
+import useMenu from '../../utils/useMenu';
+import { getFriendlyCategoryString, getSlugCategory } from '../../utils/convertSlugCategory';
 import { useDispatch } from 'react-redux';
 import { setIsLoadingListings } from '../../redux/reducers/listingsSlice';
 

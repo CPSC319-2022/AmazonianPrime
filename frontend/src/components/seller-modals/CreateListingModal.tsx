@@ -14,6 +14,7 @@ import {
   SelectChangeEvent,
   FormControl,
   InputLabel,
+  FormHelperText,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -21,16 +22,16 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SellIcon from '@mui/icons-material/Sell';
 import './CreateListingModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store/index';
+import { RootState, useAppSelector } from '../../redux/store/index';
 import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import { FileUploader } from 'react-drag-drop-files';
-import { categories } from '../common/Categories';
-import { blobToBase64 } from '../common/imageToBase64';
+import { categories } from '../../utils/Categories';
+import { blobToBase64 } from '../../utils/imageToBase64';
 import { useCreateListingMutation } from '../../redux/api/listings';
 import { useNavigate } from 'react-router';
-import useBreadcrumbHistory from '../common/useBreadcrumbHistory';
+import useBreadcrumbHistory from '../../utils/useBreadcrumbHistory';
 // @ts-ignore
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Listing } from '../../types/listing';
@@ -58,8 +59,7 @@ function CreateListingModal() {
   const brandRef = useRef<any>(null);
   const sizeRef = useRef<any>(null);
   const [createListing] = useCreateListingMutation();
-  const history = useBreadcrumbHistory();
-  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.user.value);
 
   useEffect(() => {
     // reset
@@ -77,6 +77,7 @@ function CreateListingModal() {
     }
     setOpenErrorToast('');
     setIsLoading(false);
+    setError(null);
   };
 
   const handleSuccessCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -91,7 +92,9 @@ function CreateListingModal() {
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
-    const errorMessage = [missingTitle, missingDescription, missingImage].filter((msg) => msg).join(', ');
+    const missingCost =
+      (!Number(costRef.current?.value) || Number(costRef.current?.value) === 0) && 'Cost should be more than $0';
+    const errorMessage = [missingTitle, missingDescription, missingImage, missingCost].filter((msg) => msg).join(', ');
     if (errorMessage) {
       setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
       return;
@@ -100,6 +103,8 @@ function CreateListingModal() {
       setOpenErrorToast('Please provide a brief description!');
       return;
     }
+    handleModalClose();
+    setIsLoading(true);
 
     handleModalClose();
     setIsLoading(true);
@@ -111,7 +116,7 @@ function CreateListingModal() {
       return;
     }
     await createListing({
-      UserID: 1,
+      UserID: Number(user?.UserID) || 0,
       ListingName: titleRef.current?.value,
       Description: descriptionRef.current?.value,
       Cost: Number(costRef.current?.value),
@@ -177,10 +182,12 @@ function CreateListingModal() {
   };
 
   const moreDetailsButton = (
-    <div className="listing-modal__more-details-container" onClick={() => setShowMore(true)}>
+    <div className="listing-modal__more-details-container">
       <ExpandMoreIcon />
       <div className="listing-modal__more-details">
-        <span className="listing-modal__more-details-main">More Details</span>
+        <span className="listing-modal__more-details-main" onClick={() => setShowMore(true)}>
+          More Details
+        </span>
         <span className="listing-modal__more-details-sub">Additional information about your listing.</span>
       </div>
     </div>
@@ -209,9 +216,9 @@ function CreateListingModal() {
       </Snackbar>
       <Snackbar open={result !== null} onClose={handleSuccessCloseToast} autoHideDuration={12000}>
         <Alert onClose={handleSuccessCloseToast} severity="success" sx={{ width: '100%' }}>
-          <span className="success-toast">
+          <span className="link-toast">
             <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
-            <a href={`/listing/${result?.ListingID}`}>here.</a>
+            <a href={`/listing/${result?.ListingID}`}>here</a>.
           </span>
         </Alert>
       </Snackbar>
@@ -257,12 +264,7 @@ function CreateListingModal() {
               </div>
               <div className="create-listing__content-row">
                 <span className="create-listing__condition">Condition</span>
-                <Select
-                  size="small"
-                  className="create-listing__condition"
-                  value={condition}
-                  onChange={(event) => setCondition(event.target.value)}
-                >
+                <Select size="small" value={condition} onChange={(event) => setCondition(event.target.value)}>
                   {conditions.map((value: string) => {
                     return <MenuItem value={value}>{value}</MenuItem>;
                   })}
@@ -282,6 +284,7 @@ function CreateListingModal() {
                 required
                 inputRef={costRef}
                 label="$"
+                defaultValue={1}
                 className="create-listing__cost"
                 size="small"
                 type="number"

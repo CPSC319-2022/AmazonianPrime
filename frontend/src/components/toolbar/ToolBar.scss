@@ -27,3 +27,20 @@
   background-color: white;
   z-index: 999;
 }
+
+.cart-quantity {
+  border-radius: 50%;
+  color: #1b2a5a;
+  text-align: center;
+  background: #a5d8f3;
+  box-shadow: -1px 2.5px 2.5px rgba(0, 0, 0, 0.25);
+  right: -3px;
+  position: absolute;
+  transition: all 0.15s ease;
+  transition-delay: 0.35s;
+  transition: font-size 0.24s;
+}
+
+.cart-container {
+  position: relative;
+}

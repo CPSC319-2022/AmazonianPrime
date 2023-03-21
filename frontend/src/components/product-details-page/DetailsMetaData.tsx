@@ -1,8 +1,10 @@
 import { Grid, Select, MenuItem } from '@mui/material';
+import React, { useRef } from 'react';
 import { useAppSelector } from '../../redux/store';
+import { QuantitySelect } from '../common/QuantitySelect';
 import './DetailsMetaData.scss';
 
-function DetailsMetaData() {
+const DetailsMetaData: React.FC<{ quantityRef: any }> = ({ quantityRef }) => {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   if (!listing) {
     return null;
@@ -29,21 +31,12 @@ function DetailsMetaData() {
         <Grid item xs={3}>
           <p className="product-details__details__grey-text">Quantity</p>
         </Grid>
-        <Grid item xs={9} marginTop={1}>
-          <Select
-            className="product-details__details__select"
-            defaultValue={1}
-            size="small"
-            style={{ backgroundColor: '#e0e0e0' }}
-          >
-            {Array.from(Array(listing.Quantity).keys()).map((quantity: number) => (
-              <MenuItem value={`${quantity + 1}`}>{quantity + 1}</MenuItem>
-            ))}
-          </Select>
+        <Grid item xs={9} marginTop={1.5}>
+          <QuantitySelect quantity={listing.Quantity} selectRef={quantityRef} />
         </Grid>
       </Grid>
     </div>
   );
-}
+};
 
 export default DetailsMetaData;
