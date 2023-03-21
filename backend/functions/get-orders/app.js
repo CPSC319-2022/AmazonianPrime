@@ -1,5 +1,5 @@
 const dbConnection = require('dbConnection.js');
-const userValidate = require('UserValidate.js')
+const userValidate = require('UserValidate.js');
 var mysql = require('mysql');
 
 /**
@@ -33,7 +33,8 @@ exports.lambdaHandler = async (event, context) => {
 
     const getOrderByUserIDQuery = `SELECT *
                                    FROM Users
-                                   WHERE UserID = ${UserID} LIMIT ${limit}
+                                   WHERE UserID = ${UserID} 
+                                   LIMIT ${limit}
                                    OFFSET ${offset}`;
 
     getOrderByUserID = await new Promise((resolve, reject) => {
