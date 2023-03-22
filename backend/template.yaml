@@ -791,7 +791,7 @@ Resources:
         Listings:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/orders/create/{UserId} # Ensure api is proxied with /api/*
+            Path: /api/orders/create/ # Ensure api is proxied with /api/*
             Method: post
       VpcConfig:
         SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]

@@ -20,7 +20,7 @@ exports.lambdaHandler = async (event, context) => {
         'Password1234',
         'databaseAmazonianPrime',
     );
-
+    console.log(con)
 
     const {
         UserID,
@@ -28,7 +28,9 @@ exports.lambdaHandler = async (event, context) => {
         ShoppingCartItems,
         ShippingStatus
     } = JSON.parse(event.body);
-
+    console.log("UserID: " + UserID)
+    console.log("ShoppingCartItems: " + ShoppingCartItems)
+    console.log("ShippingStatus: " + ShippingStatus)
     if (
         !UserID ||
         !AddressID ||
@@ -42,17 +44,20 @@ exports.lambdaHandler = async (event, context) => {
         }
     }
 
+    console.log("validating user")
+
     if (!userValidate.validateUser(UserID)) {
         return {
             statusCode: 404,
             body: 'User doesnt exist'
         }
     }
-
+    console.log("USer is validated")
 
     const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, ShippingStatus)
-                               VALUES (${UserID}, ${AddressID}, ${ShippingStatus});`;
+                               VALUES (${UserID}, ${AddressID}, "${ShippingStatus}");`;
 
+    console.log("Creating Order")
     const createOrders = await new Promise((resolve, reject) => {
         con.query(createOrdersQuery, function (err, res) {
             if (err) {
@@ -62,8 +67,23 @@ exports.lambdaHandler = async (event, context) => {
         });
     });
 
+    const getOrdersQuery = `SELECT * FROM Orders WHERE OrderID = ${createOrders['insertId']};`;
 
-    for (item in ShoppingCartItems) {
+    console.log("Creating Order")
+    const getOrders = await new Promise((resolve, reject) => {
+        con.query(getOrdersQuery, function (err, res) {
+            if (err) {
+                reject(err);
+            }
+            resolve(res);
+        });
+    });
+    console.log(`Order with OrderID: ${createOrders['insertId']} is created`)
+
+
+    console.log("Add to OrderItem")
+    for (let item of ShoppingCartItems) {
+        console.log(item);
         const addOrderItemQuery = `INSERT INTO OrderItem (OrderID, ListingID, OrderQuantity)
                                    VALUES (${createOrders['insertId']}, ${item.ListingID}, ${item.OrderQuantity});`;
 
@@ -76,8 +96,9 @@ exports.lambdaHandler = async (event, context) => {
             });
         });
     }
+    console.log(createOrders)
     return {
         statusCode: 200,
-        body: createOrders,
+        body: JSON.stringify(getOrders[0]),
     };
 };

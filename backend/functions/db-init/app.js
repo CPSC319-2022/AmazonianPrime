@@ -244,7 +244,7 @@ exports.lambdaHandler = async (event, context) => {
       OrderID int NOT NULL AUTO_INCREMENT,
       ListingID int NOT NULL,
       OrderQuantity int NOT NULL,
-      PRIMARY KEY (OrderID),
+      PRIMARY KEY (OrderID, ListingID),
       FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`;
