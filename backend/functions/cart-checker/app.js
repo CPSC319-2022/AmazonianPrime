@@ -1,5 +1,5 @@
 const dbConnection = require('dbConnection.js');
-// var mysql = require('mysql');
+const { MissingParameterError } = require('errorStates.js');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -19,6 +19,15 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
   const UserID = event['UserID'];
+  const AddressID = event['AddressID'];
+
+  if (
+    !UserID ||
+    !AddressID 
+  ) {
+    throw new MissingParameterError(`Missing required fields`);
+}
+
   const Response = {};
   Response.TotalQuantity = 0;
   

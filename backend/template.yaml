@@ -91,6 +91,8 @@ Resources:
         CheckQuantityFunctionArn: !GetAtt CheckQuantityFunction.Arn
         CreateOrderFunctionArn: !GetAtt CreateOrderFunction.Arn
         ClearShoppingCartFunctionArn: !GetAtt ClearShoppingCartFunction.Arn
+        StepFunctionErrorHandlerFunctionArn: !GetAtt StepFunctionErrorHandlerFunction.Arn
+        PaymentFailErrorFunctionArn: !GetAtt PaymentFailErrorFunction.Arn
         # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
       Policies:
         - LambdaInvokePolicy:
@@ -103,6 +105,10 @@ Resources:
             FunctionName: !Ref CreateOrderFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref ClearShoppingCartFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref StepFunctionErrorHandlerFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref PaymentFailErrorFunction
   CartCheckerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
@@ -195,10 +201,58 @@ Resources:
           Properties:
             Path: /api/payment/ # Testing
             Method: get
+  StepFunctionErrorHandlerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-error-handler/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  PaymentFailErrorFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/payment-fail/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
   CreateOrderFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: functions/create-order/
+      CodeUri: functions/sf-create-order/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:

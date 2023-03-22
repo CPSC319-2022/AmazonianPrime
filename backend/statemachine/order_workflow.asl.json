@@ -5,13 +5,30 @@
     "Get Cart Items": {
       "Type": "Task",
       "Resource": "${CartCheckerFunctionArn}",
-      "Next": "Check Listing Quantity"
+      "Next": "Check Listing Quantity",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "MissingParameterError"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ]
     },
     "Check Listing Quantity": {
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckQuantityFunctionArn}",
-      "Next": "Simulate Payment"
+      "Next": "Simulate Payment",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "EmptyShoppingCartError",
+            "PurchaseQuantityExceededError"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ]
     },
     "Simulate Payment": {
       "Type": "Task",
@@ -28,7 +45,20 @@
           "Next": "Create Order"
         }
       ],
-      "Default": "Checkout Fail"
+      "Default": "Payment Fail"
+    },
+    "Payment Fail": {
+      "Type": "Task",
+      "Resource": "${PaymentFailErrorFunctionArn}",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "PaymentFailureError"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ],
+      "Next": "ErrorHandler"
     },
     "Create Order": {
       "Type": "Task",
@@ -42,11 +72,13 @@
       "Resource": "${ClearShoppingCartFunctionArn}",
       "Next": "Checkout Success"
     },
+    "ErrorHandler": {
+      "Type": "Task",
+      "Resource": "${StepFunctionErrorHandlerFunctionArn}",
+      "End": true
+    },
     "Checkout Success": {
       "Type": "Succeed"
-    },
-    "Checkout Fail": {
-      "Type": "Fail"
     }
   }
 }

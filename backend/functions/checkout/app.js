@@ -20,14 +20,14 @@ exports.lambdaHandler = async (event, context) => {
 
   const params = {
     stateMachineArn: process.env.StateMachineArn,
-    input: JSON.stringify(reqBody),
+    input: reqBody,
   };
 
   let res;
   let res2;
   try {
     res = await stepFunctions.startExecution(params).promise();
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 7000));
     res2 = await stepFunctions
       .describeExecution({ executionArn: res.executionArn })
       .promise();
