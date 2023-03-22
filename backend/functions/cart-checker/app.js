@@ -18,7 +18,7 @@ exports.lambdaHandler = async (event, context) => {
     'Password1234',
     'databaseAmazonianPrime',
   );
-  const UserID = event['userID'];
+  const UserID = event['UserID'];
   const Response = {};
   Response.TotalQuantity = 0;
   
@@ -62,7 +62,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: Response,
-    userID: UserID
+    body: {...Response, ...event},
   };
 };

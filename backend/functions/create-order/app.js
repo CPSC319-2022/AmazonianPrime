@@ -1,5 +1,5 @@
-// const dbConnection = require('dbConnection.js');
-// var mysql = require('mysql');
+const dbConnection = require('dbConnection.js');
+// const userValidate = require('UserValidate.js')
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -11,9 +11,68 @@
  * @returns {Object} object - Object containing details of the stock buying transaction
  *
  */
+
 exports.lambdaHandler = async (event, context) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(event),
-  };
+    const con = await dbConnection.connectDB(
+        process.env.DatabaseAddress,
+        'user',
+        'Password1234',
+        'databaseAmazonianPrime',
+    );
+
+
+    const {
+        UserID,
+        AddressID,
+        // ShoppingCartItems
+    } = JSON.parse(event['body']);
+
+    if (
+        !UserID ||
+        !AddressID 
+        // !ShoppingCartItems ||
+        // !Array.isArray(ShoppingCartItems)
+    ) {
+        return {
+            statusCode: 400,
+            body: 'Missing required fields'
+        }
+    }
+
+    return {
+      statusCode: 200,
+      body: 'Testing endpoint'
+  }
+
+
+    // const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, ShippingStatus)
+    //                            VALUES (${UserID}, ${AddressID}, "On it's way");`;
+
+    // const createOrders = await new Promise((resolve, reject) => {
+    //     con.query(createOrdersQuery, function (err, res) {
+    //         if (err) {
+    //             reject(err);
+    //         }
+    //         resolve(res);
+    //     });
+    // });
+
+
+    // for (item in ShoppingCartItems) {
+    //     const addOrderItemQuery = `INSERT INTO OrderItem (OrderID, ListingID, OrderQuantity)
+    //                                VALUES (${createOrders['insertId']}, ${item.ListingID}, ${item.OrderQuantity});`;
+
+    //     const addOrderItem = await new Promise((resolve, reject) => {
+    //         con.query(addOrderItemQuery, function (err, res) {
+    //             if (err) {
+    //                 reject(err);
+    //             }
+    //             resolve(res);
+    //         });
+    //     });
+    // }
+    // return {
+    //     statusCode: 200,
+    //     body: createOrders,
+    // };
 };

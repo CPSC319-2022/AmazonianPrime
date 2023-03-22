@@ -15,7 +15,7 @@
     },
     "Simulate Payment": {
       "Type": "Task",
-      "InputPath": "$",
+      "InputPath": "$.body",
       "Resource": "${PaymentSimulationFunctionArn}",
       "Next": "Payment Approved?"
     },
