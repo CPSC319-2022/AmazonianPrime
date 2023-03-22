@@ -4,56 +4,62 @@ import { useState } from 'react';
 import { useDeleteListingMutation } from '../../redux/api/listings';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Snackbar, Alert } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { setFailMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 
 interface DeleteListingButtonProps {
-  listingId: any;
+  handleClick: any;
+  successMessage?: any;
+  queueMessage?: string;
+  failMessage: string;
+  showIcon?: boolean;
 }
 
-const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({ listingId }) => {
-  const listing = useAppSelector((state) => state.listings.listingDetails);
-  const user = useAppSelector((state) => state.user.value);
-  const [successToast, setSuccessToast] = useState(false);
+const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
+  successMessage,
+  handleClick,
+  queueMessage,
+  failMessage,
+  showIcon = true,
+}) => {
   const [queueToast, setQueueToast] = useState(false);
-  const [failToast, setFailToast] = useState(false);
-  const [deleteListing] = useDeleteListingMutation();
+  const dispatch = useDispatch();
   const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
-    setFailToast(false);
-    setSuccessToast(false);
     setQueueToast(false);
   };
 
   return (
     <div>
-      <Snackbar open={successToast && (!failToast || !queueToast)} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%' }}>
-          Successfully deleted the listing!
-        </Alert>
-      </Snackbar>
-      <Snackbar open={failToast && (!successToast || !queueToast)} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
-          Failed to delete the listing. Please try again later.
-        </Alert>
-      </Snackbar>
-      <Snackbar open={queueToast && !successToast && !failToast} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
-          Hang tight while we delete your listing!
-        </Alert>
-      </Snackbar>
+      {queueMessage && (
+        <Snackbar open={queueToast} autoHideDuration={6000} onClose={handleCloseToast}>
+          <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
+            {queueMessage}
+          </Alert>
+        </Snackbar>
+      )}
       <div className="pdp__delete-listing">
-        <DeleteOutlineIcon sx={{ fontSize: 20 }} />
+        {showIcon && <DeleteOutlineIcon sx={{ fontSize: 20 }} />}
         <span
           onClick={() => {
             setQueueToast(true);
-            deleteListing({ ListingID: Number(listingId), UserID: user?.UserID || '' })
-              .unwrap()
-              .then(() => setSuccessToast(true))
-              .catch(() => setFailToast(true));
+            handleClick()
+              ?.unwrap()
+              .then(() => {
+                setQueueToast(false);
+                dispatch(setFailMessage(null));
+                dispatch(setSuccessMessage(successMessage));
+              })
+              .catch((e: any) => {
+                dispatch(setSuccessMessage(null));
+                setQueueToast(false);
+                dispatch(setFailMessage(failMessage));
+              });
           }}
         >
-          Delete Listing
+          Remove Listing
         </span>
       </div>
     </div>
