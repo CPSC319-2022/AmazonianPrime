@@ -24,14 +24,16 @@ exports.lambdaHandler = async (event, context) => {
     const {
         UserID,
         AddressID,
-        // ShoppingCartItems
-    } = JSON.parse(event['body']);
+        Items
+    } = event['body'];
+    
+    const ShoppingCartItems = Items;
 
     if (
         !UserID ||
-        !AddressID 
-        // !ShoppingCartItems ||
-        // !Array.isArray(ShoppingCartItems)
+        !AddressID ||
+        !ShoppingCartItems ||
+        !Array.isArray(ShoppingCartItems)
     ) {
         return {
             statusCode: 400,
@@ -39,40 +41,58 @@ exports.lambdaHandler = async (event, context) => {
         }
     }
 
+    const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, ShippingStatus)
+                              VALUES (${UserID}, ${AddressID}, "On it's way");`;
+
+    const createOrders = await new Promise((resolve, reject) => {       
+        con.query(createOrdersQuery, function (err, res) {
+            if (err) {
+                reject(err);
+            }
+            resolve(res);
+        });
+    });
+
+    for (const index in ShoppingCartItems) {
+        let CartItem = ShoppingCartItems[index];
+        const addOrderItemQuery = `INSERT INTO OrderItem (OrderID, ListingID, OrderQuantity)
+                                    VALUES (${createOrders['insertId']}, ${CartItem.ListingID}, ${CartItem.Quantity});`;
+        const addOrderItem = await new Promise((resolve, reject) => {
+            con.query(addOrderItemQuery, function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+    
+    const OrderID = createOrders['insertId'];
+    
+    const getOrderItemsQuery = `SELECT * FROM OrderItem WHERE OrderID = ${OrderID}`
+    
+    const getOrderItems = await new Promise((resolve, reject) => {
+        con.query(getOrderItemsQuery, function (err, res) {
+            if (err) {
+                reject(err);
+            }
+            resolve(res);
+        });
+    });
+    
+    const getOrderDetailsQuery = `SELECT * FROM Orders WHERE OrderID = ${OrderID}`
+    
+    const getOrder = await new Promise((resolve, reject) => {
+        con.query(getOrderDetailsQuery, function (err, res) {
+            if (err) {
+                reject(err);
+            }
+            resolve(res);
+        });
+    });
+    
     return {
-      statusCode: 200,
-      body: 'Testing endpoint'
-  }
-
-
-    // const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, ShippingStatus)
-    //                            VALUES (${UserID}, ${AddressID}, "On it's way");`;
-
-    // const createOrders = await new Promise((resolve, reject) => {
-    //     con.query(createOrdersQuery, function (err, res) {
-    //         if (err) {
-    //             reject(err);
-    //         }
-    //         resolve(res);
-    //     });
-    // });
-
-
-    // for (item in ShoppingCartItems) {
-    //     const addOrderItemQuery = `INSERT INTO OrderItem (OrderID, ListingID, OrderQuantity)
-    //                                VALUES (${createOrders['insertId']}, ${item.ListingID}, ${item.OrderQuantity});`;
-
-    //     const addOrderItem = await new Promise((resolve, reject) => {
-    //         con.query(addOrderItemQuery, function (err, res) {
-    //             if (err) {
-    //                 reject(err);
-    //             }
-    //             resolve(res);
-    //         });
-    //     });
-    // }
-    // return {
-    //     statusCode: 200,
-    //     body: createOrders,
-    // };
+        statusCode: 200,
+        body: {...getOrder[0], "Items" : getOrderItems},
+    };
 };
