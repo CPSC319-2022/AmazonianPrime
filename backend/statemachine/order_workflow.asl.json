@@ -4,7 +4,7 @@
   "States": {
     "Get Cart Items": {
       "Type": "Task",
-      "Resource": "${CartCheckerFunctionArn}",
+      "Resource": "${GetUserCartFunctionArn}",
       "Next": "Check Listing Quantity",
       "Catch": [
         {

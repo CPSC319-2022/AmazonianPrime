@@ -18,35 +18,38 @@ exports.lambdaHandler = async (event, context) => {
   const stepFunctions = new AWS.StepFunctions();
   const reqBody = event.body || {};
 
-  const params = {
+  const executionParams = {
     stateMachineArn: process.env.StateMachineArn,
     input: reqBody,
   };
 
-  let res;
-  let res2;
   try {
-    res = await stepFunctions.startExecution(params).promise();
-    await new Promise((resolve) => setTimeout(resolve, 7000));
-    res2 = await stepFunctions
-      .describeExecution({ executionArn: res.executionArn })
-      .promise();
-  } catch (err) {
-    console.error(err);
+    const executionResult = await stepFunctions.startExecution(executionParams).promise();
+    const executionArn = executionResult.executionArn;
+
+    console.log('Started Step Function execution:', executionArn);
+
+    let status = '';
+    while (status !== 'SUCCEEDED' && status !== 'FAILED') {
+      const describeParams = { executionArn: executionArn };
+      const describeResult = await stepFunctions.describeExecution(describeParams).promise();
+      status = describeResult.status;
+    }
+
+    // Get the output of the execution
+    const describeParams = { executionArn: executionArn };
+    const describeResult = await stepFunctions.describeExecution(describeParams).promise();
+    const output = JSON.parse(describeResult.output);
+
+    console.log('Step Function output:', describeResult);
+
     return {
       statusCode: 200,
-      body: "Encountered an issue starting the execution",
+      body: JSON.stringify(output)
     };
-  }
 
-  return {
-    statusCode: 200,
-    body:
-      "StateMachineArn: " +
-      process.env.StateMachineArn +
-      ", Execution Arn:" +
-      JSON.stringify(res) +
-      ", Describe Execution" +
-      JSON.stringify(res2),
-  };
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 };

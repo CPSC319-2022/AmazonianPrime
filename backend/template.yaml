@@ -86,7 +86,7 @@ Resources:
       Type: STANDARD #why are we using express?
       DefinitionUri: statemachine/order_workflow.asl.json
       DefinitionSubstitutions:
-        CartCheckerFunctionArn: !GetAtt CartCheckerFunction.Arn
+        GetUserCartFunctionArn: !GetAtt GetUserCartFunction.Arn
         PaymentSimulationFunctionArn: !GetAtt PaymentSimulationFunction.Arn
         CheckQuantityFunctionArn: !GetAtt CheckQuantityFunction.Arn
         CreateOrderFunctionArn: !GetAtt CreateOrderFunction.Arn
@@ -96,7 +96,7 @@ Resources:
         # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
       Policies:
         - LambdaInvokePolicy:
-            FunctionName: !Ref CartCheckerFunction
+            FunctionName: !Ref GetUserCartFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref PaymentSimulationFunction
         - LambdaInvokePolicy:
@@ -109,10 +109,10 @@ Resources:
             FunctionName: !Ref StepFunctionErrorHandlerFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref PaymentFailErrorFunction
-  CartCheckerFunction:
+  GetUserCartFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
-      CodeUri: functions/cart-checker/
+      CodeUri: functions/sf-get-cart/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
