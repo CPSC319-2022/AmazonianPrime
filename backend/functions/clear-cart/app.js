@@ -13,40 +13,35 @@ const dbConnection = require('dbConnection.js');
  */
 
 exports.lambdaHandler = async (event, context) => {
-    const con = await dbConnection.connectDB(
-        process.env.DatabaseAddress,
-        'user',
-        'Password1234',
-        'databaseAmazonianPrime',
-    );
+  const con = await dbConnection.connectDB(
+    process.env.DatabaseAddress,
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
+  );
 
+  const { UserID } = event['body'];
 
-    const {
-        UserID
-    } = event['body'];
-
-    if (
-        !UserID
-    ) {
-        return {
-            statusCode: 400,
-            body: 'Missing required fields'
-        }
-    }
-    
-    const clearShoppingCartQuery = `DELETE FROM ShoppingCartItem WHERE UserID = ${UserID}`;
-
-    const clearShoppingCart = await new Promise((resolve, reject) => {       
-        con.query(clearShoppingCartQuery, function (err, res) {
-            if (err) {
-                reject(err);
-            }
-            resolve(res);
-        });
-    });
-
+  if (!UserID) {
     return {
-        statusCode: 200,
-        body: event['body']
-    }
+      statusCode: 400,
+      body: 'Missing required fields',
+    };
+  }
+
+  const clearShoppingCartQuery = `DELETE FROM ShoppingCartItem WHERE UserID = ${UserID}`;
+
+  const clearShoppingCart = await new Promise((resolve, reject) => {
+    con.query(clearShoppingCartQuery, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+
+  return {
+    statusCode: 200,
+    body: event['body'],
+  };
 };

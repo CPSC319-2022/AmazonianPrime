@@ -13,5 +13,5 @@ const { PaymentFailureError } = require('errorStates.js');
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  throw new PaymentFailureError("The payment process was unsucessful!")
+  throw new PaymentFailureError('The payment process was unsucessful!');
 };

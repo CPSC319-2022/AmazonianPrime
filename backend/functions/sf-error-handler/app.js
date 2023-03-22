@@ -10,9 +10,9 @@
  */
 
 exports.lambdaHandler = async (event, context) => {
-    return {
-        status: 400,
-        body: "The step function encountered an error in the checkout process",
-        error: event
-    }
+  return {
+    status: 400,
+    body: 'The step function encountered an error in the checkout process',
+    error: event,
+  };
 };

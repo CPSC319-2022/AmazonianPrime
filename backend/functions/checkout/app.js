@@ -11,7 +11,7 @@
  *
  */
 
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk');
 
 exports.lambdaHandler = async (event, context) => {
   // Source: https://stackoverflow.com/questions/51240606/how-to-get-result-of-aws-lambda-function-running-with-step-function
@@ -24,7 +24,9 @@ exports.lambdaHandler = async (event, context) => {
   };
 
   try {
-    const executionResult = await stepFunctions.startExecution(executionParams).promise();
+    const executionResult = await stepFunctions
+      .startExecution(executionParams)
+      .promise();
     const executionArn = executionResult.executionArn;
 
     console.log('Started Step Function execution:', executionArn);
@@ -32,22 +34,25 @@ exports.lambdaHandler = async (event, context) => {
     let status = '';
     while (status !== 'SUCCEEDED' && status !== 'FAILED') {
       const describeParams = { executionArn: executionArn };
-      const describeResult = await stepFunctions.describeExecution(describeParams).promise();
+      const describeResult = await stepFunctions
+        .describeExecution(describeParams)
+        .promise();
       status = describeResult.status;
     }
 
     // Get the output of the execution
     const describeParams = { executionArn: executionArn };
-    const describeResult = await stepFunctions.describeExecution(describeParams).promise();
+    const describeResult = await stepFunctions
+      .describeExecution(describeParams)
+      .promise();
     const output = JSON.parse(describeResult.output);
 
     console.log('Step Function output:', describeResult);
 
     return {
       statusCode: 200,
-      body: JSON.stringify(output)
+      body: JSON.stringify(output),
     };
-
   } catch (err) {
     console.error(err);
     throw err;

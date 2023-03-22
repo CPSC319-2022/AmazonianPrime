@@ -23,10 +23,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const { ListingID, Quantity } = JSON.parse(event.body);
 
-  if (
-    !ListingID ||
-    !Quantity
-  ) {
+  if (!ListingID || !Quantity) {
     return {
       statusCode: 400,
       body: 'Missing required fields',

@@ -1,5 +1,8 @@
 const dbConnection = require('dbConnection.js');
-const { EmptyShoppingCartError, PurchaseQuantityExceededError } = require('errorStates.js');
+const {
+  EmptyShoppingCartError,
+  PurchaseQuantityExceededError,
+} = require('errorStates.js');
 // var mysql = require('mysql');
 
 /**
@@ -16,23 +19,25 @@ const { EmptyShoppingCartError, PurchaseQuantityExceededError } = require('error
 exports.lambdaHandler = async (event, context) => {
   const Items = event['Items'];
 
-  if (Items.length < 1){
+  if (Items.length < 1) {
     throw new EmptyShoppingCartError(`The user's shopping cart is empty!`);
   }
 
-  for (let x in Items){
+  for (let x in Items) {
     const Item = Items[x];
-    const ListingName = Item['Listing']['ListingName']
+    const ListingName = Item['Listing']['ListingName'];
     const PurchaseQuantity = Item['Quantity'];
     const ListedQuantity = Item['Listing']['Quantity'];
 
-    if (PurchaseQuantity > ListedQuantity){
-      throw new PurchaseQuantityExceededError(`The amount to purchase, ${ListingName}, is exceeding the available quantity`)
+    if (PurchaseQuantity > ListedQuantity) {
+      throw new PurchaseQuantityExceededError(
+        `The amount to purchase, ${ListingName}, is exceeding the available quantity`,
+      );
     }
   }
 
   return {
     statusCode: 200,
-    body: {...event}
-  }
+    body: { ...event },
+  };
 };
