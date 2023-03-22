@@ -1,14 +1,21 @@
 {
   "Comment": "A state machine that handles the order purchasing workflow",
-  "StartAt": "Check Cart Items",
+  "StartAt": "Get Cart Items",
   "States": {
-    "Check Cart Items": {
+    "Get Cart Items": {
       "Type": "Task",
       "Resource": "${CartCheckerFunctionArn}",
+      "Next": "Check Listing Quantity"
+    },
+    "Check Listing Quantity": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${CheckQuantityFunctionArn}",
       "Next": "Simulate Payment"
     },
     "Simulate Payment": {
       "Type": "Task",
+      "InputPath": "$",
       "Resource": "${PaymentSimulationFunctionArn}",
       "Next": "Payment Approved?"
     },
@@ -18,10 +25,16 @@
         {
           "Variable": "$.payment_status",
           "StringMatches": "Approved",
-          "Next": "Checkout Success"
+          "Next": "Create Order"
         }
       ],
       "Default": "Checkout Fail"
+    },
+    "Create Order": {
+      "Type": "Task",
+      "InputPath": "$",
+      "Resource": "${CreateOrderFunctionArn}",
+      "Next": "Checkout Success"
     },
     "Checkout Success": {
       "Type": "Succeed"

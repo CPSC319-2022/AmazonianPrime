@@ -17,5 +17,5 @@ exports.lambdaHandler = async (event, context) => {
   if (random_number > 30) {
     random_payment_status = "Approved";
   }
-  return { payment_status: random_payment_status };
+  return { body: event, payment_status: random_payment_status };
 };

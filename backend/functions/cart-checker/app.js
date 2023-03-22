@@ -1,27 +1,68 @@
+const dbConnection = require('dbConnection.js');
+// var mysql = require('mysql');
+
 /**
+ * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
+ * For demonstration purposes, this Lambda function does not actually perform any  actual transactions. It simply returns a mocked result.
  *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
+ * @param {Object} event - Input event to the Lambda function
+ * @param {Object} context - Lambda Context runtime methods and attributes
  *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
+ * @returns {Object} object - Object containing details of the stock buying transaction
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  // Check current price of the stock
-  // random_number = Math.floor(Math.random() * 100); // Current stock price is mocked as a random integer between 0 and 100
-  // await new Promise((resolve) => setTimeout(resolve, 2000));
-  // response = {
-  //   statusCode: 200,
-  //   body: 'Your number is: ' + random_number,
-  // };
-  // return response;
-  response = {
+  const con = await dbConnection.connectDB(
+    process.env.DatabaseAddress,
+    'user',
+    'Password1234',
+    'databaseAmazonianPrime',
+  );
+  const UserID = event['userID'];
+  const Response = {};
+  Response.TotalQuantity = 0;
+  
+  //TODO if we have time, flesh out a giant join and transform to fit the expected result, reduce MySQL call to 1
+  const getCartQuery = `SELECT * FROM ShoppingCartItem WHERE UserID = ${UserID}`;
+
+  const Items = await new Promise((resolve, reject) => {
+    con.query(getCartQuery, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+
+  for (const shoppingCartItem of Items) {
+    const getListingQuery = `SELECT * FROM Listing LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath FROM ListingImage WHERE S3ImagePath IN (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images ON Listing.ListingID = Images.ImageListingID JOIN Users on Listing.UserID = Users.UserID WHERE Listing.ListingID = ${shoppingCartItem.ListingID};`;
+    const Listing = await new Promise((resolve, reject) => {
+    con.query(getListingQuery, function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        resolve(res);
+      });
+    });
+    const { FirstName, LastName, Email, Department, S3ImagePath, ...ListingData } =
+    Listing[0];
+    shoppingCartItem.Listing = ListingData;
+    shoppingCartItem.Listing.User = {
+      "FirstName": FirstName,
+      "LastName": LastName,
+      "Email": Email,
+      "Department": Department,
+    }
+    shoppingCartItem.Listing.ImagePreview = S3ImagePath;
+    Response.TotalQuantity += shoppingCartItem.Quantity;
+  }
+
+  Response.Items = Items;
+  console.log(Response);
+
+  return {
     statusCode: 200,
-    body: 'Your number is: ' + JSON.stringify(event),
+    body: Response,
+    userID: UserID
   };
-  return response;
 };
