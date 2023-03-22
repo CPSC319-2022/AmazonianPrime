@@ -14,6 +14,7 @@ import {
   SelectChangeEvent,
   FormControl,
   InputLabel,
+  FormHelperText,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -21,18 +22,19 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SellIcon from '@mui/icons-material/Sell';
 import './CreateListingModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store/index';
+import { RootState, useAppSelector } from '../../redux/store/index';
 import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import { FileUploader } from 'react-drag-drop-files';
-import { categories } from '../common/Categories';
-import { convertBase64 } from '../common/imageToBase64';
+import { categories } from '../../utils/Categories';
+import { blobToBase64 } from '../../utils/imageToBase64';
 import { useCreateListingMutation } from '../../redux/api/listings';
 import { useNavigate } from 'react-router';
-import useBreadcrumbHistory from '../common/useBreadcrumbHistory';
+import useBreadcrumbHistory from '../../utils/useBreadcrumbHistory';
 // @ts-ignore
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Listing } from '../../types/listing';
 
 const fileTypes = ['JPG', 'PNG', 'JPEG'];
 const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used Fair', 'Fair'];
@@ -43,6 +45,8 @@ function CreateListingModal() {
   const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState(categories[1]);
   const [condition, setCondition] = useState(conditions[0]);
+  const [result, setResult] = useState<Listing | null>(null);
+  const [error, setError] = useState<any>(false);
   const [images, setImages] = useState<any>([]);
   const [showMore, setShowMore] = useState(false);
   const [openErrorToast, setOpenErrorToast] = useState('');
@@ -55,8 +59,7 @@ function CreateListingModal() {
   const brandRef = useRef<any>(null);
   const sizeRef = useRef<any>(null);
   const [createListing] = useCreateListingMutation();
-  const history = useBreadcrumbHistory();
-  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.user.value);
 
   useEffect(() => {
     // reset
@@ -73,6 +76,15 @@ function CreateListingModal() {
       return;
     }
     setOpenErrorToast('');
+    setIsLoading(false);
+    setError(null);
+  };
+
+  const handleSuccessCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setResult(null);
   };
   const dispatch = useDispatch();
 
@@ -80,7 +92,9 @@ function CreateListingModal() {
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
-    const errorMessage = [missingTitle, missingDescription, missingImage].filter((msg) => msg).join(', ');
+    const missingCost =
+      (!Number(costRef.current?.value) || Number(costRef.current?.value) === 0) && 'Cost should be more than $0';
+    const errorMessage = [missingTitle, missingDescription, missingImage, missingCost].filter((msg) => msg).join(', ');
     if (errorMessage) {
       setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
       return;
@@ -89,12 +103,20 @@ function CreateListingModal() {
       setOpenErrorToast('Please provide a brief description!');
       return;
     }
+    handleModalClose();
     setIsLoading(true);
-    // TODO: handle redirect to newly created listing page with submitted info
-    const base64Array = await Promise.all(images.map(async (image: any) => await convertBase64(image)));
-    // console.log(base64Array);
-    const listingResult = await createListing({
-      UserID: 1,
+
+    handleModalClose();
+    setIsLoading(true);
+    const base64Array = await Promise.all(
+      images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image))),
+    ).catch(() => setError(true));
+
+    if (error) {
+      return;
+    }
+    await createListing({
+      UserID: Number(user?.UserID) || 0,
       ListingName: titleRef.current?.value,
       Description: descriptionRef.current?.value,
       Cost: Number(costRef.current?.value),
@@ -103,11 +125,12 @@ function CreateListingModal() {
       ItemCondition: condition,
       Brand: brandRef.current?.value,
       Colour: colourRef.current?.value,
+      Images: base64Array || [],
       Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
-    }).unwrap();
-    setIsLoading(false);
-    handleModalClose();
-    navigate(`/listing/${listingResult.ListingID}`, { state: { ...history } });
+    })
+      .unwrap()
+      .then((resultObj) => setResult(resultObj))
+      .catch(() => setError(true));
   }
 
   function handleModalClose() {
@@ -159,10 +182,12 @@ function CreateListingModal() {
   };
 
   const moreDetailsButton = (
-    <div className="listing-modal__more-details-container" onClick={() => setShowMore(true)}>
+    <div className="listing-modal__more-details-container">
       <ExpandMoreIcon />
       <div className="listing-modal__more-details">
-        <span className="listing-modal__more-details-main">More Details</span>
+        <span className="listing-modal__more-details-main" onClick={() => setShowMore(true)}>
+          More Details
+        </span>
         <span className="listing-modal__more-details-sub">Additional information about your listing.</span>
       </div>
     </div>
@@ -179,6 +204,24 @@ function CreateListingModal() {
 
   return (
     <div>
+      <Snackbar open={isLoading && (!error || !result)} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="info" sx={{ width: '100%' }}>
+          Hang tight while we create your listing!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={error && (!isLoading || !result)} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity="error" sx={{ width: '100%' }}>
+          We ran into an error creating your listing, please try again later!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={result !== null} onClose={handleSuccessCloseToast} autoHideDuration={12000}>
+        <Alert onClose={handleSuccessCloseToast} severity="success" sx={{ width: '100%' }}>
+          <span className="link-toast">
+            <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
+            <a href={`/listing/${result?.ListingID}`}>here</a>.
+          </span>
+        </Alert>
+      </Snackbar>
       <Dialog open={isCreateListingModalOpen} onClose={() => handleModalClose()} fullWidth maxWidth="lg">
         <DialogTitle>Create A New Listing</DialogTitle>
         <Snackbar open={!!openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
@@ -221,12 +264,7 @@ function CreateListingModal() {
               </div>
               <div className="create-listing__content-row">
                 <span className="create-listing__condition">Condition</span>
-                <Select
-                  size="small"
-                  className="create-listing__condition"
-                  value={condition}
-                  onChange={(event) => setCondition(event.target.value)}
-                >
+                <Select size="small" value={condition} onChange={(event) => setCondition(event.target.value)}>
                   {conditions.map((value: string) => {
                     return <MenuItem value={value}>{value}</MenuItem>;
                   })}
@@ -246,6 +284,7 @@ function CreateListingModal() {
                 required
                 inputRef={costRef}
                 label="$"
+                defaultValue={1}
                 className="create-listing__cost"
                 size="small"
                 type="number"

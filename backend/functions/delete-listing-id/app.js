@@ -86,6 +86,17 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
+  const deleteListingImagesQuery = `DELETE FROM ListingImage WHERE ListingID = ${ListingID}`;
+
+  const deleteListingImage = await new Promise((resolve, reject) => {
+    con.query(deleteListingImagesQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't get the listing from database!");
+      }
+      resolve(res);
+    });
+  });
+
   // TODO: Need to confirm that the Listing isn't a part of a completed order or a user's shopping cart.
 
   const deleteListingQuery = `DELETE FROM Listing WHERE ListingID = ${ListingID}`;

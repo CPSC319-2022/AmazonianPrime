@@ -29,20 +29,20 @@ const Gallery: React.FC<GalleryProps> = ({
     return null;
   }
 
-  if (listings?.length === 0 && !isLoading) return <NoContent />;
-  const showListings = !isLoading && listings;
+  if (listings && listings.length === 0 && !isLoading) return <NoContent />;
+  const showListings = !isLoading;
 
   return (
     <div>
       <div className="gallery__container">
         <Grid container className="gallery__container-grid" columns={4}>
-          {(showListings ? listings : Array(20).fill(0)).map((listing: ListingPreviewType | null, index) => (
+          {(!isLoading ? listings : Array(20).fill(0))?.map((listing: ListingPreviewType | null, index) => (
             <Grid item xs={1} className="gallery__container__grid-item" key={index}>
               <ListingPreview
                 listing={listing}
                 key={index}
-                imageHeight="80%"
-                imageWidth="100%"
+                imageHeight="270px"
+                imageWidth="250px"
                 showRemoveListingButton={showRemoveListingButton}
               />
             </Grid>

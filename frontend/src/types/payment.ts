@@ -1,7 +1,7 @@
 export interface Payment {
   UserID: string;
   AddressID: string;
-  CreditCardNum: string;
+  CreditCardNum: number;
   ExpiryDate: string;
   CVV: string;
   CardHolderName: string;

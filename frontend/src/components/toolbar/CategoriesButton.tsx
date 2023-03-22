@@ -2,10 +2,10 @@ import { Button } from '@mui/material';
 import './CategoriesButton.scss';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { categories } from '../common/Categories';
+import { categories } from '../../utils/Categories';
 import Menu from '../common/Menu';
-import useMenu from '../common/useMenu';
-import { getSlugCategory } from '../common/convertSlugCategory';
+import useMenu from '../../utils/useMenu';
+import { getSlugCategory } from '../../utils/convertSlugCategory';
 import { useDispatch } from 'react-redux';
 import { setIsLoadingListings } from '../../redux/reducers/listingsSlice';
 
