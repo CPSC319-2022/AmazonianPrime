@@ -222,11 +222,17 @@ exports.lambdaHandler = async (event, context) => {
       OrderID int NOT NULL AUTO_INCREMENT,
       UserID int,
       AddressID int NOT NULL,
+      PaymentID int NOT NULL,
       ShippingStatus varchar(50) NOT NULL,
       OrderTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PurchaseAmount DECIMAL(6,2),
+      GSTTax DECIMAL(6,2),
+      PSTTax DECIMAL(6,2),
+      TotalAmount DECIMAL(6,2),
       PRIMARY KEY (OrderID),
       FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
-      FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+      FOREIGN KEY (AddressID) REFERENCES Address(AddressID),
+      FOREIGN KEY (PaymentID) REFERENCES PaymentDetails(PaymentID)
   );`;
 
   const createOrderTable = await new Promise((resolve, reject) => {
