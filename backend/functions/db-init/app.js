@@ -112,10 +112,7 @@ exports.lambdaHandler = async (event, context) => {
     CVV int NOT NULL, 
     CardHolderName varchar(255) NOT NULL,
     PRIMARY KEY (PaymentID),
-    CONSTRAINT UserID
-        FOREIGN KEY (UserID) 
-        REFERENCES Users(UserID)
-        ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -139,10 +136,7 @@ exports.lambdaHandler = async (event, context) => {
     TransitNum int NOT NULL, 
     NameOnCard varchar(255) NOT NULL,
     PRIMARY KEY (BankingID),
-    CONSTRAINT UserID
-        FOREIGN KEY (UserID) 
-        REFERENCES Users(UserID)
-        ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -161,10 +155,7 @@ exports.lambdaHandler = async (event, context) => {
     UserID int NOT NULL,
     AddressID int NOT NULL,
     PRIMARY KEY (UserID, AddressID),
-    CONSTRAINT UserID
-        FOREIGN KEY (UserID) 
-        REFERENCES Users(UserID)
-        ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -194,10 +185,7 @@ exports.lambdaHandler = async (event, context) => {
     PostedTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     IsActiveListing Boolean,
     PRIMARY KEY (ListingID),
-    CONSTRAINT UserID
-        FOREIGN KEY (UserID) 
-        REFERENCES Users(UserID)
-        ON DELETE SET NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL
   );`;
 
   const createListingTable = await new Promise((resolve, reject) => {
@@ -237,10 +225,7 @@ exports.lambdaHandler = async (event, context) => {
       ShippingStatus varchar(50) NOT NULL,
       OrderTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (OrderID),
-      CONSTRAINT UserID
-        FOREIGN KEY (UserID) 
-        REFERENCES Users(UserID)
-        ON DELETE SET NULL,
+      FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
       FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -281,10 +266,7 @@ exports.lambdaHandler = async (event, context) => {
       ListingID int  NOT NULL,
       Quantity int  NOT NULL,
       PRIMARY KEY (ShoppingCartItemID),
-      CONSTRAINT UserID
-        FOREIGN KEY (UserID) 
-        REFERENCES Users(UserID)
-        ON DELETE CASCADE,
+      FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`;
 
