@@ -21,7 +21,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const RequestUserID = event.pathParameters.UserID;
 
-  if (RequestUserID === null || ListingID == RequestUserID) {
+  if (RequestUserID === null) {
     return {
       statusCode: 400,
       body: `Missing UserID. Please provide a UserID in the URL.`,
@@ -55,7 +55,7 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const userPrivileges = getUser[0]['IsAdmin'];
+  const userPrivileges = getAdmin[0]['IsAdmin'];
 
   const getUserQuery = `SELECT * FROM Users WHERE UserID = ${RequestUserID}`;
 
@@ -76,12 +76,12 @@ exports.lambdaHandler = async (event, context) => {
   }
 
   if (
-    parseInt(getUser[0]['UserID']) !== parseInt(RequestUserID) &&
+    parseInt(getAdmin[0]['UserID']) !== parseInt(UserID) &&
     userPrivileges === 0
   ) {
     return {
       statusCode: 403,
-      body: `The User ${UserID} is Not Authorized to Delete the User ${RequestUserID}`,
+      body: `The User ${UserID} is Not Authorized to Modify the Privileges of User ${RequestUserID}`,
     };
   }
 
@@ -95,9 +95,20 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
+  
+  const getAlteredUserQuery = `SELECT UserID, IsAdmin FROM Users WHERE UserID = ${RequestUserID}`;
+
+  const getAlteredUser = await new Promise((resolve, reject) => {
+    con.query(getAlteredUserQuery, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
 
   return {
     statusCode: 200,
-    body: JSON.stringify(updateUserStatus),
+    body: JSON.stringify(getAlteredUser[0]),
   };
 };

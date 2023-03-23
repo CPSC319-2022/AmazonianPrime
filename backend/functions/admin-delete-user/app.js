@@ -21,7 +21,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const RequestUserID = event.pathParameters.UserID;
 
-  if (RequestUserID === null || ListingID == RequestUserID) {
+  if (RequestUserID === null) {
     return {
       statusCode: 400,
       body: `Missing UserID. Please provide a UserID in the URL.`,
@@ -55,7 +55,7 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const userPrivileges = getUser[0]['IsAdmin'];
+  const userPrivileges = getAdmin[0]['IsAdmin'];
 
   const getUserQuery = `SELECT * FROM Users WHERE UserID = ${RequestUserID}`;
 
@@ -76,7 +76,7 @@ exports.lambdaHandler = async (event, context) => {
   }
 
   if (
-    parseInt(getUser[0]['UserID']) !== parseInt(RequestUserID) &&
+    parseInt(getAdmin[0]['UserID']) !== parseInt(UserID) &&
     userPrivileges === 0
   ) {
     return {
@@ -85,7 +85,7 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const updateUserListingsQuery = `UPDATE Listings SET IsActiveListing = FALSE WHERE UserID = ${RequestUserID}`
+  const updateUserListingsQuery = `UPDATE Listing SET IsActiveListing = FALSE WHERE UserID = ${RequestUserID}`
 
   const updateUserListings = await new Promise((resolve, reject) => {
     con.query(updateUserListingsQuery, function (err, res) {
