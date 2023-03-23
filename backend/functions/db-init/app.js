@@ -112,7 +112,10 @@ exports.lambdaHandler = async (event, context) => {
     CVV int NOT NULL, 
     CardHolderName varchar(255) NOT NULL,
     PRIMARY KEY (PaymentID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    CONSTRAINT UserID
+        FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
+        ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -136,7 +139,10 @@ exports.lambdaHandler = async (event, context) => {
     TransitNum int NOT NULL, 
     NameOnCard varchar(255) NOT NULL,
     PRIMARY KEY (BankingID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    CONSTRAINT UserID
+        FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
+        ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -155,7 +161,10 @@ exports.lambdaHandler = async (event, context) => {
     UserID int NOT NULL,
     AddressID int NOT NULL,
     PRIMARY KEY (UserID, AddressID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    CONSTRAINT UserID
+        FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
+        ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -172,7 +181,7 @@ exports.lambdaHandler = async (event, context) => {
 
   let createListingTableQuery = `CREATE TABLE Listing (
     ListingID int NOT NULL AUTO_INCREMENT, 
-    UserID int NOT NULL, 
+    UserID int, 
     ListingName varchar(255) NOT NULL, 
     Description TEXT, 
     Cost DECIMAL(6,2) NOT NULL, 
@@ -185,7 +194,10 @@ exports.lambdaHandler = async (event, context) => {
     PostedTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     IsActiveListing Boolean,
     PRIMARY KEY (ListingID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    CONSTRAINT UserID
+        FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
+        ON DELETE SET NULL,
   );`;
 
   const createListingTable = await new Promise((resolve, reject) => {
@@ -220,12 +232,15 @@ exports.lambdaHandler = async (event, context) => {
 
   let createOrderTableQuery = `CREATE TABLE Orders (
       OrderID int NOT NULL AUTO_INCREMENT,
-      UserID int NOT NULL,
+      UserID int,
       AddressID int NOT NULL,
       ShippingStatus varchar(50) NOT NULL,
       OrderTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (OrderID),
-      FOREIGN KEY (UserID) REFERENCES Users(UserID),
+      CONSTRAINT UserID
+        FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
+        ON DELETE SET NULL,
       FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -266,7 +281,10 @@ exports.lambdaHandler = async (event, context) => {
       ListingID int  NOT NULL,
       Quantity int  NOT NULL,
       PRIMARY KEY (ShoppingCartItemID),
-      FOREIGN KEY (UserID) REFERENCES Users(UserID),
+      CONSTRAINT UserID
+        FOREIGN KEY (UserID) 
+        REFERENCES Users(UserID)
+        ON DELETE CASCADE,
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`;
 
