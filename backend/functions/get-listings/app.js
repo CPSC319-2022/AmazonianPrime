@@ -28,6 +28,9 @@ exports.lambdaHandler = async (event, context) => {
 
   var options = [];
 
+  options.push(`UserID IS NOT NULL`);
+  options.push(`IsActiveListing = TRUE`);
+
   if (name != null && name !== undefined) {
     let parsedName = name.replace(/-/g, ' ');
     parsedName = name.replace(/\"/g, '');
