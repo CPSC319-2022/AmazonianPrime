@@ -28,12 +28,12 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const { UserID } = JSON.parse(event.body);
+  const { UserID, IsAdmin } = JSON.parse(event.body);
 
   if (UserID === null || UserID == undefined) {
     return {
       statusCode: 400,
-      body: `Missing Admin UserID. Please provide a Admin UserID in the request body.`,
+      body: `Missing Admin UserID. Please provide a Admin UserID in the Request Body.`,
     };
   }
 
@@ -71,7 +71,7 @@ exports.lambdaHandler = async (event, context) => {
   if (getUser.length < 1) {
     return {
       statusCode: 404,
-      body: `Requested Deletion of User with UserID ${RequestUserID} not found`,
+      body: `Requested Promotion of User with UserID ${RequestUserID} not found`,
     };
   }
 
@@ -85,21 +85,10 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const updateUserListingsQuery = `UPDATE Listings SET IsActiveListing = FALSE WHERE UserID = ${RequestUserID}`
+  const updateUserStatusQuery = `UPDATE Users SET IsAdmin = ${IsAdmin} WHERE UserID = ${RequestUserID}`
 
-  const updateUserListings = await new Promise((resolve, reject) => {
-    con.query(updateUserListingsQuery, function (err, res) {
-      if (err) {
-        reject(err);
-      }
-      resolve(res);
-    });
-  });
-
-  const deleteUserQuery = `DELETE FROM Users WHERE UserID = ${RequestUserID}`;
-
-  const deleteUser = await new Promise((resolve, reject) => {
-    con.query(deleteUserQuery, function (err, res) {
+  const updateUserStatus = await new Promise((resolve, reject) => {
+    con.query(updateUserStatusQuery, function (err, res) {
       if (err) {
         reject(err);
       }
@@ -109,6 +98,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(RequestUserID),
+    body: JSON.stringify(updateUserStatus),
   };
 };
