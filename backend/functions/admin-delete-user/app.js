@@ -28,16 +28,16 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const { UserID } = JSON.parse(event.body);
+  const { UserID: AdminUserID } = JSON.parse(event.body);
 
-  if (UserID === null || UserID == undefined) {
+  if (AdminUserID === null || AdminUserID == undefined) {
     return {
       statusCode: 400,
       body: `Missing Admin UserID. Please provide a Admin UserID in the request body.`,
     };
   }
 
-  const getAdminQuery = `SELECT IsAdmin FROM Users WHERE UserID = ${UserID}`;
+  const getAdminQuery = `SELECT IsAdmin FROM Users WHERE UserID = ${AdminUserID}`;
 
   const getAdmin = await new Promise((resolve, reject) => {
     con.query(getAdminQuery, function (err, res) {
@@ -51,7 +51,7 @@ exports.lambdaHandler = async (event, context) => {
   if (getAdmin.length < 1) {
     return {
       statusCode: 404,
-      body: `Admin with UserID ${UserID} not found`,
+      body: `Admin with UserID ${AdminUserID} not found`,
     };
   }
 
@@ -76,12 +76,12 @@ exports.lambdaHandler = async (event, context) => {
   }
 
   if (
-    parseInt(getAdmin[0]['UserID']) !== parseInt(UserID) &&
+    parseInt(getAdmin[0]['UserID']) !== parseInt(AdminUserID) &&
     userPrivileges === 0
   ) {
     return {
       statusCode: 403,
-      body: `The User ${UserID} is Not Authorized to Delete the User ${RequestUserID}`,
+      body: `The User ${AdminUserID} is Not Authorized to Delete the User ${RequestUserID}`,
     };
   }
 
