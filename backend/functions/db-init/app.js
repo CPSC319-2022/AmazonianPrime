@@ -112,7 +112,7 @@ exports.lambdaHandler = async (event, context) => {
     CVV int NOT NULL, 
     CardHolderName varchar(255) NOT NULL,
     PRIMARY KEY (PaymentID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
@@ -155,7 +155,7 @@ exports.lambdaHandler = async (event, context) => {
     UserID int NOT NULL,
     AddressID int NOT NULL,
     PRIMARY KEY (UserID, AddressID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
