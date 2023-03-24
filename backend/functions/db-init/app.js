@@ -105,7 +105,7 @@ exports.lambdaHandler = async (event, context) => {
 
   let createPaymentDetailsTableQuery = `CREATE TABLE PaymentDetails (
     PaymentID int NOT NULL AUTO_INCREMENT, 
-    UserID int NOT NULL, 
+    UserID int, 
     AddressID int NOT NULL, 
     CreditCardNum BIGINT NOT NULL, 
     ExpiryDate varchar(10) NOT NULL, 
@@ -155,7 +155,7 @@ exports.lambdaHandler = async (event, context) => {
     UserID int NOT NULL,
     AddressID int NOT NULL,
     PRIMARY KEY (UserID, AddressID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
   );`;
 
