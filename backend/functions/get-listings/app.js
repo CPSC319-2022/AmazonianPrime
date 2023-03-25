@@ -28,7 +28,7 @@ exports.lambdaHandler = async (event, context) => {
 
   var options = [];
 
-  options.push(`UserID IS NOT NULL`);
+  options.push(`Listing.UserID IS NOT NULL`);
   options.push(`IsActiveListing = TRUE`);
 
   if (name != null && name !== undefined) {
