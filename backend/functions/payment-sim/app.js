@@ -11,11 +11,15 @@
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  // Check current price of the stock
-  random_number = getRandomInt(100); // Current stock price is mocked as a random integer between 0 and 100
-  response = {
+  // Generate a random number between 0 - 100. Based on this number, we will decide if the payment is approved or declined.
+  let random_number = Math.floor(Math.random() * 100);
+  let random_payment_status = 'Declined';
+  if (random_number > 30) {
+    random_payment_status = 'Approved';
+  }
+  return {
     statusCode: 200,
-    body: 'Your number is: ' + random_number,
+    body: { ...event },
+    payment_status: random_payment_status,
   };
-  return response;
 };
