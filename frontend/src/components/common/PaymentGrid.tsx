@@ -92,6 +92,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
           <Grid item xs={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
+                format="MM/YY"
                 slotProps={{
                   textField: {
                     helperText: 'Expiry Date',

@@ -33,6 +33,11 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             fullWidth
             required
             label="City"
+            onKeyDown={(e) => {
+              if (Number(e.key) || e.key === '0') {
+                e.preventDefault();
+              }
+            }}
             defaultValue=""
             size="small"
             onChange={(e) => setCityInput(e.target.value)}
@@ -43,6 +48,11 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             fullWidth
             required
             label="Province"
+            onKeyDown={(e) => {
+              if (Number(e.key) || e.key === '0') {
+                e.preventDefault();
+              }
+            }}
             defaultValue=""
             size="small"
             onChange={(e) => setProvinceInput(e.target.value)}
@@ -63,6 +73,11 @@ const AddressGrid: React.FC<AddressGridProps> = ({
             fullWidth
             required
             label="Country"
+            onKeyDown={(e) => {
+              if (Number(e.key) || e.key === '0') {
+                e.preventDefault();
+              }
+            }}
             defaultValue=""
             size="small"
             onChange={(e) => setCountryInput(e.target.value)}

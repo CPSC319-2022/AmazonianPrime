@@ -1,6 +1,5 @@
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import React from 'react';
-import { user } from '../../redux/reducers/userSlice';
 import { useAppSelector } from '../../redux/store';
 
 interface UserSettingProps {

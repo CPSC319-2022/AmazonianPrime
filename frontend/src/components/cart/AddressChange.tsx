@@ -1,28 +1,24 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  DialogActions,
-  Button,
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, FormControlLabel, Radio, RadioGroup, Skeleton } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AddressChange.scss';
-import SettingsIcon from '@mui/icons-material/Settings';
 
 interface AddressChangeProps {
   selectedAddress: number;
   setSelectedAddress: (value: number) => any;
   selectedPayment: number;
   setSelectedPayment: (value: number) => any;
-  payments: any[]
+  payments: any[];
   addresses: string[];
 }
-export const AddressChange: React.FC<AddressChangeProps> = ({ selectedAddress, setSelectedAddress, addresses, selectedPayment, setSelectedPayment, payments }) => {
+export const AddressChange: React.FC<AddressChangeProps> = ({
+  selectedAddress,
+  setSelectedAddress,
+  addresses,
+  selectedPayment,
+  setSelectedPayment,
+  payments,
+}) => {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const navigate = useNavigate();
@@ -39,14 +35,14 @@ export const AddressChange: React.FC<AddressChangeProps> = ({ selectedAddress, s
         aria-labelledby="demo-controlled-radio-buttons-group"
         name="controlled-radio-buttons-group"
         value={value}
-        onChange={(value) => {
-          handleSelect(value.target.value)
-          setShowAddressModal(false)
-          setShowPaymentModal(false)
+        onChange={(radioValue) => {
+          handleSelect(radioValue.target.value);
+          setShowAddressModal(false);
+          setShowPaymentModal(false);
         }}
       >
-        {content.map((value, index) => (
-          <FormControlLabel value={index} control={<Radio />} label={value} />
+        {content.map((contentValue, index) => (
+          <FormControlLabel value={index} control={<Radio />} label={contentValue} />
         ))}
       </RadioGroup>
     );
@@ -61,7 +57,13 @@ export const AddressChange: React.FC<AddressChangeProps> = ({ selectedAddress, s
   const paymentModal = (
     <Dialog open={showPaymentModal} onClose={() => setShowPaymentModal(false)}>
       <DialogTitle>Choose a Payment Method</DialogTitle>
-      <DialogContent>{radioListItem(setSelectedPayment, selectedPayment, payments)}</DialogContent>
+      <DialogContent>
+        {radioListItem(
+          setSelectedPayment,
+          selectedPayment,
+          payments.map((payment) => <div className="address-change__radio">{payment}</div>),
+        )}
+      </DialogContent>
     </Dialog>
   );
 
@@ -76,7 +78,7 @@ export const AddressChange: React.FC<AddressChangeProps> = ({ selectedAddress, s
           Add Addresses
         </span>
       </div>
-      <div>{addresses[selectedAddress]}</div>
+      <div>{addresses[selectedAddress] ?? <Skeleton variant="text" sx={{ fontSize: '1.5em' }} width={300} />}</div>
       <div className="address-change__sections">
         <span>2&nbsp;&nbsp;Payment Method</span>
         {changeButton(() => setShowPaymentModal(true))}
@@ -84,7 +86,7 @@ export const AddressChange: React.FC<AddressChangeProps> = ({ selectedAddress, s
           Add Payment Methods
         </span>
       </div>
-      {payments[selectedPayment]}
+      {payments[selectedPayment] ?? <Skeleton variant="text" sx={{ fontSize: '1.5em' }} width={300} />}
     </div>
   );
 };

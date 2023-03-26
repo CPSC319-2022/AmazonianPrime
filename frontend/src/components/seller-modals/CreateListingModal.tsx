@@ -37,12 +37,12 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Listing } from '../../types/listing';
 
 const fileTypes = ['JPG', 'PNG', 'JPEG'];
-const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used Fair', 'Fair'];
+const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used- Fair', 'Fair'];
 const metrics = ['None', 'Meter(s)', 'Centimeter(s)', 'Foot/Feet'];
 
 function CreateListingModal() {
   const isCreateListingModalOpen = useSelector((state: RootState) => state.sellerModal.isCreateListingModalOpen);
-  const [quantity, setQuantity] = useState(1);
+  const quantity = useRef<any>(null);
   const [category, setCategory] = useState(categories[1]);
   const [condition, setCondition] = useState(conditions[0]);
   const [result, setResult] = useState<Listing | null>(null);
@@ -63,7 +63,6 @@ function CreateListingModal() {
 
   useEffect(() => {
     // reset
-    setQuantity(1);
     setCategory(categories[1]);
     setCondition(conditions[0]);
     setImages([]);
@@ -103,6 +102,11 @@ function CreateListingModal() {
       setOpenErrorToast('Please provide a brief description!');
       return;
     }
+
+    if (quantity.current?.value.startsWith('0') || costRef.current?.value.startsWith('0')) {
+      setOpenErrorToast('Please do not input 0 Quantites or Cost!');
+      return;
+    }
     handleModalClose();
     setIsLoading(true);
 
@@ -120,7 +124,7 @@ function CreateListingModal() {
       ListingName: titleRef.current?.value,
       Description: descriptionRef.current?.value,
       Cost: Number(costRef.current?.value),
-      Quantity: quantity,
+      Quantity: Number(quantity.current?.value),
       Category: category.replace('&', 'And'),
       ItemCondition: condition,
       Brand: brandRef.current?.value,
@@ -182,12 +186,10 @@ function CreateListingModal() {
   };
 
   const moreDetailsButton = (
-    <div className="listing-modal__more-details-container">
+    <div className="listing-modal__more-details-container" onClick={() => setShowMore(true)}>
       <ExpandMoreIcon />
       <div className="listing-modal__more-details">
-        <span className="listing-modal__more-details-main" onClick={() => setShowMore(true)}>
-          More Details
-        </span>
+        <span className="listing-modal__more-details-main">More Details</span>
         <span className="listing-modal__more-details-sub">Additional information about your listing.</span>
       </div>
     </div>
@@ -269,27 +271,38 @@ function CreateListingModal() {
                     return <MenuItem value={value}>{value}</MenuItem>;
                   })}
                 </Select>
-                <div>
+                <div className="create-listing__quantity-container">
                   <span className="create-listing__quantity">Quantity</span>
-                  <Select size="small" value={quantity} onChange={(event) => setQuantity(event.target.value as number)}>
-                    {Array(10)
-                      .fill(1)
-                      .map((_: number, index: number) => {
-                        return <MenuItem value={index + 1}>{index + 1}</MenuItem>;
-                      })}
-                  </Select>
+                  <TextField
+                    required
+                    inputRef={quantity}
+                    type="number"
+                    InputProps={{ inputProps: { min: 1, max: 100 } }}
+                    onKeyPress={(event) => {
+                      if (event?.key === '-' || event?.key === '+') {
+                        event.preventDefault();
+                      }
+                    }}
+                    size="small"
+                  />
                 </div>
               </div>
               <TextField
                 required
                 inputRef={costRef}
                 label="$"
-                defaultValue={1}
+                InputProps={{ inputProps: { min: 1, max: 100000 } }}
+                onKeyPress={(event) => {
+                  if (event?.key === 'e' || event?.key === '-' || event?.key === '+') {
+                    event.preventDefault();
+                  }
+                }}
+                helperText="Cost"
                 className="create-listing__cost"
                 size="small"
                 type="number"
               />
-              <div>{!showMore ? moreDetailsButton : lessDetailsButton}</div>
+              <div className="more-container">{!showMore ? moreDetailsButton : lessDetailsButton}</div>
               {renderOptional()}
             </div>
             <div className="create-listing__content-right">

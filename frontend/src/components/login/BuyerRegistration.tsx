@@ -1,7 +1,12 @@
 import './BuyerRegistration.scss';
 import { Alert, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useSignupMutation, useAddAddressMutation, useAddPaymentMutation } from '../../redux/api/user';
+import {
+  useSignupMutation,
+  useAddAddressMutation,
+  useAddPaymentMutation,
+  useAddShippingAddressMutation,
+} from '../../redux/api/user';
 import { setUser, setPayment, setPaymentAddress, setShippingAddress } from '../../redux/reducers/userSlice';
 import { useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -45,6 +50,7 @@ function BuyerRegistration() {
 
   const dispatch = useAppDispatch();
   const [updateProfile, updateProfileResult] = useSignupMutation();
+  const [addShippingAddress] = useAddShippingAddressMutation();
   const [addAddress, addAddressResult] = useAddAddressMutation();
   const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
@@ -130,7 +136,7 @@ function BuyerRegistration() {
     if (!useBillingAddressForShipping) {
       shippingAddress = await addAddress(shippingAddressInfo).unwrap();
     }
-    // TODO MICHAEL: link the shipping address to DB
+    await addShippingAddress({ UserID: user?.UserID || '', AddressID: shippingAddress.AddressID });
 
     paymentInfo.AddressID = billingAddress.AddressID;
     await updatePayment(paymentInfo);

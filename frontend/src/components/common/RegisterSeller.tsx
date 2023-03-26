@@ -5,13 +5,15 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../redux/store/index';
 import React, { useRef, useState } from 'react';
 import AddressGrid from '../common/AddressGrid';
-import { useAddAddressMutation, useAddBankingMutation } from '../../redux/api/user';
+import { useAddAddressMutation, useAddBankingMutation, useUpdateBankingMutation } from '../../redux/api/user';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { setSuccessMessage } from '../../redux/reducers/appSlice';
 
 interface RegisterSellerProps {
   onCancel?: any;
+  isUpdatingExisting?: boolean;
 }
-const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel }) => {
+const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel, isUpdatingExisting = false }) => {
   const [billingAddressInput, setBillingAddressInput] = useState('');
   const [billingCityInput, setBillingCityInput] = useState('');
   const [billingProvinceInput, setBillingProvinceInput] = useState('');
@@ -19,7 +21,8 @@ const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel }) => {
   const [billingCountryInput, setBillingCountryInput] = useState('');
 
   const [updateAddress] = useAddAddressMutation();
-  const [updateBanking] = useAddBankingMutation();
+  const [updateBanking] = useUpdateBankingMutation();
+  const [addBanking] = useAddBankingMutation();
   const user = useAppSelector((state) => state.user.value);
   const [openErrorToast, setOpenErrorToast] = useState('');
   const fullName = useRef<any>(null);
@@ -32,6 +35,7 @@ const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel }) => {
   function handleClose(value: boolean) {
     setOpenErrorToast('');
     setIsLoading(false);
+    onCancel(true);
   }
 
   const handleSave = async () => {
@@ -66,7 +70,9 @@ const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel }) => {
       PostalCode: billingPostalCodeInput,
       Country: billingCountryInput,
     };
-    const address = await updateAddress(billingAddressInfo).unwrap();
+    const address = await updateAddress(billingAddressInfo)
+      .unwrap()
+      .catch(() => setOpenErrorToast('We ran into an error saving your address. Please try again later!'));
 
     const bankingInfo = {
       UserID: user?.UserID,
@@ -77,8 +83,17 @@ const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel }) => {
       NameOnCard: fullName?.current?.value,
     };
 
-    const bank = await updateBanking(bankingInfo).unwrap();
+    if (isUpdatingExisting) {
+      await updateBanking(bankingInfo)
+        .unwrap()
+        .catch(() => setOpenErrorToast('We ran into an error saving your banking details. Please try again later!'));
+    } else {
+      await addBanking(bankingInfo)
+        .unwrap()
+        .catch(() => setOpenErrorToast('We ran into an error saving your banking details. Please try again later!'));
+    }
     setIsLoading(false);
+    dispatch(setSuccessMessage('Your banking details have been saved!'));
     handleClose(true);
   };
 

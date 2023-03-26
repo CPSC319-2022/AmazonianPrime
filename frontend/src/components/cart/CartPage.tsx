@@ -10,10 +10,13 @@ import { costToString } from '../../utils/costToString';
 import { CartItem } from './CartItem';
 import Breadcrumbs from '../common/Breadcrumbs';
 import { useState } from 'react';
+import { useGetPaymentsQuery, useGetShippingAddressQuery } from '../../redux/api/user';
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
   const [selectedAddress, setSelectedAddress] = useState(0);
+  const { data: shippingAddresses } = useGetShippingAddressQuery(user?.UserID || '');
+  const { data: payments } = useGetPaymentsQuery(user?.UserID || '');
   const [selectedPayment, setSelectedPayment] = useState(0);
   let subtotal = 0;
   const { sticky, stickyRef } = useSticky(45);
@@ -103,32 +106,33 @@ function CartPage() {
             <AddressChange
               selectedAddress={selectedAddress}
               setSelectedAddress={setSelectedAddress}
-              addresses={[
-                '1234 Test Drive Vancouver, British Columbia V5C 1J3',
-                '5436 Test Drive Vancouver, British Columbia V5C 1J3',
-              ]}
+              addresses={
+                shippingAddresses?.map((address) => {
+                  return `${address.StreetAddress} ${address.Province}`;
+                }) || []
+              }
               selectedPayment={selectedPayment}
               setSelectedPayment={setSelectedPayment}
-              payments={[
-                <>
-                  <div>
-                    Credit Card ending in <span className="address__grey">5432</span>
-                  </div>
-                  <div>
-                    <span className="address-change__button-billing">Billing Address&nbsp;</span>
-                    1234 Test Drive Vancouver, British Columbia V5C 1J3
-                  </div>
-                </>,
-                <>
-                  <div>
-                    Credit Card ending in <span className="address__grey">1234</span>
-                  </div>
-                  <div>
-                    <span className="address-change__button-billing">Billing Address&nbsp;</span>
-                    some other address
-                  </div>
-                </>,
-              ]}
+              payments={
+                payments?.map((payment) => {
+                  const creditNumber = payment.CreditCardNum.toString();
+                  return (
+                    <>
+                      <div>
+                        Credit Card ending in{' '}
+                        <span className="address__grey">
+                          {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="address-change__button-billing">Billing Address&nbsp;</span>
+                        {payment.CardHolderName},&nbsp;{payment.StreetAddress},&nbsp;{payment.CityName}&nbsp;
+                        {payment.Province}
+                      </div>
+                    </>
+                  );
+                }) || []
+              }
             />
             <div className="cart__items-quantity">
               3&nbsp;&nbsp;{`Review Items (${cartItems?.TotalQuantity || 0} items)`}

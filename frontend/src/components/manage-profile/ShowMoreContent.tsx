@@ -14,10 +14,10 @@ export const ShowMoreContent: React.FC<ShowMoreContentProps> = ({ title, content
     <div className="more-content__existing">
       <span className="more-content__existing-title">
         {title}
-        <div className="more-content__show-button">
+        <div className="more-content__show-button" onClick={() => setIsShowing(!isShowing)}>
           {isShowing ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           <div>
-            <span onClick={() => setIsShowing(!isShowing)}>{isShowing ? 'Hide' : 'Show'}</span>
+            <span>{isShowing ? 'Hide' : 'Show'}</span>
           </div>
         </div>
       </span>

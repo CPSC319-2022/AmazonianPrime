@@ -11,6 +11,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import './PaymentSettings.scss';
 import { ShowMoreContent } from './ShowMoreContent';
+import { useAddAddressMutation, useAddPaymentMutation, useGetPaymentsQuery } from '../../redux/api/user';
+import { setPaymentAddress } from '../../redux/reducers/userSlice';
+import { useDispatch } from 'react-redux';
+import { setSuccessMessage } from '../../redux/reducers/appSlice';
 
 export const PaymentSettings = () => {
   const user = useAppSelector((state) => state.user.value);
@@ -35,29 +39,86 @@ export const PaymentSettings = () => {
   const [openErrorToast, setOpenErrorToast] = useState('');
   const [searchParams] = useSearchParams();
   const [isShowing, setIsShowing] = useState(false);
-  const handleClick = () => {};
+  const dispatch = useDispatch();
+  const { data: payments } = useGetPaymentsQuery(user?.UserID || '');
+  const handleClick = async () => {
+    const billingAddressInfo = {
+      UserID: user?.UserID,
+      CityName: billingCityInput,
+      Province: billingProvinceInput,
+      StreetAddress: billingAddressInput,
+      PostalCode: billingPostalCodeInput,
+      Country: billingCountryInput,
+    };
+
+    if (
+      !billingAddressInfo.CityName ||
+      !billingAddressInfo.Province ||
+      !billingAddressInfo.StreetAddress ||
+      !billingAddressInfo.PostalCode ||
+      !billingAddressInfo.Country
+    ) {
+      setOpenErrorToast('Please fill all required Billing fields!');
+      return;
+    }
+
+    const paymentInfo = {
+      UserID: user?.UserID,
+      AddressID: '',
+      CreditCardNum: Number(creditCardInput),
+      ExpiryDate: expiryDateInput.current?.value.replace(/\s/g, ''),
+      CVV: cvvInput,
+      CardHolderName: firstNameInput + ' ' + lastNameInput,
+    };
+
+    if (!paymentInfo.CreditCardNum || !paymentInfo.ExpiryDate || !paymentInfo.CVV || !paymentInfo.CardHolderName) {
+      setOpenErrorToast('Please fill all required Payment fields!');
+      return;
+    }
+
+    setIsLoading(true);
+
+    const billingAddress = await addAddress(billingAddressInfo).unwrap();
+
+    paymentInfo.AddressID = billingAddress.AddressID;
+    await updatePayment(paymentInfo);
+
+    setIsLoading(false);
+    dispatch(setSuccessMessage('Successfully added your payment method!'));
+    // Update Redux
+    dispatch(setPaymentAddress(billingAddressInfo));
+  };
+  const [addAddress, addAddressResult] = useAddAddressMutation();
+  const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
   if (Number(searchParams.get('page')) !== 3) {
     return null;
   }
   return (
     <div className="buyer-registration-page__forms">
+      <span className="setting__title">Payment Details</span>
       <ShowMoreContent
         title="Your Existing Payment Details"
-        contents={[
-          <div className="more-content__details">
-            <span>Credit card ending in 1234</span>
-            <span>
-              <span className="more-content__billing">Billing Address</span> 1234 Ave Burnaby BC, v6c 0k2
-            </span>
-          </div>,
-          <div className="more-content__details">
-            <span>Credit card ending in 1234</span>
-            <span>
-              <span className="more-content__billing">Billing Address</span> 1234 Ave Burnaby BC, v6c 0k2
-            </span>
-          </div>,
-        ]}
+        contents={
+          payments?.map((payment) => {
+            const creditNumber = payment.CreditCardNum.toString();
+            return (
+              <div className="more-content__details">
+                <div>
+                  Credit Card ending in{' '}
+                  <span className="address__grey">
+                    {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
+                  </span>
+                </div>
+                <div>
+                  <span className="more-content__billing">Billing Address&nbsp;</span>
+                  {payment.CardHolderName},&nbsp;{payment.StreetAddress},&nbsp;{payment.CityName}&nbsp;
+                  {payment.Province}
+                </div>
+              </div>
+            );
+          }) || []
+        }
       />
       <PaymentGrid
         setFirstNameInput={setFirstNameInput}
@@ -73,7 +134,7 @@ export const PaymentSettings = () => {
       />
       <div className="buyer-settings__button-container">
         <LoadingButton
-          loading={false}
+          loading={loading}
           loadingPosition="start"
           startIcon={<DoneAllIcon />}
           className="buyer-settings__button"

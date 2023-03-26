@@ -54,6 +54,7 @@ export const UserSettingsProfile = () => {
           {openErrorToast}
         </Alert>
       </Snackbar>
+      <span className="user-setting__title">User Settings</span>
       <UserSetting
         departmentInput={departmentInput}
         setDepartmentInput={setDepartmentInput}

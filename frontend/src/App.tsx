@@ -17,6 +17,8 @@ import { addItemsToCart, setIsLoadingCart } from './redux/reducers/shoppingCartS
 import { Snackbar, Alert } from '@mui/material';
 import { setFailMessage, setSuccessMessage } from './redux/reducers/appSlice';
 import { ManageProfile } from './components/manage-profile/ManageProfile';
+import { modifyIsSellerRegistered, setIsSellerRegistered } from './redux/reducers/sellerModalSlice';
+import { useGetBankingQuery } from './redux/api/user';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
@@ -26,6 +28,7 @@ const AppWrapper = () => {
   const dispatch = useAppDispatch();
   const isLoggedIn = sessionStorage.getItem('user');
   const { data, isLoading } = useShoppingCartQuery(user?.UserID || '');
+  const { data: bankingData } = useGetBankingQuery(user?.UserID || '');
 
   const renderHomePage = (): ReactNode => {
     if (!user && !isLoggedIn) {
@@ -36,6 +39,12 @@ const AppWrapper = () => {
       return <LandingPage />;
     }
   };
+
+  useEffect(() => {
+    if (bankingData) {
+      dispatch(setIsSellerRegistered(true));
+    }
+  }, [bankingData]);
 
   useEffect(() => {
     dispatch(setIsLoadingCart({ isLoading }));

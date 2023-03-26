@@ -14,11 +14,9 @@ import { useNavigate } from 'react-router-dom';
 import { SellerSettingsProfile } from './SellerSettingsProfile';
 import { PaymentSettings } from './PaymentSettings';
 import { useState } from 'react';
-import { StarBorder } from '@mui/icons-material';
 import { AddressSettings } from './AddressSettings';
-interface ManageProfileProps {}
 
-export const ManageProfile: React.FC<ManageProfileProps> = () => {
+export const ManageProfile = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const handleClick = () => {
