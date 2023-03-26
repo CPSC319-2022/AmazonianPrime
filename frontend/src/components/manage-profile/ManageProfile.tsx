@@ -28,8 +28,8 @@ export const ManageProfile = () => {
       <div className="manage-profile__container">
         <div className="manage-profile__menu">
           <List>
-            <ListItem disablePadding>
-              <ListItemButton className="manage-profile__menu-btn" onClick={() => navigate('/manage-profile?page=1')}>
+            <ListItem disablePadding onClick={() => navigate('/manage-profile?page=1')}>
+              <ListItemButton className="manage-profile__menu-btn">
                 <ListItemIcon>
                   <AccountCircleIcon />
                 </ListItemIcon>
@@ -39,8 +39,8 @@ export const ManageProfile = () => {
           </List>
           <Divider />
           <List>
-            <ListItem disablePadding>
-              <ListItemButton className="manage-profile__menu-btn" onClick={() => navigate('/manage-profile?page=2')}>
+            <ListItem disablePadding onClick={() => navigate('/manage-profile?page=2')}>
+              <ListItemButton className="manage-profile__menu-btn">
                 <ListItemIcon>
                   <StorefrontIcon />
                 </ListItemIcon>
@@ -58,17 +58,25 @@ export const ManageProfile = () => {
             </ListItem>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton className="manage-profile__menu-btn" sx={{ pl: 4 }}>
+                <ListItemButton
+                  className="manage-profile__menu-btn"
+                  sx={{ pl: 4 }}
+                  onClick={() => navigate('/manage-profile?page=3')}
+                >
                   <ListItemIcon>
                     <PaymentIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Payment Details" onClick={() => navigate('/manage-profile?page=3')} />
+                  <ListItemText primary="Payment Details" />
                 </ListItemButton>
-                <ListItemButton className="manage-profile__menu-btn" sx={{ pl: 4 }}>
+                <ListItemButton
+                  className="manage-profile__menu-btn"
+                  sx={{ pl: 4 }}
+                  onClick={() => navigate('/manage-profile?page=4')}
+                >
                   <ListItemIcon>
                     <HomeIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Shipping Address" onClick={() => navigate('/manage-profile?page=4')} />
+                  <ListItemText primary="Shipping Address" />
                 </ListItemButton>
               </List>
             </Collapse>
