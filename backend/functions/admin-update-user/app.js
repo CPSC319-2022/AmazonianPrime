@@ -21,7 +21,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const { UserID, IsAdmin } = JSON.parse(event.body);
 
-  if (!UserID || !IsAdmin) {
+  if (!UserID || IsAdmin === undefined) {
     return {
       statusCode: 400,
       body: 'Missing required fields',
