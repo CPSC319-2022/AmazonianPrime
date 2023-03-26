@@ -8,7 +8,9 @@
       "Next": "Check Listing Quantity",
       "Catch": [
         {
-          "ErrorEquals": ["MissingParameterError"],
+          "ErrorEquals": [
+            "MissingParameterError"
+          ],
           "Next": "ErrorHandler"
         }
       ]
@@ -17,7 +19,7 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckQuantityFunctionArn}",
-      "Next": "Simulate Payment",
+      "Next": "Send Task Token",
       "Catch": [
         {
           "ErrorEquals": [
@@ -27,6 +29,12 @@
           "Next": "ErrorHandler"
         }
       ]
+    },
+    "Send Task Token": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${SNSSendTokenFunctionArn}",
+      "Next": "Simulate Payment"
     },
     "Simulate Payment": {
       "Type": "Task",
@@ -50,7 +58,9 @@
       "Resource": "${PaymentFailErrorFunctionArn}",
       "Catch": [
         {
-          "ErrorEquals": ["PaymentFailureError"],
+          "ErrorEquals": [
+            "PaymentFailureError"
+          ],
           "Next": "ErrorHandler"
         }
       ],
@@ -71,6 +81,12 @@
     "ErrorHandler": {
       "Type": "Task",
       "Resource": "${StepFunctionErrorHandlerFunctionArn}",
+      "Next": "Send Error Prompt"
+    },
+    "Send Error Prompt": {
+      "Type": "Task",
+      "InputPath": "$",
+      "Resource": "${SQSThrowErrorFunctionArn}",
       "End": true
     },
     "Checkout Success": {

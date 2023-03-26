@@ -15,9 +15,9 @@ Globals:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'content-type'"
       AllowOrigin: "'*'"
-Parameters:
-  PipelineRole:
-    Type: String
+# Parameters:
+#   PipelineRole:
+#     Type: String
 
 Resources:
   FrontendBucketPolicy:
@@ -33,16 +33,16 @@ Resources:
             Resource: !Sub
               - "arn:aws:s3:::${Bucket}/*"
               - Bucket: !Ref FrontendBucket
-          - Effect: Allow
-            Principal:
-              AWS:
-                - !Ref PipelineRole
-            Action:
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-            Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
+      #     - Effect: Allow
+      #       Principal:
+      #         AWS:
+      #           - !Ref PipelineRole
+      #       Action:
+      #         - "s3:PutObject"
+      #         - "s3:DeleteObject"
+      #       Resource: !Sub
+      #         - "arn:aws:s3:::${Bucket}/*"
+      #         - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -80,6 +80,30 @@ Resources:
               QueryString: true
         Enabled: true
         DefaultRootObject: index.html
+  ## -------- Checkout Step Function -------------
+  CheckoutQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: checkout-queue-status
+  CheckoutTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: SNS Topic for Checkout Flows
+  CheckoutTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Id: MyTopicPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: SQSMessagePolicy
+            Effect: Allow
+            Principal: "*"
+            Action: sqs:SendMessage
+            Resource: "*"
+      Topics:
+      - !Ref CheckoutTopic
+      
   OrderStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
@@ -93,6 +117,9 @@ Resources:
         ClearShoppingCartFunctionArn: !GetAtt ClearShoppingCartFunction.Arn
         StepFunctionErrorHandlerFunctionArn: !GetAtt StepFunctionErrorHandlerFunction.Arn
         PaymentFailErrorFunctionArn: !GetAtt PaymentFailErrorFunction.Arn
+        SendTaskTokenFunctionArn: !GetAtt SendTaskTokenFunction.Arn
+        SQSThrowErrorFunctionArn: !GetAtt SQSThrowErrorFunction.Arn
+        SNSSendTokenFunctionArn: !GetAtt SNSSendTokenFunction.Arn
         # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
       Policies:
         - LambdaInvokePolicy:
@@ -109,6 +136,72 @@ Resources:
             FunctionName: !Ref StepFunctionErrorHandlerFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref PaymentFailErrorFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SendTaskTokenFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SQSThrowErrorFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SNSSendTokenFunction
+  SendTaskTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/send-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Role: !GetAtt SendMessageLambdaRole.Arn
+      Environment:
+        Variables:
+          SQSQueueName: !Ref CheckoutQueue
+  SNSSendTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-sns-send-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          SNSTopicName: !Ref CheckoutTopic
+      Policies:
+        - Statement:
+            - Sid: SNSPublishPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref CheckoutTopic
+  SQSThrowErrorFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-throw-sqs-error/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Role: !GetAtt SendMessageLambdaRole.Arn
+      Environment:
+        Variables:
+          SQSQueueName: !Ref CheckoutQueue
+  SendMessageLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: sqs-send-message-policy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt CheckoutQueue.Arn
   GetUserCartFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
@@ -284,6 +377,20 @@ Resources:
     Properties:
       CodeUri: functions/checkout/
       Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          StateMachineArn: !GetAtt OrderStateMachine.Arn
+          SQSQueueName: !Ref CheckoutQueue
+          SNSTopicName: !Ref CheckoutTopic
+      Architectures:
+        - x86_64
+      Events:
+        Checkout:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/checkout/test # Testing
+            Method: post
       Policies:
         - StepFunctionsExecutionPolicy:
             StateMachineName: !GetAtt OrderStateMachine.Name
@@ -293,18 +400,21 @@ Resources:
               Action:
                 - states:DescribeExecution
               Resource: "*"
-      Environment:
-        Variables:
-          StateMachineArn: !GetAtt OrderStateMachine.Arn
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      Events:
-        Checkout:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/checkout/test # Testing
-            Method: post
+        - Statement:
+            - Sid: SQSReceiveMessagePolicy
+              Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:CreateQueue
+                - sqs:DeleteQueue
+              Resource: "*"
+        - Statement:
+            - Sid: SNSSubscribePolicy
+              Effect: Allow
+              Action:
+                - sns:Subscribe
+              Resource: "*"
   FrontendBucket:
     Type: AWS::S3::Bucket
   ListingsFunction:
@@ -361,7 +471,7 @@ Resources:
         SignUp:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/signup # Ensure api is proxied with /api/*
+            Path: /api/signup # Ensure  pi is proxied with /api/*
             Method: get # TODO: change this to PUT
 
   ##  ----------------- Database Config -----------------
