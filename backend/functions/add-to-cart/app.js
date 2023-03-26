@@ -33,7 +33,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const checkValidQuantityQuery = `SELECT * FROM Listing WHERE ListingID = ${ListingID}`;
   const checkValidQuantity = await new Promise((resolve, reject) => {
-    con.query(addToCartQuery, function (err, res) {
+    con.query(checkValidQuantityQuery, function (err, res) {
       if (err) {
         reject(err);
       }
@@ -51,7 +51,7 @@ exports.lambdaHandler = async (event, context) => {
   if(ShoppingCartItemID) {
     const updateCartQuery = `UPDATE ShoppingCartItem SET Quantity = ${Quantity} WHERE ShoppingCartItemID = "${ShoppingCartItemID}"`;
     const updateCart = await new Promise((resolve, reject) => {
-      con.query(addToCartQuery, function (err, res) {
+      con.query(updateCartQuery, function (err, res) {
         if (err) {
           reject(err);
         }
