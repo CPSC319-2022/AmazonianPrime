@@ -47,6 +47,20 @@ function Breadcrumbs() {
         navigate: `${Paths.Cart}`,
       },
     ];
+  } else if (window.location.pathname === Paths['Manage Profile']) {
+    breadCrumbs = [
+      {
+        link: 'Manage Profile',
+        navigate: `${Paths['Manage Profile']}`,
+      },
+    ];
+  } else if (window.location.pathname === Paths.Cart) {
+    breadCrumbs = [
+      {
+        link: 'Shopping Cart',
+        navigate: `${Paths.Cart}`,
+      },
+    ];
   } else {
     breadCrumbs = [
       {

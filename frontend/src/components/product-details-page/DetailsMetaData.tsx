@@ -29,7 +29,7 @@ const DetailsMetaData: React.FC<{ quantityRef: any }> = ({ quantityRef }) => {
         {getDetailsRow('Colour', listing.Colour ? listing.Colour : 'N/A')}
         {getDetailsRow('Size', listing.Size ? listing.Size : 'N/A')}
         <Grid item xs={3}>
-          <p className="product-details__details__grey-text">Quantity</p>
+          <p className="product-details__details__grey-text">Quantity&nbsp;({listing.Quantity})</p>
         </Grid>
         <Grid item xs={9} marginTop={1.5}>
           <QuantitySelect quantity={listing.Quantity} selectRef={quantityRef} />

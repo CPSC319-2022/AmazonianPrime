@@ -4,13 +4,20 @@ import useMenu from '../../utils/useMenu';
 import { getSlugCategory } from '../../utils/convertSlugCategory';
 import { useNavigate } from 'react-router-dom';
 import Menu from '../common/Menu';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../redux/reducers/userSlice';
 
 export const AccountButton = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const handleRedirect = (category: string) => {
     handleCloseMenu();
-    navigate(`${getSlugCategory(category)}?page=1`);
+    if (category === 'Logout') {
+      dispatch(setUser(null));
+    } else {
+      navigate(`${getSlugCategory(category)}?page=1`);
+    }
   };
   return (
     <>
@@ -23,7 +30,7 @@ export const AccountButton = () => {
         open={open}
         handleClose={handleCloseMenu}
         handleClick={handleRedirect}
-        items={['User Settings', 'Manage Profile', 'My Listings']}
+        items={['User Settings', 'Manage Profile', 'My Listings', 'Logout']}
       />
     </>
   );

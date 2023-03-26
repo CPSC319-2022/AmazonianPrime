@@ -1,0 +1,36 @@
+@import '../../variables';
+
+.more-content__details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1em;
+}
+
+.more-content__show-button {
+  display: flex;
+  flex-direction: row;
+  margin-left: 0.75em;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.more-content__details-containers {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+
+.more-content__existing-title {
+  margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: row;
+}
+
+.more-content__billing {
+  color: $grey;
+}
+
+.more-content__existing {
+  margin-bottom: 1em;
+}
