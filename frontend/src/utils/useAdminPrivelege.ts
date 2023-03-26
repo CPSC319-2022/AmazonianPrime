@@ -4,12 +4,14 @@ import { useAppSelector } from '../redux/store';
 export const key = 'adminPrivelegeRequested';
 
 const useAdminPrivelege = () => {
-  const [isRequestedState, setIsRequestedState] = useState(false);
   const user = useAppSelector((state) => state.user.value);
-  const isAdminPrivelegeRequested = useMemo(
-    () => sessionStorage.getItem(key) === 'true' && user?.IsAdmin === 1,
-    [isRequestedState],
+  const [isRequestedState, setIsRequestedState] = useState(
+    sessionStorage.getItem(key) === 'true' && user?.IsAdmin === 1,
   );
+
+  window.addEventListener('storageChangeEvent', () => {
+    setIsRequestedState(sessionStorage.getItem(key) === 'true' && user?.IsAdmin === 1);
+  });
   if (!user?.IsAdmin) {
     return { isAdmin: false };
   }
@@ -17,10 +19,11 @@ const useAdminPrivelege = () => {
     if (isRequested !== undefined) {
       setIsRequestedState(isRequested);
       sessionStorage.setItem(key, new Boolean(isRequested && user?.IsAdmin).toString());
+      window.dispatchEvent(new Event('storageChangeEvent'));
     }
   };
 
-  return { isAdmin: true, isAdminPrivelegeRequested, setPrivelege };
+  return { isAdmin: true, isAdminPrivelegeRequested: isRequestedState, setPrivelege };
 };
 
 export default useAdminPrivelege;
