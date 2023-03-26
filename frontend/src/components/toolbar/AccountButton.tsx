@@ -25,10 +25,14 @@ export const AccountButton = () => {
     if (category === 'Logout') {
       dispatch(setUser(null));
     } else if (category === 'Switch to User Priveleges') {
-      setPrivelege && setPrivelege(false);
+      if (setPrivelege) {
+        setPrivelege(false);
+      }
       setToastMessage('You have successfully switched modes. You are now acting as a User.');
     } else if (category === 'Switch to Admin Privelges') {
-      setPrivelege && setPrivelege(true);
+      if (setPrivelege) {
+        setPrivelege(true);
+      }
       setToastMessage('You have successfully switched modes. You are now acting as an Administrator.');
     } else {
       navigate(`${getSlugCategory(category)}?page=1`);

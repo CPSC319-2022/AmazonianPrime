@@ -18,7 +18,8 @@ const useAdminPrivelege = () => {
   const setPrivelege = (isRequested: boolean) => {
     if (isRequested !== undefined) {
       setIsRequestedState(isRequested);
-      sessionStorage.setItem(key, new Boolean(isRequested && user?.IsAdmin).toString());
+      const value = Boolean(isRequested && user?.IsAdmin).toString();
+      sessionStorage.setItem(key, value);
       window.dispatchEvent(new Event('storageChangeEvent'));
     }
   };
