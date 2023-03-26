@@ -20,13 +20,14 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const { UserID, AddressID, Items } = event['body'];
+  const { UserID, AddressID, PaymentID, Items } = event['body'];
 
   const ShoppingCartItems = Items;
 
   if (
     !UserID ||
     !AddressID ||
+    !PaymentID ||
     !ShoppingCartItems ||
     !Array.isArray(ShoppingCartItems)
   ) {
@@ -36,8 +37,8 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, ShippingStatus)
-                              VALUES (${UserID}, ${AddressID}, "On it's way");`;
+  const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, PaymentID, ShippingStatus)
+                              VALUES (${UserID}, ${AddressID}, ${PaymentID}, "On it's way");`;
 
   const createOrders = await new Promise((resolve, reject) => {
     con.query(createOrdersQuery, function (err, res) {
