@@ -15,7 +15,7 @@ export const AccountButton = () => {
   const [toastMessage, setToastMessage] = useState('');
   const { isAdmin, isAdminPrivelegeRequested, setPrivelege } = useAdminPrivelege();
   const switchAdminText = isAdmin
-    ? [isAdminPrivelegeRequested ? 'Switch to User Privileges' : 'Switch to Admin Privileges']
+    ? [isAdminPrivelegeRequested ? 'Switch to User Priveleges' : 'Switch to Admin Privelges']
     : [];
 
   const items = ['User Settings', 'Manage Profile', 'My Listings', ...switchAdminText, 'Logout'];
@@ -24,12 +24,12 @@ export const AccountButton = () => {
     handleCloseMenu();
     if (category === 'Logout') {
       dispatch(setUser(null));
-    } else if (category === 'Switch to User Privileges') {
+    } else if (category === 'Switch to User Priveleges') {
       if (setPrivelege) {
         setPrivelege(false);
       }
       setToastMessage('You have successfully switched modes. You are now acting as a User.');
-    } else if (category === 'Switch to Admin Privileges') {
+    } else if (category === 'Switch to Admin Privelges') {
       if (setPrivelege) {
         setPrivelege(true);
       }
