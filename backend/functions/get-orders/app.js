@@ -1,6 +1,5 @@
 const dbConnection = require('dbConnection.js');
 const userValidate = require('UserValidate.js');
-var mysql = require('mysql');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -20,7 +19,7 @@ exports.lambdaHandler = async (event, context) => {
         'databaseAmazonianPrime',
     );
 
-    const UserID = event.queryStringParameters.userID;
+    const UserID = event.queryStringParameters.userid;
     const offset = event.queryStringParameters.offset;
     const limit = event.queryStringParameters.limit;
 
@@ -32,15 +31,15 @@ exports.lambdaHandler = async (event, context) => {
     }
 
     const getOrderByUserIDQuery = `SELECT *
-                                   FROM Users
-                                   WHERE UserID = ${UserID} 
-                                   LIMIT ${limit}
-                                   OFFSET ${offset}`;
-
-    getOrderByUserID = await new Promise((resolve, reject) => {
+                              FROM Orders
+                              WHERE UserID = ${UserID}` +
+        (limit ? ` LIMIT ${limit}` : '') +
+        (offset ? ` OFFSET ${offset}` : '');
+    console.log(getOrderByUserIDQuery);
+    const getOrderByUserID = await new Promise((resolve, reject) => {
         con.query(getOrderByUserIDQuery, function (err, res) {
             if (err) {
-                reject("Couldn't get the user from database!");
+                reject(err);
             }
             resolve(res);
         });

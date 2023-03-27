@@ -15,9 +15,9 @@ Globals:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'content-type'"
       AllowOrigin: "'*'"
-Parameters:
-  PipelineRole:
-    Type: String
+#Parameters:
+#  PipelineRole:
+#    Type: String
 
 Resources:
   FrontendBucketPolicy:
@@ -33,16 +33,16 @@ Resources:
             Resource: !Sub
               - "arn:aws:s3:::${Bucket}/*"
               - Bucket: !Ref FrontendBucket
-          - Effect: Allow
-            Principal:
-              AWS:
-                - !Ref PipelineRole
-            Action:
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-            Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
+#          - Effect: Allow
+#            Principal:
+#              AWS:
+#                - !Ref PipelineRole
+#            Action:
+#              - "s3:PutObject"
+#              - "s3:DeleteObject"
+#            Resource: !Sub
+#              - "arn:aws:s3:::${Bucket}/*"
+#              - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -141,20 +141,6 @@ Resources:
             Path: /api/listing-old/{listingid} # Ensure api is proxied with /api/*
             Method: get
 
-  GetOrderFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: listing/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      Events:
-        Listings:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/listing-old/{userid} # Ensure api is proxied with /api/*
-            Method: get
   LoginFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -490,6 +476,49 @@ Resources:
       VpcConfig:
         SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
         SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  GetOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/get-orders/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/orders/{userid} # Ensure api is proxied with /api/*
+            Method: get
+            RequestParameters:
+              - method.request.querystring.name:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.category:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.offset:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.limit:
+                  Required: false
+                  Caching: false
+      VpcConfig:
+        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
       Environment:
         Variables:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
