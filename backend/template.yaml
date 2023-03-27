@@ -89,20 +89,20 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: SNS Topic for Checkout Flows
-  CheckoutTopicPolicy:
-    Type: AWS::SNS::TopicPolicy
-    Properties:
-      PolicyDocument:
-        Id: MyTopicPolicy
-        Version: 2012-10-17
-        Statement:
-          - Sid: SQSMessagePolicy
-            Effect: Allow
-            Principal: "*"
-            Action: sqs:SendMessage
-            Resource: "*"
-      Topics:
-      - !Ref CheckoutTopic
+  # CheckoutTopicPolicy:
+  #   Type: AWS::SNS::TopicPolicy
+  #   Properties:
+  #     PolicyDocument:
+  #       Id: MyTopicPolicy
+  #       Version: 2012-10-17
+  #       Statement:
+  #         - Sid: SQSMessagePolicy
+  #           Effect: Allow
+  #           Principal: "*"
+  #           Action: sqs:SendMessage
+  #           Resource: "*"
+  #     Topics:
+  #       - !Ref CheckoutTopic
       
   OrderStateMachine:
     Type: AWS::Serverless::StateMachine
@@ -408,6 +408,7 @@ Resources:
                 - sqs:DeleteMessage
                 - sqs:CreateQueue
                 - sqs:DeleteQueue
+                - sqs:SetQueueAttributes
               Resource: "*"
         - Statement:
             - Sid: SNSSubscribePolicy

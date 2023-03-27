@@ -15,50 +15,30 @@ const AWS = require('aws-sdk');
 const stepFunctions = new AWS.StepFunctions();
 const sns = new AWS.SNS();
 const sqs = new AWS.SQS();
+const { v4: uuid } = require('uuid');
 
 exports.lambdaHandler = async (event, context) => {
   // Source: https://stackoverflow.com/questions/51240606/how-to-get-result-of-aws-lambda-function-running-with-step-function
-  const reqBody = event.body || {};
-
-  const executionParams = {
-    stateMachineArn: process.env.StateMachineArn,
-    input: reqBody,
-  };
-
   try {
-
-    // let status = '';
-    // while (status !== 'SUCCEEDED' && status !== 'FAILED') {
-    //   const describeParams = { executionArn: executionArn };
-    //   const describeResult = await stepFunctions
-    //     .describeExecution(describeParams)
-    //     .promise();
-    //   status = describeResult.status;
-    // }
-
-    // // Get the output of the execution
-    // const describeParams = { executionArn: executionArn };
-    // const describeResult = await stepFunctions
-    //   .describeExecution(describeParams)
-    //   .promise();
-    // const output = JSON.parse(describeResult.output);
-
-    // console.log('Step Function output:', describeResult);
-
-    await new Promise((res) => setTimeout(res, 2000));
-
+    let transactionID = uuid();
     const topicArn = process.env.SNSTopicName;
 
     // Define the message attribute names and values to filter by
     const attributeFilters = {
-      TransactionID: 'abcde'
+      "TransactionID": [transactionID]
     };
     
+    
+    
     // Create an SQS queue to receive the SNS messages
-    const queueName = 'MyQueue';
+    const queueName = 'Queue' + transactionID;
     const queueParams = { QueueName: queueName };
     const queueResult = await sqs.createQueue(queueParams).promise();
     const queueUrl = queueResult.QueueUrl;
+    const queueRegion = queueUrl.split('.')[1];
+    const accountId = queueUrl.split('/')[3];
+
+    const queueArn = `arn:aws:sqs:${queueRegion}:${accountId}:${queueName}`;
     
     // Subscribe the SQS queue to the SNS topic with the attribute filters
     const subscribeParams = {
@@ -67,9 +47,34 @@ exports.lambdaHandler = async (event, context) => {
         Attributes: {
             FilterPolicy: JSON.stringify(attributeFilters)
         },
-        Endpoint: queueUrl
+        Endpoint: queueArn
     };
-    await sns.subscribe(subscribeParams).promise();
+    await sns.subscribe(subscribeParams).promise(); // Need to make subsequent call to unsubscribe to avoid polluting SNS
+    
+    // Add permissions for SNS topic to publish messages to the SQS queue
+    const policyParams = {
+      Attributes: {
+        Policy: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [{
+            Sid: 'AllowSnsTopicToSendMessageToSqsQueue',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'sns.amazonaws.com'
+            },
+            Action: 'sqs:SendMessage',
+            Resource: queueArn,
+            Condition: {
+              ArnEquals: {
+                "aws:SourceArn": topicArn
+              }
+            }
+          }]
+        })
+      },
+      QueueUrl: queueResult.QueueUrl
+    };
+    await sqs.setQueueAttributes(policyParams).promise();
     
     // Receive messages from the SQS queue
     const receiveParams = {
@@ -78,6 +83,13 @@ exports.lambdaHandler = async (event, context) => {
         WaitTimeSeconds: 20 // long-poll for up to 20 seconds
     };
     const result = await sqs.receiveMessage(receiveParams).promise();
+    
+    const reqBody = event.body || {};
+
+    const executionParams = {
+      stateMachineArn: process.env.StateMachineArn,
+      input: JSON.stringify({...JSON.parse(reqBody), "TransactionID": transactionID}),
+    };
 
     const executionResult = await stepFunctions
       .startExecution(executionParams)
@@ -103,24 +115,11 @@ exports.lambdaHandler = async (event, context) => {
     // Clean up
     await sqs.deleteQueue({ QueueUrl: queueUrl }).promise();
 
-    // const queueUrl = process.env.SQSQueueName;
-    // const response = await sqs.receiveMessage({ QueueUrl: queueUrl }).promise();
-
-    // if (response.Messages) {
-    //   const message = JSON.parse(response.Messages[0].Body);
-    //   // process the message payload
-    //   await sqs.deleteMessage({ QueueUrl: queueUrl, ReceiptHandle: response.Messages[0].ReceiptHandle }).promise();
-    // } else {
-    //   return {
-    //     statusCode: 200,
-    //     body: "No messages in queue",
-    //   };
-    // }
-
     return {
       statusCode: 200,
       body: JSON.stringify(result),
     };
+    
   } catch (err) {
     console.error(err);
     throw err;
