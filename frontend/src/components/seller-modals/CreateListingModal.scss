@@ -49,6 +49,9 @@
   width: 100%;
 }
 
+.create-listing__cost {
+  width: 40%;
+}
 .create-listing__description,
 .create-listing__image-drop,
 .create-listing__cost,
@@ -105,6 +108,19 @@
   margin-top: 1em;
   display: flex;
   flex-direction: row;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.more-container {
+  display: flex;
+}
+
+.create-listing__quantity-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .listing-modal__more-details {

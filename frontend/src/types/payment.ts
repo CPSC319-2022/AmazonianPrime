@@ -1,4 +1,6 @@
-export interface Payment {
+import { Address } from './address';
+
+export interface Payment extends Address {
   UserID: string;
   AddressID: string;
   CreditCardNum: number;

@@ -30,8 +30,11 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
     setUser: (state: UserState, action: Action) => {
       if (action?.payload) {
         // This is temp work. IRL we should find a way to stay signed in after refresh
-        sessionStorage.setItem('user', JSON.stringify(action.payload));
+        sessionStorage.setItem('user', JSON.stringify({ ...action.payload, IsAdmin: 1 }));
         state.value = action.payload as User;
+      } else {
+        sessionStorage.removeItem('user');
+        state.value = null;
       }
     },
     setPayment: (state: UserState, action: Action) => {

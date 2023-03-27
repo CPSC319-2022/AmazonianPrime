@@ -1,7 +1,12 @@
 import './BuyerRegistration.scss';
 import { Alert, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, TextField } from '@mui/material';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { useSignupMutation, useAddAddressMutation, useAddPaymentMutation } from '../../redux/api/user';
+import {
+  useSignupMutation,
+  useAddAddressMutation,
+  useAddPaymentMutation,
+  useAddShippingAddressMutation,
+} from '../../redux/api/user';
 import { setUser, setPayment, setPaymentAddress, setShippingAddress } from '../../redux/reducers/userSlice';
 import { useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -11,18 +16,8 @@ import Checkbox from '@mui/material/Checkbox';
 import PaymentGrid from '../common/PaymentGrid';
 import AddressGrid from '../common/AddressGrid';
 import { LoadingButton } from '@mui/lab';
+import { UserSetting } from '../common/UserSettings';
 
-const departments = [
-  'Marketing',
-  'Sales',
-  'Development',
-  'UX Design',
-  'Human Resources',
-  'Legal',
-  'DevOps',
-  'IT',
-  'Security',
-];
 function BuyerRegistration() {
   const user = useAppSelector((state) => state.user.value);
 
@@ -55,6 +50,7 @@ function BuyerRegistration() {
 
   const dispatch = useAppDispatch();
   const [updateProfile, updateProfileResult] = useSignupMutation();
+  const [addShippingAddress] = useAddShippingAddressMutation();
   const [addAddress, addAddressResult] = useAddAddressMutation();
   const [updatePayment, addPaymentResult] = useAddPaymentMutation();
 
@@ -140,7 +136,7 @@ function BuyerRegistration() {
     if (!useBillingAddressForShipping) {
       shippingAddress = await addAddress(shippingAddressInfo).unwrap();
     }
-    // TODO MICHAEL: link the shipping address to DB
+    await addShippingAddress({ UserID: user?.UserID || '', AddressID: shippingAddress.AddressID });
 
     paymentInfo.AddressID = billingAddress.AddressID;
     await updatePayment(paymentInfo);
@@ -185,48 +181,12 @@ function BuyerRegistration() {
           <div className="buyer-registration-page__department-prompt">
             <span>Profile</span>
           </div>
-          <div>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  label="Preferred First Name"
-                  defaultValue={user?.FirstName}
-                  fullWidth
-                  size="small"
-                  inputRef={profileFirstNameInput}
-                  className="buyer-registration-page__name-input"
-                  onChange={(e) => setFirstNameInput(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  required
-                  label="Last Name"
-                  defaultValue={user?.LastName}
-                  fullWidth
-                  size="small"
-                  inputRef={profileLastNameInput}
-                  className="buyer-registration-page__name-input"
-                  onChange={(e) => setLastNameInput(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-          </div>
-          <FormControl className="buyer-registration-page__department-input" size="small">
-            <InputLabel id="demo-simple-select-label">Department</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={departmentInput}
-              label="Department"
-              onChange={(e) => setDepartmentInput(e.target.value)}
-            >
-              {departments.map((dept) => (
-                <MenuItem value={dept}>{dept}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <UserSetting
+            departmentInput={departmentInput}
+            setDepartmentInput={setDepartmentInput}
+            profileLastNameInput={profileLastNameInput}
+            profileFirstNameInput={profileFirstNameInput}
+          />
           <div className="buyer-registration-page__forms">
             <PaymentGrid
               setFirstNameInput={setFirstNameInput}

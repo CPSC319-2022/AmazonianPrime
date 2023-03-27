@@ -1,19 +1,80 @@
 {
   "Comment": "A state machine that handles the order purchasing workflow",
-  "StartAt": "Check Cart Items",
+  "StartAt": "Get Cart Items",
   "States": {
-    "Check Cart Items": {
+    "Get Cart Items": {
       "Type": "Task",
-      "Resource": "${CartCheckerFunctionArn}",
-      "Retry": [
+      "Resource": "${GetUserCartFunctionArn}",
+      "Next": "Check Listing Quantity",
+      "Catch": [
         {
-          "ErrorEquals": ["States.TaskFailed"],
-          "IntervalSeconds": 15,
-          "MaxAttempts": 5,
-          "BackoffRate": 1.5
+          "ErrorEquals": ["MissingParameterError"],
+          "Next": "ErrorHandler"
+        }
+      ]
+    },
+    "Check Listing Quantity": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${CheckQuantityFunctionArn}",
+      "Next": "Simulate Payment",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "EmptyShoppingCartError",
+            "PurchaseQuantityExceededError"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ]
+    },
+    "Simulate Payment": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${PaymentSimulationFunctionArn}",
+      "Next": "Payment Approved?"
+    },
+    "Payment Approved?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.payment_status",
+          "StringMatches": "Approved",
+          "Next": "Create Order"
         }
       ],
+      "Default": "Payment Fail"
+    },
+    "Payment Fail": {
+      "Type": "Task",
+      "Resource": "${PaymentFailErrorFunctionArn}",
+      "Catch": [
+        {
+          "ErrorEquals": ["PaymentFailureError"],
+          "Next": "ErrorHandler"
+        }
+      ],
+      "Next": "ErrorHandler"
+    },
+    "Create Order": {
+      "Type": "Task",
+      "InputPath": "$",
+      "Resource": "${CreateOrderFunctionArn}",
+      "Next": "Empty Shopping Cart"
+    },
+    "Empty Shopping Cart": {
+      "Type": "Task",
+      "InputPath": "$",
+      "Resource": "${ClearShoppingCartFunctionArn}",
+      "Next": "Checkout Success"
+    },
+    "ErrorHandler": {
+      "Type": "Task",
+      "Resource": "${StepFunctionErrorHandlerFunctionArn}",
       "End": true
+    },
+    "Checkout Success": {
+      "Type": "Succeed"
     }
   }
 }
