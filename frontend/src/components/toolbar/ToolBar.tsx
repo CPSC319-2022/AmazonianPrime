@@ -46,6 +46,11 @@ function ToolBar() {
                     Sell
                   </Button>
                 )}
+                {isAdminPrivelegeRequested && (
+                  <Button color="secondary" className="toolbar__button" onClick={() => navigate('/users')}>
+                    Users
+                  </Button>
+                )}
                 <Button className="toolbar__button" onClick={() => navigate('/orders')}>
                   Orders
                 </Button>
