@@ -1,4 +1,141 @@
 @import '../../variables';
 
-.cart-page {
+.cart-page.cart-page {
+  width: unset;
+  margin: 1.5em 3.2em;
+}
+
+.cart__top-content.cart__top-content {
+  margin-bottom: 2em;
+}
+
+.cart-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 2em;
+}
+
+.cart-icon {
+  margin-right: 0.5em;
+}
+.cart__welcome-message {
+  font-size: 1.1em;
+}
+
+.cart__items-quantity {
+  margin-top: 0.75em;
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.cart__listing-image {
+  object-fit: cover;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.cart__listing-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1.5em;
+}
+
+.cart__listing-header,
+.cart__listing-header-summary {
+  display: flex;
+  flex-direction: row;
+  font-size: 2em;
+  width: 100%;
+
+  .cart__listing-cost {
+    margin-left: auto;
+    color: $secondary-color;
+  }
+}
+
+.cart__listing-header {
+  .cart__listing-name {
+    &:hover {
+      cursor: pointer;
+      text-decoration-line: underline;
+      text-decoration-thickness: 2px;
+    }
+  }
+}
+
+.cart__listing-header-summary {
+  font-size: 1em;
+  margin: 0 0.15em;
+  .cart__listing-cost {
+    color: black;
+  }
+}
+
+.cart__order-summary-border,
+.cart__order-summary-half-border {
+  border-top: 1px solid black;
+  width: 100%;
+  margin: 0.75em 0;
+}
+
+.cart__order-summary-half-border {
+  width: 40%;
+  margin-left: auto;
+}
+
+.cart__listing-user {
+  margin: 0.5em 0;
+}
+
+.cart__listing-quantity {
+  margin-right: 0.5em;
+  font-size: 0.95em;
+}
+
+.cart__listing-quantity-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.cart__listing-details {
+  display: flex;
+  margin: 0 1em;
+  width: 100%;
+  align-items: start;
+  flex-direction: column;
+  align-self: start;
+}
+
+.cart__remove {
+  margin-top: 0.5em;
+}
+.cart__order-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin-left: 3em;
+}
+
+.cart__order-summary-sticky {
+  position: fixed;
+  top: 95px;
+  width: calc(33.333333% - 5.1em);
+  background-color: white;
+}
+
+.cart__listing-name-quantity {
+  color: $grey;
+  font-size: 0.85em;
+}
+
+.cart__order-summary-title {
+  font-size: 1.5em;
+}
+
+.cart__checkout-button.cart__checkout-button {
+  font-weight: bold;
+  margin-top: 1em;
 }

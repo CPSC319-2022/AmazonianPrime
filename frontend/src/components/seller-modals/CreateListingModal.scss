@@ -49,6 +49,9 @@
   width: 100%;
 }
 
+.create-listing__cost {
+  width: 40%;
+}
 .create-listing__description,
 .create-listing__image-drop,
 .create-listing__cost,
@@ -88,6 +91,9 @@
 
 .create-listing__condition {
   margin-right: 1em;
+  p {
+    margin: 0;
+  }
 }
 
 .seller-modal__save-button.seller-modal__save-button {
@@ -107,15 +113,14 @@
   }
 }
 
-.success-toast {
+.more-container {
+  display: flex;
+}
+
+.create-listing__quantity-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-
-  a:link,
-  a:visited {
-    color: rgb(30, 70, 32);
-  }
 }
 
 .listing-modal__more-details {
@@ -124,6 +129,9 @@
 
   .listing-modal__more-details-main {
     font-size: 1.1em;
+    &:hover {
+      cursor: pointer;
+    }
   }
   .listing-modal__more-details-sub {
     font-size: 0.85em;

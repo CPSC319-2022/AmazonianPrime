@@ -28,6 +28,9 @@ exports.lambdaHandler = async (event, context) => {
 
   var options = [];
 
+  options.push(`Listing.UserID IS NOT NULL`);
+  options.push(`IsActiveListing = TRUE`);
+
   if (name != null && name !== undefined) {
     let parsedName = name.replace(/-/g, ' ');
     parsedName = name.replace(/\"/g, '');
@@ -46,13 +49,15 @@ exports.lambdaHandler = async (event, context) => {
 
   let whereClause;
 
-  if (options.length > 0){
+  if (options.length > 0) {
     whereClause = options.reduce((a, b) => {
       return a + ' AND ' + b;
     });
   }
 
-  const getListingsQuery = `SELECT * FROM Listing LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath FROM ListingImage WHERE S3ImagePath IN (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images ON Listing.ListingID = Images.ImageListingID JOIN Users on Listing.UserID = Users.UserID ${whereClause !== undefined ? `WHERE ${whereClause} `: ''}LIMIT ${limit} OFFSET ${offset};`;
+  const getListingsQuery = `SELECT * FROM Listing LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath FROM ListingImage WHERE S3ImagePath IN (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images ON Listing.ListingID = Images.ImageListingID JOIN Users on Listing.UserID = Users.UserID ${
+    whereClause !== undefined ? `WHERE ${whereClause} ` : ''
+  }LIMIT ${limit} OFFSET ${offset};`;
 
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
@@ -65,7 +70,9 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(getListings);
 
-  const getNumberOfListings = `SELECT COUNT(*) FROM Listing ${whereClause !== undefined ? `WHERE ${whereClause} `: ''};`;
+  const getNumberOfListings = `SELECT COUNT(*) FROM Listing ${
+    whereClause !== undefined ? `WHERE ${whereClause} ` : ''
+  };`;
 
   const getListingsCount = await new Promise((resolve, reject) => {
     con.query(getNumberOfListings, function (err, res) {
@@ -78,7 +85,14 @@ exports.lambdaHandler = async (event, context) => {
 
   // Need to figure out how to extract the image preview as well for each image here. Perhaps
   const output = getListings.map((entry) => {
-    const { FirstName, LastName, Email, Department, S3ImagePath, ...ListingData } = entry;
+    const {
+      FirstName,
+      LastName,
+      Email,
+      Department,
+      S3ImagePath,
+      ...ListingData
+    } = entry;
     return {
       ...ListingData,
       User: { FirstName, LastName, Email, Department },

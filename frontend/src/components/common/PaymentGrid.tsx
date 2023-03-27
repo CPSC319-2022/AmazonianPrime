@@ -61,11 +61,12 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
               onChange={(e) => setLastNameInput(e.target.value)}
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <TextField
               fullWidth
               required
               label="Card Number"
+              autoComplete="off"
               defaultValue=""
               size="small"
               type="number"
@@ -81,6 +82,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
               required
               size="small"
               label="CVV"
+              autoComplete="off"
               defaultValue=""
               type="number"
               onInput={(e: any) => {
@@ -92,6 +94,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
           <Grid item xs={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
+                format="MM/YY"
                 slotProps={{
                   textField: {
                     helperText: 'Expiry Date',

@@ -2,7 +2,7 @@ import './Breadcrumbs.scss';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { Link, Typography, Breadcrumbs as MUIBreadcrumbs } from '@mui/material';
 import { useAppSelector } from '../../redux/store';
-import { getFriendlyCategoryString } from './convertSlugCategory';
+import { getFriendlyCategoryString } from '../../utils/convertSlugCategory';
 import { Paths } from '../../Paths';
 
 function Breadcrumbs() {
@@ -38,6 +38,27 @@ function Breadcrumbs() {
       {
         link: 'My Listings',
         navigate: `${Paths.MyListings}?page=${page ?? 1}`,
+      },
+    ];
+  } else if (location.state?.previousPage === Paths.Cart) {
+    breadCrumbs = [
+      {
+        link: 'Shopping Cart',
+        navigate: `${Paths.Cart}`,
+      },
+    ];
+  } else if (window.location.pathname === Paths['Manage Profile']) {
+    breadCrumbs = [
+      {
+        link: 'Manage Profile',
+        navigate: `${Paths['Manage Profile']}`,
+      },
+    ];
+  } else if (window.location.pathname === Paths.Cart) {
+    breadCrumbs = [
+      {
+        link: 'Shopping Cart',
+        navigate: `${Paths.Cart}`,
       },
     ];
   } else {

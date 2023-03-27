@@ -14,6 +14,7 @@ import {
   SelectChangeEvent,
   FormControl,
   InputLabel,
+  FormHelperText,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -21,27 +22,27 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SellIcon from '@mui/icons-material/Sell';
 import './CreateListingModal.scss';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store/index';
+import { RootState, useAppSelector } from '../../redux/store/index';
 import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import { FileUploader } from 'react-drag-drop-files';
-import { categories } from '../common/Categories';
-import { blobToBase64 } from '../common/imageToBase64';
+import { categories } from '../../utils/Categories';
+import { blobToBase64 } from '../../utils/imageToBase64';
 import { useCreateListingMutation } from '../../redux/api/listings';
 import { useNavigate } from 'react-router';
-import useBreadcrumbHistory from '../common/useBreadcrumbHistory';
+import useBreadcrumbHistory from '../../utils/useBreadcrumbHistory';
 // @ts-ignore
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Listing } from '../../types/listing';
 
 const fileTypes = ['JPG', 'PNG', 'JPEG'];
-const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used Fair', 'Fair'];
+const conditions = ['New', 'Used- Like New', 'Used- Good', 'Used- Fair', 'Fair'];
 const metrics = ['None', 'Meter(s)', 'Centimeter(s)', 'Foot/Feet'];
 
 function CreateListingModal() {
   const isCreateListingModalOpen = useSelector((state: RootState) => state.sellerModal.isCreateListingModalOpen);
-  const [quantity, setQuantity] = useState(1);
+  const quantity = useRef<any>(null);
   const [category, setCategory] = useState(categories[1]);
   const [condition, setCondition] = useState(conditions[0]);
   const [result, setResult] = useState<Listing | null>(null);
@@ -58,12 +59,10 @@ function CreateListingModal() {
   const brandRef = useRef<any>(null);
   const sizeRef = useRef<any>(null);
   const [createListing] = useCreateListingMutation();
-  const history = useBreadcrumbHistory();
-  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.user.value);
 
   useEffect(() => {
     // reset
-    setQuantity(1);
     setCategory(categories[1]);
     setCondition(conditions[0]);
     setImages([]);
@@ -77,6 +76,7 @@ function CreateListingModal() {
     }
     setOpenErrorToast('');
     setIsLoading(false);
+    setError(null);
   };
 
   const handleSuccessCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -91,7 +91,9 @@ function CreateListingModal() {
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
-    const errorMessage = [missingTitle, missingDescription, missingImage].filter((msg) => msg).join(', ');
+    const missingCost =
+      (!Number(costRef.current?.value) || Number(costRef.current?.value) === 0) && 'Cost should be more than $0';
+    const errorMessage = [missingTitle, missingDescription, missingImage, missingCost].filter((msg) => msg).join(', ');
     if (errorMessage) {
       setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
       return;
@@ -100,6 +102,13 @@ function CreateListingModal() {
       setOpenErrorToast('Please provide a brief description!');
       return;
     }
+
+    if (quantity.current?.value.startsWith('0') || costRef.current?.value.startsWith('0')) {
+      setOpenErrorToast('Please do not input 0 Quantites or Cost!');
+      return;
+    }
+    handleModalClose();
+    setIsLoading(true);
 
     handleModalClose();
     setIsLoading(true);
@@ -111,11 +120,11 @@ function CreateListingModal() {
       return;
     }
     await createListing({
-      UserID: 1,
+      UserID: Number(user?.UserID) || 0,
       ListingName: titleRef.current?.value,
       Description: descriptionRef.current?.value,
       Cost: Number(costRef.current?.value),
-      Quantity: quantity,
+      Quantity: Number(quantity.current?.value),
       Category: category.replace('&', 'And'),
       ItemCondition: condition,
       Brand: brandRef.current?.value,
@@ -155,10 +164,28 @@ function CreateListingModal() {
     return (
       <div>
         <div className="create-listing__optional-container">
-          <TextField inputRef={brandRef} label="Brand" className="create-listing__optional" size="small" />
-          <TextField inputRef={colourRef} label="Colour" className="create-listing__optional" size="small" />
+          <TextField
+            autoComplete="off"
+            inputRef={brandRef}
+            label="Brand"
+            className="create-listing__optional"
+            size="small"
+          />
+          <TextField
+            autoComplete="off"
+            inputRef={colourRef}
+            label="Colour"
+            className="create-listing__optional"
+            size="small"
+          />
         </div>
-        <TextField className="create-listing__optional-container" inputRef={sizeRef} label="Size" size="small" />
+        <TextField
+          autoComplete="off"
+          className="create-listing__optional-container"
+          inputRef={sizeRef}
+          label="Size"
+          size="small"
+        />
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel>Metric</InputLabel>
           <Select
@@ -209,9 +236,9 @@ function CreateListingModal() {
       </Snackbar>
       <Snackbar open={result !== null} onClose={handleSuccessCloseToast} autoHideDuration={12000}>
         <Alert onClose={handleSuccessCloseToast} severity="success" sx={{ width: '100%' }}>
-          <span className="success-toast">
+          <span className="link-toast">
             <p>We successfully created your listing, {result?.ListingName}! View it&nbsp;</p>
-            <a href={`/listing/${result?.ListingID}`}>here.</a>
+            <a href={`/listing/${result?.ListingID}`}>here</a>.
           </span>
         </Alert>
       </Snackbar>
@@ -257,36 +284,45 @@ function CreateListingModal() {
               </div>
               <div className="create-listing__content-row">
                 <span className="create-listing__condition">Condition</span>
-                <Select
-                  size="small"
-                  className="create-listing__condition"
-                  value={condition}
-                  onChange={(event) => setCondition(event.target.value)}
-                >
+                <Select size="small" value={condition} onChange={(event) => setCondition(event.target.value)}>
                   {conditions.map((value: string) => {
                     return <MenuItem value={value}>{value}</MenuItem>;
                   })}
                 </Select>
-                <div>
+                <div className="create-listing__quantity-container">
                   <span className="create-listing__quantity">Quantity</span>
-                  <Select size="small" value={quantity} onChange={(event) => setQuantity(event.target.value as number)}>
-                    {Array(10)
-                      .fill(1)
-                      .map((_: number, index: number) => {
-                        return <MenuItem value={index + 1}>{index + 1}</MenuItem>;
-                      })}
-                  </Select>
+                  <TextField
+                    required
+                    autoComplete="off"
+                    inputRef={quantity}
+                    type="number"
+                    InputProps={{ inputProps: { min: 1, max: 100 } }}
+                    onKeyPress={(event) => {
+                      if (event?.key === '-' || event?.key === '+') {
+                        event.preventDefault();
+                      }
+                    }}
+                    size="small"
+                  />
                 </div>
               </div>
               <TextField
                 required
                 inputRef={costRef}
                 label="$"
+                autoComplete="off"
+                InputProps={{ inputProps: { min: 1, max: 100000 } }}
+                onKeyPress={(event) => {
+                  if (event?.key === 'e' || event?.key === '-' || event?.key === '+') {
+                    event.preventDefault();
+                  }
+                }}
+                helperText="Cost"
                 className="create-listing__cost"
                 size="small"
                 type="number"
               />
-              <div>{!showMore ? moreDetailsButton : lessDetailsButton}</div>
+              <div className="more-container">{!showMore ? moreDetailsButton : lessDetailsButton}</div>
               {renderOptional()}
             </div>
             <div className="create-listing__content-right">

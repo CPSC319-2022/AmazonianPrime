@@ -19,6 +19,9 @@ export const sellerModalSlice = createSlice({
     modifyRegisterUserModalVisibility: (state, action: PayloadAction<boolean>) => {
       state.isSellerModalOpen = action.payload;
     },
+    setIsSellerRegistered: (state, action: PayloadAction<boolean>) => {
+      state.isSellerRegistered = action.payload;
+    },
     modifyIsSellerRegistered: (state, action: PayloadAction<boolean>) => {
       state.isSellerRegistered = action.payload;
       if (action.payload) {
@@ -35,6 +38,10 @@ export const sellerModalSlice = createSlice({
   },
 });
 
-export const { modifyRegisterUserModalVisibility, modifyIsSellerRegistered, modifyCreateListingModalVisibility } =
-  sellerModalSlice.actions;
+export const {
+  modifyRegisterUserModalVisibility,
+  modifyIsSellerRegistered,
+  modifyCreateListingModalVisibility,
+  setIsSellerRegistered,
+} = sellerModalSlice.actions;
 export default sellerModalSlice.reducer;

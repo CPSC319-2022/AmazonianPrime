@@ -9,5 +9,8 @@
   "scripts": {
     "format": "prettier --write \"*/**/*.json\" \"*/**/*.js\"",
     "dev:start": "sam build && sam local start-api -p 8080"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1323.0"
   }
 }

@@ -8,13 +8,15 @@ import { useDispatch } from 'react-redux';
 import { modifyCreateListingModalVisibility } from '../../redux/reducers/sellerModalSlice';
 import { useAppSelector } from '../../redux/store';
 import SellerModal from '../seller-modals/SellerModal';
-import useSticky from '../common/useSticky';
+import useSticky from '../../utils/useSticky';
 import CategoriesButton from './CategoriesButton';
 import { AccountButton } from './AccountButton';
+import useAdminPrivelege from '../../utils/useAdminPrivelege';
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
   const dispatch = useDispatch();
+  const { isAdminPrivelegeRequested } = useAdminPrivelege();
 
   function handleOpenSellerModal() {
     dispatch(modifyCreateListingModalVisibility(true));
@@ -23,6 +25,8 @@ function ToolBar() {
   const classes = sticky ? 'landing-page__sticky-toolbar toolbar' : 'toolbar';
 
   const user = useAppSelector((state) => state.user.value);
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const size = cartItems?.TotalQuantity || 0 > 0 ? '20px' : 0;
   if (!user?.Department) return null;
   return (
     <>
@@ -37,9 +41,11 @@ function ToolBar() {
             <Grid item xs={3} container direction="row" justifyContent="center" alignItems="center">
               <div className="toolbar__buttons">
                 <CategoriesButton />
-                <Button color="secondary" className="toolbar__button" onClick={() => handleOpenSellerModal()}>
-                  Sell
-                </Button>
+                {!isAdminPrivelegeRequested && (
+                  <Button color="secondary" className="toolbar__button" onClick={() => handleOpenSellerModal()}>
+                    Sell
+                  </Button>
+                )}
                 <Button className="toolbar__button" onClick={() => navigate('/orders')}>
                   Orders
                 </Button>
@@ -49,9 +55,17 @@ function ToolBar() {
               <SearchBar />
             </Grid>
             <Grid item xs={2} container direction="row" justifyContent="flex-end" alignItems="center">
-              <IconButton color="primary" component="label" onClick={() => navigate('/cart')}>
-                <ShoppingCartIcon sx={{ fontSize: 30 }} />
-              </IconButton>
+              <div className="cart-container">
+                <IconButton color="primary" component="label" onClick={() => navigate('/cart')}>
+                  <ShoppingCartIcon sx={{ fontSize: 30 }} />
+                </IconButton>
+                <span
+                  className="cart-quantity"
+                  style={{ width: size, height: size, fontSize: cartItems?.TotalQuantity === 0 ? '0' : '15px' }}
+                >
+                  {cartItems?.TotalQuantity || (0 > 0 && cartItems?.TotalQuantity)}
+                </span>
+              </div>
               <AccountButton />
             </Grid>
           </Grid>

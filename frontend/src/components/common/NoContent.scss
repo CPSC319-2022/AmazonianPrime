@@ -1,3 +1,4 @@
+.no-content-fixed,
 .no-content {
   position: fixed;
   top: 50%;
@@ -7,6 +8,11 @@
   align-items: center;
   display: flex;
   flex-direction: column;
+  text-align: center;
+}
+
+.no-content {
+  top: 70%;
 }
 
 .no-content-image {

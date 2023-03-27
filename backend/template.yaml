@@ -8,7 +8,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 30
     MemorySize: 128
   Api:
     Cors:
@@ -83,23 +83,176 @@ Resources:
   OrderStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
-      Type: EXPRESS #why are we using express?
+      Type: STANDARD #why are we using express?
       DefinitionUri: statemachine/order_workflow.asl.json
       DefinitionSubstitutions:
-        CartCheckerFunctionArn: !GetAtt CartCheckerFunction.Arn
-      Events:
-        OrderApiEvent:
-          Type: Api
-          Properties:
-            Path: /api/order/checkout # Ensure api is proxied with /api/*
-            Method: post
+        GetUserCartFunctionArn: !GetAtt GetUserCartFunction.Arn
+        PaymentSimulationFunctionArn: !GetAtt PaymentSimulationFunction.Arn
+        CheckQuantityFunctionArn: !GetAtt CheckQuantityFunction.Arn
+        CreateOrderFunctionArn: !GetAtt CreateOrderFunction.Arn
+        ClearShoppingCartFunctionArn: !GetAtt ClearShoppingCartFunction.Arn
+        StepFunctionErrorHandlerFunctionArn: !GetAtt StepFunctionErrorHandlerFunction.Arn
+        PaymentFailErrorFunctionArn: !GetAtt PaymentFailErrorFunction.Arn
+        # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
       Policies:
         - LambdaInvokePolicy:
-            FunctionName: !Ref CartCheckerFunction
-  CartCheckerFunction:
+            FunctionName: !Ref GetUserCartFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref PaymentSimulationFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CheckQuantityFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CreateOrderFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ClearShoppingCartFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref StepFunctionErrorHandlerFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref PaymentFailErrorFunction
+  GetUserCartFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
-      CodeUri: functions/cart-checker/
+      CodeUri: functions/sf-get-cart/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        CartChecker:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/listings/test # Testing
+            Method: get
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CheckQuantityFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/check-quantity/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  ClearShoppingCartFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/clear-cart/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  PaymentSimulationFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/payment-sim/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        PaymentSimulation:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/payment/ # Testing
+            Method: get
+  StepFunctionErrorHandlerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-error-handler/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  PaymentFailErrorFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/payment-fail/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/sf-create-order/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
@@ -108,8 +261,50 @@ Resources:
         Listings:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/listings/test # Testing
-            Method: get
+            Path: /api/orders/create/{UserId} # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CheckoutPollFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/checkout/
+      Handler: app.lambdaHandler
+      Policies:
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt OrderStateMachine.Name
+        - Statement:
+            - Sid: StepFunctionsDescribeExecutionPolicy
+              Effect: Allow
+              Action:
+                - states:DescribeExecution
+              Resource: "*"
+      Environment:
+        Variables:
+          StateMachineArn: !GetAtt OrderStateMachine.Arn
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Checkout:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/checkout/test # Testing
+            Method: post
   FrontendBucket:
     Type: AWS::S3::Bucket
   ListingsFunction:
@@ -385,7 +580,6 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
-
   UpdateUserFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -593,6 +787,37 @@ Resources:
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
+  
+  GetPaymentFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/get-payment/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/payment/{id} # Ensure api is proxied with /api/*
+            Method: get
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
 
   AddBankingFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -608,6 +833,68 @@ Resources:
           Properties:
             Path: /api/user/banking # Ensure api is proxied with /api/*
             Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  
+  UpdateBankingFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/update-banking/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/banking # Ensure api is proxied with /api/*
+            Method: put
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+
+  GetBankingFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/get-banking/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/banking/{id} # Ensure api is proxied with /api/*
+            Method: get
       VpcConfig:
         SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
         SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
@@ -652,6 +939,205 @@ Resources:
               Action:
                 - rds-db:connect
               Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+
+  AddShippingFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/add-shipping/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/shipping # Ensure api is proxied with /api/*
+            Method: post
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  
+  GetShippingFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/get-shipping/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/shipping/{id} # Ensure api is proxied with /api/*
+            Method: get
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  
+  GetUsersAdminFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/admin-get-users/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/admin/users # Ensure api is proxied with /api/*
+            Method: get
+            RequestParameters:
+              - method.request.querystring.offset:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.limit:
+                  Required: false
+                  Caching: false
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  DeleteUserByIdAdminFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/admin-delete-user/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/admin/users/{UserID} # Ensure api is proxied with /api/*
+            Method: delete
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+              Resource: '*'
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  GetOrdersAdminFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/admin-get-orders/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/admin/orders # Ensure api is proxied with /api/*
+            Method: get
+            RequestParameters:
+              - method.request.querystring.offset:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.limit:
+                  Required: false
+                  Caching: false
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  ModifyUserPrivilegeAsAdminFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/admin-modify-user-privilege/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        Listings:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/admin/users/privilege/{UserID} # Ensure api is proxied with /api/*
+            Method: put
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+              Resource: '*'
       Layers:
         - !Ref DBSharedLayer
         - !Ref NodeDependenciesLayer
@@ -902,5 +1388,11 @@ Outputs:
   LoginFunctionIamRole:
     Description: "Implicit IAM Role created for Login function"
     Value: !GetAtt LoginFunctionRole.Arn
+  OrderStateMachine:
+    Value: !GetAtt OrderStateMachine.Arn
+    Description: OrderStateMachine Arn
+  OrderApi:
+    Description: "API Gateway endpoint URL for Prod stage for Order step function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/order/checkout/"
   Website:
     Value: !GetAtt CloudFrontDistribution.DomainName
