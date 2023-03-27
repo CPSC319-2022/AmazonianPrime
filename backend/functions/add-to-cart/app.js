@@ -41,7 +41,7 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  if(checkValidQuantity[0].Quantity < Quantity) {
+  if(checkValidQuantity[0].Quantity < Quantity || Quantity < 1) {
     return {
       statusCode: 400,
       body: 'Invalid requested item quantity (shopping cart quantity > listing quantity)',
