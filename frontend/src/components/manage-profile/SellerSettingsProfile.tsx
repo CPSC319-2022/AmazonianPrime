@@ -36,7 +36,7 @@ export const SellerSettingsProfile = () => {
           </div>
         ) : (
           <div className="seller__banking-detail">
-            We couldn't find your banking details. Please fill out the details below!
+            We don't have any records of your banking details. Please fill out the details below!
           </div>
         )}
       </div>
