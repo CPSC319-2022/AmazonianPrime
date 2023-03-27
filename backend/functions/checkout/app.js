@@ -76,14 +76,6 @@ exports.lambdaHandler = async (event, context) => {
     };
     await sqs.setQueueAttributes(policyParams).promise();
     
-    // Receive messages from the SQS queue
-    const receiveParams = {
-        QueueUrl: queueUrl,
-        MaxNumberOfMessages: 1,
-        WaitTimeSeconds: 20 // long-poll for up to 20 seconds
-    };
-    const result = await sqs.receiveMessage(receiveParams).promise();
-    
     const reqBody = event.body || {};
 
     const executionParams = {
@@ -97,6 +89,16 @@ exports.lambdaHandler = async (event, context) => {
     const executionArn = executionResult.executionArn;
 
     console.log('Started Step Function execution:', executionArn);
+    
+    // await new Promise(resolve => setTimeout(resolve, 4000));
+    
+    // Receive messages from the SQS queue
+    const receiveParams = {
+        QueueUrl: queueUrl,
+        MaxNumberOfMessages: 1,
+        WaitTimeSeconds: 20 // long-poll for up to 20 seconds
+    };
+    const result = await sqs.receiveMessage(receiveParams).promise();
     
     if (result.Messages) {
         // Process the received message(s)
@@ -117,7 +119,7 @@ exports.lambdaHandler = async (event, context) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(result),
+      body: JSON.stringify(JSON.parse(result.Messages[0].Body)),
     };
     
   } catch (err) {

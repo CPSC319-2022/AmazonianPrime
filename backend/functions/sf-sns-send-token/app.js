@@ -16,10 +16,11 @@ const sns = new AWS.SNS();
  */
 exports.lambdaHandler = async (event, context) => {
   const topicArn = process.env.SNSTopicName;
+  const TransactionID = event['TransactionID'];
     
     // Define the message attributes
     const messageAttributes = {
-        'TransactionID': { DataType: 'String', StringValue: 'abcde' }
+        'TransactionID': { DataType: 'String', StringValue: TransactionID}
     };
     
     // Define the message body
