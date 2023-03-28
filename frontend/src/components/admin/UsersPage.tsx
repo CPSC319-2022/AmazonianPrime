@@ -21,7 +21,6 @@ import { useEffect, useState } from 'react';
 function UsersPage() {
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
-
   const [getUsersByName, filteredData] = useLazyGetUsersQuery();
   const { data, isLoading } = useGetUsersQuery({
     page: page == null || Number(page) <= 0 ? 1 : Number(page),
@@ -42,6 +41,8 @@ function UsersPage() {
   }, [data]);
 
   const [searchInput, setSearchInput] = useState('');
+  const [validatedSearchInput, setValidatedSearchInput] = useState('');
+
 
   const departments = [
     'Marketing',
@@ -67,6 +68,7 @@ function UsersPage() {
     const tokenizedSearchInput = searchInput.split(' ');
     const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
     const dashSeperatedInput = firstTwoTokens.join('-');
+    setValidatedSearchInput(dashSeperatedInput);
     getUsersByName({
       page: page == null || Number(page) <= 0 ? 1 : Number(page),
       name: dashSeperatedInput,
@@ -83,6 +85,13 @@ function UsersPage() {
       // Check for "Enter" key code
       searchForUsers();
     }
+  }
+
+  function changeTriggered() {
+    getUsersByName({
+        page: page == null || Number(page) <= 0 ? 1 : Number(page),
+        name: validatedSearchInput,
+      });
   }
 
   return (
@@ -126,7 +135,7 @@ function UsersPage() {
             }}
           />
         </Grid>
-        <UsersGrid users={filteredData ? filteredData.data?.Data : data?.Data} />
+        <UsersGrid users={filteredData?.data ? filteredData.data.Data : data?.Data} changeTriggered={changeTriggered} />
       </Grid>
       <Pagination
         className="gallery__pagination"

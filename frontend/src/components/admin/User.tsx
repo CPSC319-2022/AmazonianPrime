@@ -1,16 +1,18 @@
-import { Button, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Button, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
 import './User.scss';
 import { useChangePrivilegeLevelMutation, useRemoveUserMutation } from '../../redux/api/admin';
 import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
+import { CheckCircleOutline } from '@mui/icons-material/'
 import { useState } from 'react';
 
 interface UserProps {
   user: UserType;
+  changeTriggered: () => void;
 }
 
-const User: React.FC<UserProps> = ({ user }) => {
+const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
   const thisUserID = useAppSelector((state) => state.user.value?.UserID);
   const [changePrivilege] = useChangePrivilegeLevelMutation();
   const [removeUser] = useRemoveUserMutation();
@@ -21,26 +23,49 @@ const User: React.FC<UserProps> = ({ user }) => {
       UserID: thisUserID,
       IsAdmin: IsAdmin === 0 ? 1 : 0,
     };
-    await changePrivilege({ user: UserID, body: userInfo });
+    try {
+        await changePrivilege({ user: UserID, body: userInfo }).unwrap()
+    } catch {
+        setErrorToast(true);
+        return;
+    }
+    setSuccessToast(true);
+    changeTriggered();
   }
 
   async function deleteUser() {
     const userInfo = {
       UserID: thisUserID,
     };
-    await removeUser({ user: UserID, body: userInfo });
+    try {
+        await removeUser({ user: UserID, body: userInfo }).unwrap()
+    } catch {
+        setErrorToast(true);
+        return;
+    }
+    setSuccessToast(true);
+    changeTriggered();
   }
 
-  const [open, setOpen] = useState(false);
+  const [openConfirmDelete, setConfirmDelete] = useState(false);
+  const [openSuccessToast, setSuccessToast] = useState(false);
+  const [openErrorToast, setErrorToast] = useState(false);
+
 
   const handleConfirm = () => {
     deleteUser();
-    setOpen(false);
+    setConfirmDelete(false);
   };
 
   const handleCancel = () => {
-    setOpen(false);
+    setConfirmDelete(false);
   };
+
+  const handleCloseToast = () => {
+    setSuccessToast(false);
+    setErrorToast(false);
+  };
+
 
   return (
     <div>
@@ -59,7 +84,7 @@ const User: React.FC<UserProps> = ({ user }) => {
             variant="contained"
             className="user__button"
             color="secondary"
-            onClick={() => setOpen(true)}
+            onClick={() => setConfirmDelete(true)}
             startIcon={<CloseIcon />}
           >
             {' '}
@@ -67,7 +92,7 @@ const User: React.FC<UserProps> = ({ user }) => {
           </Button>
         </div>
       </Grid>
-      <Dialog open={open} onClose={handleCancel} PaperProps={{ style: { padding: '8px', width: '350px' } }}>
+      <Dialog open={openConfirmDelete} onClose={handleCancel} PaperProps={{ style: { padding: '8px', width: '350px' } }}>
         <DialogTitle>Confirm Deactivate</DialogTitle>
         <DialogContent>
           <p>
@@ -83,6 +108,16 @@ const User: React.FC<UserProps> = ({ user }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={openSuccessToast} autoHideDuration={6000} onClose={handleCloseToast}>
+          <Alert onClose={handleCloseToast} severity={"success"} sx={{ width: '100%' }}>
+            {`Successfully changed ${FirstName} ${LastName}'s access level`}
+          </Alert>
+        </Snackbar>
+        <Snackbar open={openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
+          <Alert onClose={handleCloseToast} severity={"error"} sx={{ width: '100%' }}>
+            An error has occured. Please try again later.
+          </Alert>
+        </Snackbar>
     </div>
   );
 };
