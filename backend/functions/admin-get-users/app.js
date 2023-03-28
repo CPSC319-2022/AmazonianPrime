@@ -31,6 +31,17 @@ exports.lambdaHandler = async (event, context) => {
     optNameClause += `WHERE CONCAT(FirstName, LastName) LIKE '%${parsedName}%'`;
   }
 
+  const getNumberOfUsers = `SELECT COUNT(*) FROM Users`;
+
+  const getUsersCount = await new Promise((resolve, reject) => {
+    con.query(getNumberOfUsers, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+
   const getUsersQuery = `SELECT * FROM Users ${optNameClause} LIMIT ${limit} OFFSET ${offset}`;
 
   const Users = await new Promise((resolve, reject) => {
@@ -46,6 +57,9 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(Users),
+    body: JSON.stringify({
+      TotalUsers: getUsersCount[0]['COUNT(*)'],
+      Data: Users,
+    }),
   };
 };
