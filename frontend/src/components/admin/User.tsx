@@ -29,8 +29,8 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
         setErrorToast(true);
         return;
     }
-    setSuccessToast(true);
     changeTriggered();
+    setSuccessToast(true);
   }
 
   async function deleteUser() {
@@ -43,8 +43,8 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
         setErrorToast(true);
         return;
     }
-    setSuccessToast(true);
     changeTriggered();
+    setSuccessToast(true);
   }
 
   const [openConfirmDelete, setConfirmDelete] = useState(false);
@@ -72,7 +72,7 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       <Grid item xs={1} marginTop={3} className="user">
         <div>
           <div className="user__username">
-            {FirstName} {LastName}, {Department}
+            {FirstName} {LastName}{Department ? `, ${Department}` : ''}
           </div>
           <div className="user__user-information">{Email}</div>
         </div>
