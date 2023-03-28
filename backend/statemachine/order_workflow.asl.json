@@ -19,6 +19,21 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckQuantityFunctionArn}",
+      "Next": "Check Payment Detail",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "EmptyShoppingCartError",
+            "PurchaseQuantityExceededError"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ]
+    },
+    "Check Payment Detail": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${CheckPaymentFunctionArn}",
       "Next": "Send Task Token",
       "Catch": [
         {

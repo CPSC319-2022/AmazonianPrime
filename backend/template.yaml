@@ -113,6 +113,7 @@ Resources:
         GetUserCartFunctionArn: !GetAtt GetUserCartFunction.Arn
         PaymentSimulationFunctionArn: !GetAtt PaymentSimulationFunction.Arn
         CheckQuantityFunctionArn: !GetAtt CheckQuantityFunction.Arn
+        CheckPaymentFunctionArn: !GetAtt CheckPaymentFunction.Arn
         CreateOrderFunctionArn: !GetAtt CreateOrderFunction.Arn
         ClearShoppingCartFunctionArn: !GetAtt ClearShoppingCartFunction.Arn
         StepFunctionErrorHandlerFunctionArn: !GetAtt StepFunctionErrorHandlerFunction.Arn
@@ -128,6 +129,8 @@ Resources:
             FunctionName: !Ref PaymentSimulationFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref CheckQuantityFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CheckPaymentFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref CreateOrderFunction
         - LambdaInvokePolicy:
@@ -236,6 +239,30 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
       CodeUri: functions/check-quantity/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CheckPaymentFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/check-payment/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
@@ -415,6 +442,8 @@ Resources:
               Effect: Allow
               Action:
                 - sns:Subscribe
+                - sns:Unsubscribe
+                - sns:ListSubscriptionsByTopic
               Resource: "*"
   FrontendBucket:
     Type: AWS::S3::Bucket
