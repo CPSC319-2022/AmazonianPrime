@@ -1,10 +1,15 @@
-import { Grid, Select, MenuItem } from '@mui/material';
-import React, { useRef } from 'react';
+import { Grid } from '@mui/material';
+import React from 'react';
 import { useAppSelector } from '../../redux/store';
+import { ShoppingCartItem } from '../../types/shoppingCartItem';
 import { QuantitySelect } from '../common/QuantitySelect';
 import './DetailsMetaData.scss';
 
-const DetailsMetaData: React.FC<{ quantityRef: any }> = ({ quantityRef }) => {
+const DetailsMetaData: React.FC<{ selectQuantity: number; setSelectQuantity: any; itemInCart?: ShoppingCartItem }> = ({
+  selectQuantity,
+  setSelectQuantity,
+  itemInCart,
+}) => {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   if (!listing) {
     return null;
@@ -29,10 +34,16 @@ const DetailsMetaData: React.FC<{ quantityRef: any }> = ({ quantityRef }) => {
         {getDetailsRow('Colour', listing.Colour ? listing.Colour : 'N/A')}
         {getDetailsRow('Size', listing.Size ? listing.Size : 'N/A')}
         <Grid item xs={3}>
-          <p className="product-details__details__grey-text">Quantity&nbsp;({listing.Quantity})</p>
+          <p className="product-details__details__grey-text">Quantity</p>
+          <span className="product-details__details__grey-text">({listing.Quantity} items available)</span>
         </Grid>
         <Grid item xs={9} marginTop={1.5}>
-          <QuantitySelect quantity={listing.Quantity} selectRef={quantityRef} />
+          <QuantitySelect
+            quantity={listing.Quantity}
+            controlledValue={selectQuantity}
+            setValue={setSelectQuantity}
+            defaultValue={itemInCart?.Quantity}
+          />
         </Grid>
       </Grid>
     </div>

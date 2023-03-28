@@ -1,5 +1,4 @@
 import { useAppSelector } from '../../redux/store';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './CartPage.scss';
 import { Button, Grid, Skeleton } from '@mui/material';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
@@ -135,7 +134,7 @@ function CartPage() {
               }
             />
             <div className="cart__items-quantity">
-              3&nbsp;&nbsp;{`Review Items (${cartItems?.TotalQuantity || 0} items)`}
+              3&nbsp;&nbsp;Review Items&nbsp;{cartItems && `(${cartItems?.TotalQuantity || 0} items)`}
             </div>
           </div>
           {isLoading

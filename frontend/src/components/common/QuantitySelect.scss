@@ -1,4 +1,7 @@
-.product-details__details__select {
+.product-details__details__select.product-details__details__select {
   width: 60px;
   height: 20px;
+  div {
+    padding-right: 0 !important;
+  }
 }
