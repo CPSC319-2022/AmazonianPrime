@@ -2,16 +2,21 @@ import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Se
 import './UsersPage.scss';
 import UsersGrid from './UsersGrid';
 import SearchIcon from '@mui/icons-material/Search';
-import { setIsLoadingListings, setListings } from '../../redux/reducers/listingsSlice';
+import { setIsLoadingUsers } from '../../redux/reducers/adminSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetUsersQuery, useLazyGetUsersQuery } from '../../redux/api/admin';
+import { useEffect } from 'react';
 
 function UsersPage() {
     const { data, isLoading } = useGetUsersQuery({
         page: Number(1) ?? 1,
         name: '',
       });
+
+    useEffect(() => {
+        dispatch(setIsLoadingUsers({ isLoadingUsers: isLoading }));
+    }, [isLoading]);
 
     const departments = [
         'Marketing',
@@ -29,7 +34,7 @@ function UsersPage() {
     const dispatch = useDispatch();
 
     const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-        dispatch(setIsLoadingListings({ isLoadingListings: true }));
+        dispatch(setIsLoadingUsers({ isLoadingListings: true }));
         navigate(`?users=&page=${value}`);
         console.log(data);
     };

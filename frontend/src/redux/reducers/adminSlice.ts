@@ -32,11 +32,17 @@ export const adminInfo = createSlice<AdminState, SliceReducers, 'adminSlice'>({
         state.users = action.payload as PaginatedUsers;
       }
     },
+    setIsLoadingUsers: (state: AdminState, action: Action) => {
+      if (action?.payload) {
+        state.isLoadingUsers = action.payload.isLoadingUsers;
+      }
+    },
   },
 });
 
 export const {
   setUsers,
+  setIsLoadingUsers
 } = adminInfo.actions;
 
 export default adminInfo.reducer;

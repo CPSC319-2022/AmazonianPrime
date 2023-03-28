@@ -1,6 +1,6 @@
 import { User } from './user';
 
 export interface PaginatedUsers {
-  TotalListings: string;
+  TotalUsers: string;
   Data: User[];
 }
