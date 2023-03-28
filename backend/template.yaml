@@ -1177,6 +1177,12 @@ Resources:
               - method.request.querystring.limit:
                   Required: false
                   Caching: false
+              - method.request.querystring.orderId:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.userId:
+                  Required: false
+                  Caching: false
       VpcConfig:
         SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
         SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
