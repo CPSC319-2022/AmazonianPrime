@@ -21,8 +21,17 @@ exports.lambdaHandler = async (event, context) => {
 
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
+  const name = event.queryStringParameters.name;
 
-  const getUsersQuery = `SELECT * FROM Users LIMIT ${limit} OFFSET ${offset}`;
+  var optNameClause = ``;
+
+  if (name != null && name !== undefined) {
+    let parsedName = name.replace(/-/g, '');
+    parsedName = parsedName.replace(/\"/g, '');
+    optNameClause += `WHERE CONCAT(FirstName, LastName) LIKE '%${parsedName}%'`;
+  }
+
+  const getUsersQuery = `SELECT * FROM Users ${optNameClause} LIMIT ${limit} OFFSET ${offset}`;
 
   const Users = await new Promise((resolve, reject) => {
     con.query(getUsersQuery, function (err, res) {
