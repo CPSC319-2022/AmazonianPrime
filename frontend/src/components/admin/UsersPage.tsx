@@ -12,6 +12,7 @@ function UsersPage() {
     const [searchParams] = useSearchParams();
     const page = searchParams.get('page');
 
+    const [updateProfile] = useLazyGetUsersQuery();
     const { data, isLoading } = useGetUsersQuery({
         page: (page == null || Number(page) <= 0) ? 1 : Number(page),
         name: '',

@@ -28,6 +28,19 @@ export const adminApi = createApi({
         };
       },
     }),
+    removeUser: builder.mutation<User, { user: string, body: Partial<User> }>({
+      query({user, body}) {
+        return {
+          url: `admin/users/${user}`,
+          credentials: 'include',
+          method: 'DELETE',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -35,4 +48,5 @@ export const {
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useChangePrivilegeLevelMutation,
+  useRemoveUserMutation,
 } = adminApi;

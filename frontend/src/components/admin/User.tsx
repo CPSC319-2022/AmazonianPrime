@@ -1,6 +1,6 @@
 import { Button, Grid } from "@mui/material";
 import './User.scss';
-import { useChangePrivilegeLevelMutation } from '../../redux/api/admin';
+import { useChangePrivilegeLevelMutation, useRemoveUserMutation } from '../../redux/api/admin';
 import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
@@ -14,14 +14,21 @@ const User: React.FC<UserProps> = ({
 }) => {
     const thisUserID = useAppSelector((state) => state.user.value?.UserID);
     const [changePrivilege] = useChangePrivilegeLevelMutation();
+    const [removeUser] = useRemoveUserMutation();
     const { FirstName, LastName, Department, IsAdmin, Email, UserID } = user;
 
-    function swapPrivilegeLevel() {
+    async function swapPrivilegeLevel() {
         const userInfo = {
             UserID: thisUserID,
             IsAdmin: (IsAdmin == 0) ? 1 : 0
-          };
-        changePrivilege({user: UserID, body: userInfo})
+        };
+        await changePrivilege({user: UserID, body: userInfo})
+    }
+    async function deleteUser() {
+        const userInfo = {
+            UserID: thisUserID,
+        };
+        await removeUser({user: UserID, body: userInfo})
     }
     return (
         <div>
@@ -42,7 +49,7 @@ const User: React.FC<UserProps> = ({
                     variant="contained"
                     className="user__button"
                     color="secondary" 
-                    onClick={() => {}}
+                    onClick={deleteUser}
                     startIcon={<CloseIcon/> }
                 > Deactivate 
                 </Button>
