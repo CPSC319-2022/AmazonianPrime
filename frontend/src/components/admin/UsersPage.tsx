@@ -73,7 +73,10 @@ function UsersPage() {
           }}
         />
       </Grid>
-      <UsersGrid/>
+      <UsersGrid 
+        totalUsersNumber={Number(data?.length)}
+        users={data}
+      />
     </Grid>
     <Pagination
         className="gallery__pagination"

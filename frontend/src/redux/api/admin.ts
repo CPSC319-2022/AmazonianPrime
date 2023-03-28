@@ -7,7 +7,7 @@ export const adminApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
   tagTypes: ['ShippingAddresses', 'Payments', 'Banking'],
   endpoints: (builder) => ({
-    getUsers: builder.query<User, { page: number, name: string }>({
+    getUsers: builder.query<User[], { page: number, name: string }>({
       query: ({ page, name }) => {
         return `admin/users?offset=${LIMIT * (page - 1)}&limit=${LIMIT}${
           name && `name="${name}"&`
