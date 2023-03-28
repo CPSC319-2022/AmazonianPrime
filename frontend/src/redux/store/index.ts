@@ -5,9 +5,12 @@ import listingsReducer from '../reducers/listingsSlice';
 import cartReducer from '../reducers/shoppingCartSlice';
 import sellerModalReducer from '../reducers/sellerModalSlice';
 import appReducer from '../reducers/appSlice';
+import adminReducer from '../reducers/adminSlice';
+
 import { userApi } from '../api/user';
 import { listingsApi } from '../api/listings';
 import { shoppingCartApi } from '../api/shoppingCart';
+import { adminApi } from '../api/admin';
 
 const store = configureStore({
   reducer: {
@@ -21,10 +24,13 @@ const store = configureStore({
     // listings
     listings: listingsReducer,
     [listingsApi.reducerPath]: listingsApi.reducer,
+    admin: adminReducer,
+    [adminApi.reducerPath]: adminApi.reducer,
+  
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware, listingsApi.middleware, shoppingCartApi.middleware),
+    getDefaultMiddleware().concat(userApi.middleware, listingsApi.middleware, shoppingCartApi.middleware, adminApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
