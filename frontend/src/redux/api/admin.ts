@@ -11,7 +11,7 @@ export const adminApi = createApi({
     getUsers: builder.query<PaginatedUsers, { page: number, name: string }>({
       query: ({ page, name }) => {
         return `admin/users?offset=${LIMIT * (page - 1)}&limit=${LIMIT}${
-          name && `name="${name}"&`
+          name && `&name="${name}"`
         }`;
       },
     }),

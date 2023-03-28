@@ -6,13 +6,13 @@ import { setUsers, setIsLoadingUsers } from '../../redux/reducers/adminSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetUsersQuery, useLazyGetUsersQuery } from '../../redux/api/admin';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function UsersPage() {
     const [searchParams] = useSearchParams();
     const page = searchParams.get('page');
 
-    const [updateProfile] = useLazyGetUsersQuery();
+    const [getUsersByName, filteredData] = useLazyGetUsersQuery();
     const { data, isLoading } = useGetUsersQuery({
         page: (page == null || Number(page) <= 0) ? 1 : Number(page),
         name: '',
@@ -30,6 +30,8 @@ function UsersPage() {
           dispatch(setIsLoadingUsers({ isLoadingListings: true }));
         }
       }, [data]);
+
+    const [searchInput, setSearchInput] = useState('');
 
     const departments = [
         'Marketing',
@@ -50,6 +52,27 @@ function UsersPage() {
         dispatch(setIsLoadingUsers({ isLoadingListings: true }));
         navigate(`?page=${value}`);
     };
+
+    function searchForUsers() {
+        const tokenizedSearchInput = searchInput.split(" ");
+        const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
+        const dashSeperatedInput = firstTwoTokens.join("-");
+        getUsersByName({
+            page: (page == null || Number(page) <= 0) ? 1 : Number(page),
+            name: dashSeperatedInput,
+        })
+    }
+
+    function handleKeyDown(event: any) {
+        const regex = /^[a-zA-Z\s]*$/; // Regular expression to allow only alphanumeric characters and spaces
+        const key = event.key;
+        if (!regex.test(key)) {
+            event.preventDefault(); // Prevents the input of non-matching characters
+        }
+        if (event.keyCode === 13) { // Check for "Enter" key code
+            searchForUsers();
+          }
+    }
 
   return (<div className="users-page">
     <div className="users">
@@ -75,11 +98,14 @@ function UsersPage() {
           placeholder="Name"
           size="small"
           style={{ height: 100 }}
+          onKeyDown={handleKeyDown}
+          onChange={(e) => setSearchInput(e.target.value)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton>
-                  <SearchIcon />
+                <IconButton 
+                    onClick={searchForUsers}>
+                    <SearchIcon />
                 </IconButton>
               </InputAdornment>
             ), 
@@ -87,11 +113,11 @@ function UsersPage() {
               height: "30px",
               width: "300px",
             }
-          }}
+          }}          
         />
       </Grid>
       <UsersGrid
-        users={data?.Data}
+        users={filteredData ? filteredData.data?.Data : data?.Data}
       />
     </Grid>
     <Pagination
