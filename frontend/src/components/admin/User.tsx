@@ -1,9 +1,10 @@
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import './User.scss';
 import { useChangePrivilegeLevelMutation, useRemoveUserMutation } from '../../redux/api/admin';
 import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
+import { useState } from 'react';
 
 interface UserProps {
     user: UserType;
@@ -24,12 +25,25 @@ const User: React.FC<UserProps> = ({
         };
         await changePrivilege({user: UserID, body: userInfo})
     }
+    
     async function deleteUser() {
         const userInfo = {
             UserID: thisUserID,
         };
         await removeUser({user: UserID, body: userInfo})
     }
+
+    const [open, setOpen] = useState(false);
+
+    const handleConfirm = () => {
+        deleteUser()
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        setOpen(false);
+    };
+
     return (
         <div>
           <Grid item xs={1} marginTop={3} className="user">
@@ -49,12 +63,22 @@ const User: React.FC<UserProps> = ({
                     variant="contained"
                     className="user__button"
                     color="secondary" 
-                    onClick={deleteUser}
+                    onClick={() => setOpen(true)}
                     startIcon={<CloseIcon/> }
                 > Deactivate 
                 </Button>
             </div>
           </Grid>
+          <Dialog open={open} onClose={handleCancel} PaperProps={{ style: { padding: '8px', width: '350px' } }}>
+            <DialogTitle>Confirm Deactivate</DialogTitle>
+            <DialogContent>
+            <p>Are you sure you want to deactivate user {FirstName} {LastName}?</p>
+            </DialogContent>
+            <DialogActions>
+            <Button variant="outlined" onClick={handleCancel} color="primary">Cancel</Button>
+            <Button variant="contained" onClick={handleConfirm} color="secondary">Confirm</Button>
+            </DialogActions>
+          </Dialog>
         </div>
     )
 }

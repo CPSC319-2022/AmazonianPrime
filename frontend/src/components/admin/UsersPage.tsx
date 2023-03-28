@@ -96,7 +96,7 @@ function UsersPage() {
     </Grid>
     <Pagination
         className="gallery__pagination"
-        count={Number(data ? Math.ceil(Number(data.TotalUsers) / 4.0) : 1)}
+        count={Number(data ? Math.ceil(Number(data.TotalUsers) / 8.0) : 1)}
         page={Number(page) ? Number(page) : 1}
         onChange={handlePageChange}
       />

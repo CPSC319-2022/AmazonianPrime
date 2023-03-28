@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PaginatedUsers } from '../../types/paginatedUsers';
 import { User } from '../../types/user';
 
-const LIMIT = 6;
+const LIMIT = 8;
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
