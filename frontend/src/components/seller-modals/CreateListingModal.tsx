@@ -91,9 +91,12 @@ function CreateListingModal() {
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
+    const missingQuantity = !quantity.current?.value && 'Quantity';
     const missingCost =
-      (!Number(costRef.current?.value) || Number(costRef.current?.value) === 0) && 'Cost should be more than $0';
-    const errorMessage = [missingTitle, missingDescription, missingImage, missingCost].filter((msg) => msg).join(', ');
+      ((!Number(costRef.current?.value) && Number(costRef.current?.value) !== 0) || !costRef.current?.value) && 'Cost';
+    const errorMessage = [missingTitle, missingDescription, missingImage, missingQuantity, missingCost]
+      .filter((msg) => msg)
+      .join(', ');
     if (errorMessage) {
       setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
       return;
@@ -103,8 +106,8 @@ function CreateListingModal() {
       return;
     }
 
-    if (quantity.current?.value.startsWith('0') || costRef.current?.value.startsWith('0')) {
-      setOpenErrorToast('Please do not input 0 Quantites or Cost!');
+    if (Number(quantity.current?.value) === 0) {
+      setOpenErrorToast('Please input more than 0 items to sell (Quantity)!');
       return;
     }
     handleModalClose();
