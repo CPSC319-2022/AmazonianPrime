@@ -34,7 +34,7 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckPaymentFunctionArn}",
-      "Next": "Send Task Token",
+      "Next": "Valid Payment?",
       "Catch": [
         {
           "ErrorEquals": [
@@ -45,10 +45,33 @@
         }
       ]
     },
+    "Valid Payment?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.body.ValidPayment",
+          "BooleanEquals": true,
+          "Next": "Send Task Token"
+        }
+      ],
+      "Default": "Send Wait Token"
+    },
     "Send Task Token": {
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${SNSSendTokenFunctionArn}",
+      "Next": "Simulate Payment"
+    },
+    "Send Wait Token": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+      "Parameters": {
+        "Payload": {
+          "input.$": "$",
+          "taskToken.$": "$$.Task.Token"
+        },
+        "FunctionName": "${SNSWaitForTokenFunctionName}"
+      },
       "Next": "Simulate Payment"
     },
     "Simulate Payment": {

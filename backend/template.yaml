@@ -121,6 +121,9 @@ Resources:
         SendTaskTokenFunctionArn: !GetAtt SendTaskTokenFunction.Arn
         SQSThrowErrorFunctionArn: !GetAtt SQSThrowErrorFunction.Arn
         SNSSendTokenFunctionArn: !GetAtt SNSSendTokenFunction.Arn
+        SNSWaitForTokenFunctionArn: !GetAtt SNSWaitForTokenFunction.Arn
+        SNSWaitForTokenFunctionName: !Sub "${SNSWaitForTokenFunction}"
+        SNSTopicArn: !Ref CheckoutTopic
         # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
       Policies:
         - LambdaInvokePolicy:
@@ -145,6 +148,14 @@ Resources:
             FunctionName: !Ref SQSThrowErrorFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref SNSSendTokenFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SNSWaitForTokenFunction
+        - Statement:
+            - Sid: SNSPublishPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref CheckoutTopic
   SendTaskTokenFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
@@ -161,6 +172,24 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
       CodeUri: functions/sf-sns-send-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          SNSTopicName: !Ref CheckoutTopic
+      Policies:
+        - Statement:
+            - Sid: SNSPublishPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref CheckoutTopic
+  SNSWaitForTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-sns-wait-token/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:

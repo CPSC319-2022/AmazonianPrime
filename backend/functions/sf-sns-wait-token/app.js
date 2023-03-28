@@ -16,7 +16,10 @@ const sns = new AWS.SNS();
  */
 exports.lambdaHandler = async (event, context) => {
   const topicArn = process.env.SNSTopicName;
-  const TransactionID = event['TransactionID'];
+  const body = event['input']['body'];
+  const TransactionID = body['TransactionID'];
+  console.log(body);
+  console.log(TransactionID);
     
     // Define the message attributes
     const messageAttributes = {
@@ -24,7 +27,7 @@ exports.lambdaHandler = async (event, context) => {
     };
     
     // Define the message body
-    const messageBody = 'Payment is okay! Poll for step function output';
+    const messageBody = event['taskToken'];
     
     // Define the SNS parameters
     const snsParams = {
@@ -43,6 +46,6 @@ exports.lambdaHandler = async (event, context) => {
 
       return {
         statusCode: 200,
-        body: { ...event },
+        body: { ...body },
       };
 };

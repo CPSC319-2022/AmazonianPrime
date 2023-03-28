@@ -28,8 +28,6 @@ exports.lambdaHandler = async (event, context) => {
       "TransactionID": [transactionID]
     };
     
-    
-    
     // Create an SQS queue to receive the SNS messages
     const queueName = 'Queue' + transactionID;
     const queueParams = { QueueName: queueName };
@@ -115,6 +113,8 @@ exports.lambdaHandler = async (event, context) => {
     }
 
     // Clean up
+    // const subscriptionArn = await getSubscriptionArn(sns, queueUrl, topicArn);
+    // await sns.unsubscribe({ SubscriptionArn: subscriptionArn }).promise();
     await sqs.deleteQueue({ QueueUrl: queueUrl }).promise();
 
     return {
@@ -127,3 +127,12 @@ exports.lambdaHandler = async (event, context) => {
     throw err;
   }
 };
+
+async function getSubscriptionArn(sns, queueUrl, topicArn) {
+  const subscriptions = await sns.listSubscriptionsByTopic({ TopicArn: topicArn }).promise();
+  const subscription = subscriptions.Subscriptions.find(sub => sub.Protocol === 'sqs' && sub.Endpoint === queueUrl);
+  if (!subscription) {
+    throw new Error(`No subscription found for queue URL ${queueUrl} and topic ARN ${topicArn}`);
+  }
+  return subscription.SubscriptionArn;
+}
