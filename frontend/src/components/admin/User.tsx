@@ -44,7 +44,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       return;
     }
     changeTriggered();
-    setSuccessToast(true);
   }
 
   const [openConfirmDelete, setConfirmDelete] = useState(false);
