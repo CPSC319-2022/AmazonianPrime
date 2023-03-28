@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PaginatedUsers } from '../../types/paginatedUsers';
+import { User } from '../../types/user';
 
-const LIMIT = 4;
+const LIMIT = 6;
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
@@ -12,6 +13,19 @@ export const adminApi = createApi({
         return `admin/users?offset=${LIMIT * (page - 1)}&limit=${LIMIT}${
           name && `name="${name}"&`
         }`;
+      },
+    }),
+    changePrivilegeLevel: builder.mutation<User, { user: number, body: string }>({
+      query({user, body}) {
+        return {
+          url: `admin/users/${user}}`,
+          credentials: 'include',
+          method: 'PUT',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
       },
     }),
   }),

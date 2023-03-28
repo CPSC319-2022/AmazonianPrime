@@ -1,11 +1,13 @@
 .user {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     padding: 10px;
+    min-width: 80vh;
     background-color: rgb(251, 244, 229);
 
     .user__buttons {
+        display: flex;
+        flex-direction: row;
+        margin-left: auto;
         .user__button {
             margin: 5.5px;
             max-height: 30px;

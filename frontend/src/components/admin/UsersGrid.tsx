@@ -1,8 +1,5 @@
-import { Grid, Pagination } from "@mui/material";
+import { Grid } from "@mui/material";
 import './UsersGrid.scss';
-import { setIsLoadingListings, setListings } from '../../redux/reducers/listingsSlice';
-import { useDispatch } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import User from "./User";
 import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';

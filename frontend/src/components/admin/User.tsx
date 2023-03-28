@@ -1,8 +1,7 @@
-import { Button, Grid, Pagination } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import './User.scss';
 import { setIsLoadingListings, setListings } from '../../redux/reducers/listingsSlice';
 import { useDispatch } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
 

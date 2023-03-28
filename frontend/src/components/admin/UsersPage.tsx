@@ -51,16 +51,16 @@ function UsersPage() {
         console.log(data);
     };
 
-  return (<div className="orders-page">
-    <div className="orders">
+  return (<div className="users-page">
+    <div className="users">
       Users
     </div>
-    <Grid container className="orders-page__main">
+    <Grid container className="users-page__main">
       <Grid item xs={2}>
         <FormControl>
           <InputLabel>Department</InputLabel>
           <Select
-            className="orders-page__header-text"
+            className="users-page__header-text"
             size="small"
             variant="standard"
             style={{ backgroundColor: '#ffffff', width: 140}}>
@@ -97,7 +97,7 @@ function UsersPage() {
     <Pagination
         className="gallery__pagination"
         count={Number(data ? Math.ceil(Number(data.TotalUsers) / 4.0) : 1)}
-        page={Number(page)}
+        page={Number(page) ? Number(page) : 1}
         onChange={handlePageChange}
       />
   </div>
