@@ -43,7 +43,6 @@ function UsersPage() {
   const [searchInput, setSearchInput] = useState('');
   const [validatedSearchInput, setValidatedSearchInput] = useState('');
 
-
   const departments = [
     'Marketing',
     'Sales',
@@ -89,9 +88,9 @@ function UsersPage() {
 
   function changeTriggered() {
     getUsersByName({
-        page: page == null || Number(page) <= 0 ? 1 : Number(page),
-        name: validatedSearchInput,
-      });
+      page: page == null || Number(page) <= 0 ? 1 : Number(page),
+      name: validatedSearchInput,
+    });
   }
 
   return (

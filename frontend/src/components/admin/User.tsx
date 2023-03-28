@@ -4,7 +4,7 @@ import { useChangePrivilegeLevelMutation, useRemoveUserMutation } from '../../re
 import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
-import { CheckCircleOutline } from '@mui/icons-material/'
+import { CheckCircleOutline } from '@mui/icons-material/';
 import { useState } from 'react';
 
 interface UserProps {
@@ -24,10 +24,10 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       IsAdmin: IsAdmin === 0 ? 1 : 0,
     };
     try {
-        await changePrivilege({ user: UserID, body: userInfo }).unwrap()
+      await changePrivilege({ user: UserID, body: userInfo }).unwrap();
     } catch {
-        setErrorToast(true);
-        return;
+      setErrorToast(true);
+      return;
     }
     changeTriggered();
     setSuccessToast(true);
@@ -38,10 +38,10 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       UserID: thisUserID,
     };
     try {
-        await removeUser({ user: UserID, body: userInfo }).unwrap()
+      await removeUser({ user: UserID, body: userInfo }).unwrap();
     } catch {
-        setErrorToast(true);
-        return;
+      setErrorToast(true);
+      return;
     }
     changeTriggered();
     setSuccessToast(true);
@@ -50,7 +50,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
   const [openConfirmDelete, setConfirmDelete] = useState(false);
   const [openSuccessToast, setSuccessToast] = useState(false);
   const [openErrorToast, setErrorToast] = useState(false);
-
 
   const handleConfirm = () => {
     deleteUser();
@@ -66,13 +65,13 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
     setErrorToast(false);
   };
 
-
   return (
     <div>
       <Grid item xs={1} marginTop={3} className="user">
         <div>
           <div className="user__username">
-            {FirstName} {LastName}{Department ? `, ${Department}` : ''}
+            {FirstName} {LastName}
+            {Department ? `, ${Department}` : ''}
           </div>
           <div className="user__user-information">{Email}</div>
         </div>
@@ -92,7 +91,11 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
           </Button>
         </div>
       </Grid>
-      <Dialog open={openConfirmDelete} onClose={handleCancel} PaperProps={{ style: { padding: '8px', width: '350px' } }}>
+      <Dialog
+        open={openConfirmDelete}
+        onClose={handleCancel}
+        PaperProps={{ style: { padding: '8px', width: '350px' } }}
+      >
         <DialogTitle>Confirm Deactivate</DialogTitle>
         <DialogContent>
           <p>
@@ -109,15 +112,15 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
         </DialogActions>
       </Dialog>
       <Snackbar open={openSuccessToast} autoHideDuration={6000} onClose={handleCloseToast}>
-          <Alert onClose={handleCloseToast} severity={"success"} sx={{ width: '100%' }}>
-            {`Successfully changed ${FirstName} ${LastName}'s access level`}
-          </Alert>
-        </Snackbar>
-        <Snackbar open={openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
-          <Alert onClose={handleCloseToast} severity={"error"} sx={{ width: '100%' }}>
-            An error has occured. Please try again later.
-          </Alert>
-        </Snackbar>
+        <Alert onClose={handleCloseToast} severity={'success'} sx={{ width: '100%' }}>
+          {`Successfully changed ${FirstName} ${LastName}'s access level`}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
+        <Alert onClose={handleCloseToast} severity={'error'} sx={{ width: '100%' }}>
+          An error has occured. Please try again later.
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
