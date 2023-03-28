@@ -15,9 +15,9 @@ Globals:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'content-type'"
       AllowOrigin: "'*'"
-Parameters:
-  PipelineRole:
-    Type: String
+#Parameters:
+#  PipelineRole:
+#    Type: String
 
 Resources:
   FrontendBucketPolicy:
@@ -33,16 +33,16 @@ Resources:
             Resource: !Sub
               - "arn:aws:s3:::${Bucket}/*"
               - Bucket: !Ref FrontendBucket
-          - Effect: Allow
-            Principal:
-              AWS:
-                - !Ref PipelineRole
-            Action:
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-            Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
+#          - Effect: Allow
+#            Principal:
+#              AWS:
+#                - !Ref PipelineRole
+#            Action:
+#              - "s3:PutObject"
+#              - "s3:DeleteObject"
+#            Resource: !Sub
+#              - "arn:aws:s3:::${Bucket}/*"
+#              - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -1211,6 +1211,76 @@ Resources:
         - nodejs14.x
       RetentionPolicy: Delete
 
+ # ---- SES Confirmation Email Sending
+  EmailSenderFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SESPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource: "*"
+        - PolicyName: EC2AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                Resource: "*"
+        - PolicyName: CloudWatchPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+  EmailConformationFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/email-confirmation/
+      Handler: app.lambdaHandler
+      Role: !GetAtt EmailSenderFunctionRole.Arn
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Architectures:
+        - x86_64
+      Events:
+        http:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/email # Ensure api is proxied with /api/*
+            Method: post
+#      VpcConfig:
+#        SecurityGroupIds: [ { "Ref": "lambdaSecurityGroup" } ]
+#        SubnetIds: [ { "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" } ]
+#      Policies:
+#        - Statement:
+#            - Sid: RDSLambdaConnectPolicy
+#              Effect: Allow
+#              Action:
+#                - rds-db:connect
+#              Resource: "*"
+#      Layers:
+#        - !Ref DBSharedLayer
+#        - !Ref NodeDependenciesLayer
   # ---- S3 Bucket Image Upload
   ImageBucket:
     Type: AWS::S3::Bucket
