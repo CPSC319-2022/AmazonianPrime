@@ -2,21 +2,33 @@ import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Se
 import './UsersPage.scss';
 import UsersGrid from './UsersGrid';
 import SearchIcon from '@mui/icons-material/Search';
-import { setIsLoadingUsers } from '../../redux/reducers/adminSlice';
+import { setUsers, setIsLoadingUsers } from '../../redux/reducers/adminSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetUsersQuery, useLazyGetUsersQuery } from '../../redux/api/admin';
 import { useEffect } from 'react';
 
 function UsersPage() {
+    const [searchParams] = useSearchParams();
+    const page = searchParams.get('page');
+
     const { data, isLoading } = useGetUsersQuery({
-        page: Number(1) ?? 1,
+        page: (page == null || Number(page) <= 0) ? 1 : Number(page),
         name: '',
-      });
+    });
 
     useEffect(() => {
         dispatch(setIsLoadingUsers({ isLoadingUsers: isLoading }));
     }, [isLoading]);
+
+    useEffect(() => {
+        if (data) {
+          dispatch(setUsers(data));
+          dispatch(setIsLoadingUsers({ isLoadingListings: false }));
+        } else {
+          dispatch(setIsLoadingUsers({ isLoadingListings: true }));
+        }
+      }, [data]);
 
     const departments = [
         'Marketing',
@@ -35,7 +47,7 @@ function UsersPage() {
 
     const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
         dispatch(setIsLoadingUsers({ isLoadingListings: true }));
-        navigate(`?users=&page=${value}`);
+        navigate(`?page=${value}`);
         console.log(data);
     };
 
@@ -78,15 +90,14 @@ function UsersPage() {
           }}
         />
       </Grid>
-      <UsersGrid 
-        totalUsersNumber={Number(data?.length)}
-        users={data}
+      <UsersGrid
+        users={data?.Data}
       />
     </Grid>
     <Pagination
         className="gallery__pagination"
-        count={10}
-        page={Number(1)}
+        count={Number(data ? Math.ceil(Number(data.TotalUsers) / 4.0) : 1)}
+        page={Number(page)}
         onChange={handlePageChange}
       />
   </div>

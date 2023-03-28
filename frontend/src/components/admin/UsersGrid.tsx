@@ -8,17 +8,15 @@ import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 interface UsersGridProps {
   users: UserType[] | undefined;
-  totalUsersNumber: number;
 }
 
 const UsersGrid: React.FC<UsersGridProps> = ({
   users,
-  totalUsersNumber,
 }) => {
   const isLoading = useAppSelector((state) => state.admin.isLoadingUsers);
 
   return (
-      <>
+      <div>
         <Grid container className="users__container-grid" columns={1}>
             {(!isLoading ? users : Array(20).fill(0))?.map((user: UserType, index) => (
               <Grid item xs={1} className="users__container__grid-item" key={index}>
@@ -28,7 +26,7 @@ const UsersGrid: React.FC<UsersGridProps> = ({
               </Grid>
             ))}
           </Grid>
-      </>
+      </div>
     )
 }
 
