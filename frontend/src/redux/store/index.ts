@@ -26,11 +26,15 @@ const store = configureStore({
     [listingsApi.reducerPath]: listingsApi.reducer,
     admin: adminReducer,
     [adminApi.reducerPath]: adminApi.reducer,
-  
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware, listingsApi.middleware, shoppingCartApi.middleware, adminApi.middleware),
+    getDefaultMiddleware().concat(
+      userApi.middleware,
+      listingsApi.middleware,
+      shoppingCartApi.middleware,
+      adminApi.middleware,
+    ),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

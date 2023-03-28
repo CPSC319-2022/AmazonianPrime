@@ -8,15 +8,13 @@ export const adminApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
   tagTypes: ['ShippingAddresses', 'Payments', 'Banking'],
   endpoints: (builder) => ({
-    getUsers: builder.query<PaginatedUsers, { page: number, name: string }>({
+    getUsers: builder.query<PaginatedUsers, { page: number; name: string }>({
       query: ({ page, name }) => {
-        return `admin/users?offset=${LIMIT * (page - 1)}&limit=${LIMIT}${
-          name && `&name="${name}"`
-        }`;
+        return `admin/users?offset=${LIMIT * (page - 1)}&limit=${LIMIT}${name && `&name="${name}"`}`;
       },
     }),
-    changePrivilegeLevel: builder.mutation<User, { user: string, body: Partial<User> }>({
-      query({user, body}) {
+    changePrivilegeLevel: builder.mutation<User, { user: string; body: Partial<User> }>({
+      query({ user, body }) {
         return {
           url: `admin/users/privilege/${user}`,
           credentials: 'include',
@@ -28,8 +26,8 @@ export const adminApi = createApi({
         };
       },
     }),
-    removeUser: builder.mutation<User, { user: string, body: Partial<User> }>({
-      query({user, body}) {
+    removeUser: builder.mutation<User, { user: string; body: Partial<User> }>({
+      query({ user, body }) {
         return {
           url: `admin/users/${user}`,
           credentials: 'include',
@@ -44,9 +42,5 @@ export const adminApi = createApi({
   }),
 });
 
-export const {
-  useGetUsersQuery,
-  useLazyGetUsersQuery,
-  useChangePrivilegeLevelMutation,
-  useRemoveUserMutation,
-} = adminApi;
+export const { useGetUsersQuery, useLazyGetUsersQuery, useChangePrivilegeLevelMutation, useRemoveUserMutation } =
+  adminApi;

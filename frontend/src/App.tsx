@@ -8,7 +8,7 @@ import { ReactNode, useEffect } from 'react';
 import LoginPage from './components/login/LoginPage';
 import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
 import OrdersPage from './components/orders/OrdersPage';
-import UsersPage from './components/admin/UsersPage'
+import UsersPage from './components/admin/UsersPage';
 import CartPage from './components/cart/CartPage';
 import MyListings from './components/my-listings/MyListings';
 import BrowsePage from './components/browse-page/BrowsePage';

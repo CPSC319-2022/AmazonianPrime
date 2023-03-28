@@ -40,9 +40,6 @@ export const adminInfo = createSlice<AdminState, SliceReducers, 'adminSlice'>({
   },
 });
 
-export const {
-  setUsers,
-  setIsLoadingUsers
-} = adminInfo.actions;
+export const { setUsers, setIsLoadingUsers } = adminInfo.actions;
 
 export default adminInfo.reducer;
