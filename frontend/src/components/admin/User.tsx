@@ -5,6 +5,7 @@ import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
 import { CheckCircleOutline } from '@mui/icons-material/';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { useState } from 'react';
 
 interface UserProps {
@@ -30,7 +31,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       return;
     }
     changeTriggered();
-    setSuccessToast(true);
   }
 
   async function deleteUser() {
@@ -47,7 +47,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
   }
 
   const [openConfirmDelete, setConfirmDelete] = useState(false);
-  const [openSuccessToast, setSuccessToast] = useState(false);
   const [openErrorToast, setErrorToast] = useState(false);
 
   const handleConfirm = () => {
@@ -60,7 +59,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
   };
 
   const handleCloseToast = () => {
-    setSuccessToast(false);
     setErrorToast(false);
   };
 
@@ -79,13 +77,11 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
             {IsAdmin ? 'Demote' : 'Promote'}
           </Button>
           <Button
-            variant="contained"
-            className="user__button"
-            color="secondary"
+            variant="text"
+            className="user__button-deactivate"
             onClick={() => setConfirmDelete(true)}
-            startIcon={<CloseIcon />}
+            startIcon={<PersonRemoveIcon />}
           >
-            {' '}
             Deactivate
           </Button>
         </div>
@@ -98,7 +94,11 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
         <DialogTitle>Confirm Deactivate</DialogTitle>
         <DialogContent>
           <p>
-            Are you sure you want to deactivate user {FirstName} {LastName}?
+            Are you sure you want to deactivate user{' '}
+            <strong>
+              {FirstName} {LastName}
+            </strong>
+            ?
           </p>
         </DialogContent>
         <DialogActions>
@@ -110,11 +110,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar open={openSuccessToast} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity={'success'} sx={{ width: '100%' }}>
-          {`Successfully changed ${FirstName} ${LastName}'s access level`}
-        </Alert>
-      </Snackbar>
       <Snackbar open={openErrorToast} autoHideDuration={6000} onClose={handleCloseToast}>
         <Alert onClose={handleCloseToast} severity={'error'} sx={{ width: '100%' }}>
           An error has occured. Please try again later.

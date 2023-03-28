@@ -8,6 +8,7 @@ import {
   Select,
   TextField,
   Pagination,
+  debounce,
 } from '@mui/material';
 import './UsersPage.scss';
 import UsersGrid from './UsersGrid';
@@ -16,7 +17,8 @@ import { setUsers, setIsLoadingUsers } from '../../redux/reducers/adminSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetUsersQuery, useLazyGetUsersQuery } from '../../redux/api/admin';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import Breadcrumbs from '../common/Breadcrumbs';
 
 function UsersPage() {
   const [searchParams] = useSearchParams();
@@ -63,8 +65,8 @@ function UsersPage() {
     navigate(`?page=${value}`);
   };
 
-  function searchForUsers() {
-    const tokenizedSearchInput = searchInput.split(' ');
+  function searchForUsers(value: string) {
+    const tokenizedSearchInput = value.split(' ');
     const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
     const dashSeperatedInput = firstTwoTokens.join('-');
     setValidatedSearchInput(dashSeperatedInput);
@@ -74,17 +76,11 @@ function UsersPage() {
     });
   }
 
-  function handleKeyDown(event: any) {
-    const regex = /^[a-zA-Z\s]*$/; // Regular expression to allow only alphanumeric characters and spaces
-    const key = event.key;
-    if (!regex.test(key)) {
-      event.preventDefault(); // Prevents the input of non-matching characters
-    }
-    if (event.keyCode === 13) {
-      // Check for "Enter" key code
-      searchForUsers();
-    }
-  }
+  const changeHandler = (event: any) => {
+    setSearchInput(event.target?.value);
+    searchForUsers(event.target?.value);
+  };
+  const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
 
   function changeTriggered() {
     getUsersByName({
@@ -95,9 +91,10 @@ function UsersPage() {
 
   return (
     <div className="users-page">
-      <div className="users">Users</div>
+      <Breadcrumbs />
       <Grid container className="users-page__main">
-        <Grid item xs={2}>
+        {/*
+                  <Grid item xs={2}>
           <FormControl>
             <InputLabel>Department</InputLabel>
             <Select
@@ -112,21 +109,17 @@ function UsersPage() {
             </Select>
           </FormControl>
         </Grid>
+          */}
+
         <Grid item xs={10} paddingTop={2} marginBottom={-10}>
           <TextField
             placeholder="Name"
             size="small"
             style={{ height: 100 }}
-            onKeyDown={handleKeyDown}
-            onChange={(e) => setSearchInput(e.target.value)}
+            autoComplete="off"
+            onChange={debouncedChangeHandler}
             InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={searchForUsers}>
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
+              endAdornment: <SearchIcon />,
               style: {
                 height: '30px',
                 width: '300px',
@@ -138,7 +131,7 @@ function UsersPage() {
       </Grid>
       <Pagination
         className="gallery__pagination"
-        count={Number(data ? Math.ceil(Number(data.TotalUsers) / 8.0) : 1)}
+        count={Number(data ? Math.ceil(Number(data.TotalUsers) / 8) : 1)}
         page={Number(page) ? Number(page) : 1}
         onChange={handlePageChange}
       />

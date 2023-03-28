@@ -17,8 +17,9 @@ export const AccountButton = () => {
   const switchAdminText = isAdmin
     ? [isAdminPrivelegeRequested ? 'Switch to User Privileges' : 'Switch to Admin Privileges']
     : [];
+  const userPrivilegeButtons = !isAdminPrivelegeRequested ? ['Manage Profile', 'My Listings'] : [];
 
-  const items = ['User Settings', 'Manage Profile', 'My Listings', ...switchAdminText, 'Logout'];
+  const items = ['User Settings', ...userPrivilegeButtons, ...switchAdminText, 'Logout'];
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const handleRedirect = (category: string) => {
     handleCloseMenu();
