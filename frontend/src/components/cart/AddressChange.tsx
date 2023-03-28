@@ -1,6 +1,8 @@
 import { Dialog, DialogTitle, DialogContent, FormControlLabel, Radio, RadioGroup, Skeleton } from '@mui/material';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setPreferredShippingAddressIndex } from '../../redux/reducers/userSlice';
 import './AddressChange.scss';
 
 interface AddressChangeProps {
@@ -22,6 +24,7 @@ export const AddressChange: React.FC<AddressChangeProps> = ({
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const changeButton = (onClick: any) => (
     <span className="address-change__button" onClick={onClick}>
@@ -50,7 +53,16 @@ export const AddressChange: React.FC<AddressChangeProps> = ({
   const addressModal = (
     <Dialog open={showAddressModal} onClose={() => setShowAddressModal(false)}>
       <DialogTitle>Choose a Shipping Address</DialogTitle>
-      <DialogContent>{radioListItem(setSelectedAddress, selectedAddress, addresses)}</DialogContent>
+      <DialogContent>
+        {radioListItem(
+          (value: number) => {
+            dispatch(setPreferredShippingAddressIndex(value));
+            setSelectedAddress(value);
+          },
+          selectedAddress,
+          addresses,
+        )}
+      </DialogContent>
     </Dialog>
   );
 
