@@ -54,7 +54,7 @@
           "Next": "Send Task Token"
         }
       ],
-      "Default": "Send Wait Token"
+      "Default": "Parallel Wait Token"
     },
     "Send Task Token": {
       "Type": "Task",
@@ -62,16 +62,43 @@
       "Resource": "${SNSSendTokenFunctionArn}",
       "Next": "Simulate Payment"
     },
-    "Send Wait Token": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-      "Parameters": {
-        "Payload": {
-          "input.$": "$",
-          "taskToken.$": "$$.Task.Token"
+    "Parallel Wait Token": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Send Wait Token",
+          "States": {
+            "Send Wait Token": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+              "Parameters": {
+                "Payload": {
+                  "input.$": "$",
+                  "taskToken.$": "$$.Task.Token"
+                },
+                "FunctionName": "${SNSWaitForTokenFunctionName}"
+              },
+              "End": true
+            }
+          }
         },
-        "FunctionName": "${SNSWaitForTokenFunctionName}"
-      },
+        {
+          "StartAt": "Pass Input",
+          "States": {
+            "Pass Input": {
+              "Type": "Pass",
+              "End": true
+            }
+          }
+        }
+      ],
+      "ResultPath": "$.results",
+      "Next": "Update Payment ID"
+    },
+    "Update Payment ID": {
+      "Type": "Task",
+      "InputPath": "$.results",
+      "Resource": "${AppendSNSTokenFunctionArn}",
       "Next": "Simulate Payment"
     },
     "Simulate Payment": {

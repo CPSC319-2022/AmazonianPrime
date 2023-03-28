@@ -122,6 +122,7 @@ Resources:
         SQSThrowErrorFunctionArn: !GetAtt SQSThrowErrorFunction.Arn
         SNSSendTokenFunctionArn: !GetAtt SNSSendTokenFunction.Arn
         SNSWaitForTokenFunctionArn: !GetAtt SNSWaitForTokenFunction.Arn
+        AppendSNSTokenFunctionArn: !GetAtt AppendSNSTokenFunction.Arn
         SNSWaitForTokenFunctionName: !Sub "${SNSWaitForTokenFunction}"
         SNSTopicArn: !Ref CheckoutTopic
         # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
@@ -150,6 +151,8 @@ Resources:
             FunctionName: !Ref SNSSendTokenFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref SNSWaitForTokenFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref AppendSNSTokenFunction
         - Statement:
             - Sid: SNSPublishPolicy
               Effect: Allow
@@ -474,6 +477,63 @@ Resources:
                 - sns:Unsubscribe
                 - sns:ListSubscriptionsByTopic
               Resource: "*"
+  RetryPaymentFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/retry-payment/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          StateMachineArn: !GetAtt OrderStateMachine.Arn
+          SQSQueueName: !Ref CheckoutQueue
+          SNSTopicName: !Ref CheckoutTopic
+      Architectures:
+        - x86_64
+      Events:
+        Checkout:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/checkout/retry # Testing
+            Method: post
+      Policies:
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt OrderStateMachine.Name
+        - Statement:
+            - Sid: StepFunctionsDescribeExecutionPolicy
+              Effect: Allow
+              Action:
+                - states:DescribeExecution
+                - states:SendTaskSuccess
+                - states:SendTaskFailure
+                - states:SendTaskHeartbeat
+              Resource: "*"
+        - Statement:
+            - Sid: SQSReceiveMessagePolicy
+              Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:CreateQueue
+                - sqs:DeleteQueue
+                - sqs:SetQueueAttributes
+              Resource: "*"
+        - Statement:
+            - Sid: SNSSubscribePolicy
+              Effect: Allow
+              Action:
+                - sns:Subscribe
+                - sns:Unsubscribe
+                - sns:ListSubscriptionsByTopic
+              Resource: "*"
+  AppendSNSTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/append-sns-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
   FrontendBucket:
     Type: AWS::S3::Bucket
   ListingsFunction:
