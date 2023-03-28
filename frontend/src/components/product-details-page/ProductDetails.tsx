@@ -1,16 +1,15 @@
 import './ProductDetails.scss';
 import { useAppSelector } from '../../redux/store';
-import { Alert, Button, Grid, IconButton, Snackbar } from '@mui/material';
+import { Alert, Button, Grid, Snackbar } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import DetailsMetaData from './DetailsMetaData';
 import ProductDetailsSkeleton from './ProductDetailsSkeleton';
 import NoContent from '../common/NoContent';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useDeleteListingMutation } from '../../redux/api/listings';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import DeleteListingButton from '../common/DeleteListingButton';
 import { UserDisplayName } from '../common/UserDisplayName';
-import { useAddListingToCartMutation } from '../../redux/api/shoppingCart';
+import { useAddListingToCartMutation, useUpdateListingToCartMutation } from '../../redux/api/shoppingCart';
 import { costToString } from '../../utils/costToString';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,7 +35,28 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
     }
     setErrorToast(false);
   };
-  const quantityRef = useRef<any>(null);
+  const [selectQuantity, setSelectQuantity] = useState(itemInCart?.Quantity || 1);
+  const [updateListingToCart] = useUpdateListingToCartMutation();
+
+  const handleQuantityChange = (value: number) => {
+    if (itemInCart && listing) {
+      const { Images, ...rest } = listing;
+      updateListingToCart({
+        listing: {
+          ImagePreview: Images[0],
+          ...rest,
+        },
+        userId: user?.UserID || '',
+        body: {
+          ListingID: listing.ListingID,
+          Quantity: Number(value),
+          ShoppingCartItemID: itemInCart.ShoppingCartItemID,
+        },
+      });
+    }
+    setSelectQuantity(value);
+  };
+
   if (!listing) {
     // TODO: add no results page
     if (isLoading) {
@@ -51,7 +71,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
       userId: user?.UserID || '',
       body: {
         ListingID,
-        Quantity: Number(quantityRef.current.value),
+        Quantity: Number(selectQuantity),
       },
     })
       .unwrap()
@@ -132,7 +152,11 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           </span>
         </div>
       )}
-      <DetailsMetaData quantityRef={quantityRef} />
+      <DetailsMetaData
+        selectQuantity={selectQuantity}
+        setSelectQuantity={handleQuantityChange}
+        itemInCart={itemInCart}
+      />
       <div className="product-details__description-container">
         <div className="product-details__small-header">Description</div>
         <div className="product-details__description">{Description}</div>

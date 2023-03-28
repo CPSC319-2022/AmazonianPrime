@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Listing } from '../../types/listing';
+import { ListingPreview } from '../../types/listingPreview';
 import { ShoppingCartItem } from '../../types/shoppingCartItem';
 import { ShoppingCartItems } from '../../types/shoppingCartItems';
 import { User } from '../../types/user';
@@ -52,6 +53,47 @@ export const shoppingCartApi = createApi({
         }
       },
     }),
+    updateListingToCart: builder.mutation<
+      ShoppingCartItem,
+      {
+        listing: ListingPreview;
+        userId: string;
+        body: { ListingID: number; Quantity: number; ShoppingCartItemID?: number };
+      }
+    >({
+      query({ userId, body }) {
+        return {
+          url: `user/shopping-cart/${userId}`,
+          credentials: 'include',
+          method: 'PUT',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['CartItems'],
+      async onQueryStarted({ listing, userId, body }, { dispatch, queryFulfilled }) {
+        const patchResultListings = dispatch(
+          shoppingCartApi.util.updateQueryData('shoppingCart', userId, (draft) => {
+            let quantity = 0;
+            draft.Items = draft.Items.map((item) => {
+              if (item.ShoppingCartItemID === body.ShoppingCartItemID) {
+                item.Quantity = body.Quantity;
+              }
+              quantity += item.Quantity;
+              return item;
+            });
+            draft.TotalQuantity = quantity;
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResultListings.undo();
+        }
+      },
+    }),
     removeListingFromCart: builder.mutation<
       any,
       { quantityRemoved: number; userId: string; body: { ListingID: number } }
@@ -85,4 +127,9 @@ export const shoppingCartApi = createApi({
   }),
 });
 
-export const { useAddListingToCartMutation, useShoppingCartQuery, useRemoveListingFromCartMutation } = shoppingCartApi;
+export const {
+  useAddListingToCartMutation,
+  useUpdateListingToCartMutation,
+  useShoppingCartQuery,
+  useRemoveListingFromCartMutation,
+} = shoppingCartApi;

@@ -1,5 +1,4 @@
 import { useAppSelector } from '../../redux/store';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './CartPage.scss';
 import { Button, Grid, Skeleton } from '@mui/material';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
@@ -14,7 +13,8 @@ import { useGetPaymentsQuery, useGetShippingAddressQuery } from '../../redux/api
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
-  const [selectedAddress, setSelectedAddress] = useState(0);
+  const preferredShippingAddressIndex = useAppSelector((state) => state.user.preferredShippingAddressIndex);
+  const [selectedAddress, setSelectedAddress] = useState(preferredShippingAddressIndex ?? 0);
   const { data: shippingAddresses } = useGetShippingAddressQuery(user?.UserID || '');
   const { data: payments } = useGetPaymentsQuery(user?.UserID || '');
   const [selectedPayment, setSelectedPayment] = useState(0);
@@ -108,7 +108,7 @@ function CartPage() {
               setSelectedAddress={setSelectedAddress}
               addresses={
                 shippingAddresses?.map((address) => {
-                  return `${address.StreetAddress} ${address.Province}`;
+                  return `${address.StreetAddress}, ${address.CityName} ${address.Province}`;
                 }) || []
               }
               selectedPayment={selectedPayment}
@@ -135,7 +135,7 @@ function CartPage() {
               }
             />
             <div className="cart__items-quantity">
-              3&nbsp;&nbsp;{`Review Items (${cartItems?.TotalQuantity || 0} items)`}
+              3&nbsp;&nbsp;Review Items&nbsp;{cartItems && `(${cartItems?.TotalQuantity || 0} items)`}
             </div>
           </div>
           {isLoading

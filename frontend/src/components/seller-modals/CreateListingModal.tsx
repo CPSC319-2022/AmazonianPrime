@@ -91,9 +91,12 @@ function CreateListingModal() {
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
+    const missingQuantity = !quantity.current?.value && 'Quantity';
     const missingCost =
-      (!Number(costRef.current?.value) || Number(costRef.current?.value) === 0) && 'Cost should be more than $0';
-    const errorMessage = [missingTitle, missingDescription, missingImage, missingCost].filter((msg) => msg).join(', ');
+      ((!Number(costRef.current?.value) && Number(costRef.current?.value) !== 0) || !costRef.current?.value) && 'Cost';
+    const errorMessage = [missingTitle, missingDescription, missingImage, missingQuantity, missingCost]
+      .filter((msg) => msg)
+      .join(', ');
     if (errorMessage) {
       setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
       return;
@@ -103,8 +106,8 @@ function CreateListingModal() {
       return;
     }
 
-    if (quantity.current?.value.startsWith('0') || costRef.current?.value.startsWith('0')) {
-      setOpenErrorToast('Please do not input 0 Quantites or Cost!');
+    if (Number(quantity.current?.value) === 0) {
+      setOpenErrorToast('Please input more than 0 items to sell (Quantity)!');
       return;
     }
     handleModalClose();
@@ -164,10 +167,28 @@ function CreateListingModal() {
     return (
       <div>
         <div className="create-listing__optional-container">
-          <TextField inputRef={brandRef} label="Brand" className="create-listing__optional" size="small" />
-          <TextField inputRef={colourRef} label="Colour" className="create-listing__optional" size="small" />
+          <TextField
+            autoComplete="off"
+            inputRef={brandRef}
+            label="Brand"
+            className="create-listing__optional"
+            size="small"
+          />
+          <TextField
+            autoComplete="off"
+            inputRef={colourRef}
+            label="Colour"
+            className="create-listing__optional"
+            size="small"
+          />
         </div>
-        <TextField className="create-listing__optional-container" inputRef={sizeRef} label="Size" size="small" />
+        <TextField
+          autoComplete="off"
+          className="create-listing__optional-container"
+          inputRef={sizeRef}
+          label="Size"
+          size="small"
+        />
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel>Metric</InputLabel>
           <Select
@@ -275,6 +296,7 @@ function CreateListingModal() {
                   <span className="create-listing__quantity">Quantity</span>
                   <TextField
                     required
+                    autoComplete="off"
                     inputRef={quantity}
                     type="number"
                     InputProps={{ inputProps: { min: 1, max: 100 } }}
@@ -291,6 +313,7 @@ function CreateListingModal() {
                 required
                 inputRef={costRef}
                 label="$"
+                autoComplete="off"
                 InputProps={{ inputProps: { min: 1, max: 100000 } }}
                 onKeyPress={(event) => {
                   if (event?.key === 'e' || event?.key === '-' || event?.key === '+') {

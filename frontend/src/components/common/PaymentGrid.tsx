@@ -66,6 +66,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
               fullWidth
               required
               label="Card Number"
+              autoComplete="off"
               defaultValue=""
               size="small"
               type="number"
@@ -81,6 +82,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
               required
               size="small"
               label="CVV"
+              autoComplete="off"
               defaultValue=""
               type="number"
               onInput={(e: any) => {
