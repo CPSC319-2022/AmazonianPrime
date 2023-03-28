@@ -1,7 +1,7 @@
 import { Button, Grid } from "@mui/material";
 import './User.scss';
-import { setIsLoadingListings, setListings } from '../../redux/reducers/listingsSlice';
-import { useDispatch } from 'react-redux';
+import { useChangePrivilegeLevelMutation } from '../../redux/api/admin';
+import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -12,8 +12,17 @@ interface UserProps {
 const User: React.FC<UserProps> = ({
     user,
 }) => {
-    const { FirstName, LastName, Department, IsAdmin, Email } = user;
+    const thisUserID = useAppSelector((state) => state.user.value?.UserID);
+    const [changePrivilege] = useChangePrivilegeLevelMutation();
+    const { FirstName, LastName, Department, IsAdmin, Email, UserID } = user;
 
+    function swapPrivilegeLevel() {
+        const userInfo = {
+            UserID: thisUserID,
+            IsAdmin: (IsAdmin == 0) ? 1 : 0
+          };
+        changePrivilege({user: UserID, body: userInfo})
+    }
     return (
         <div>
           <Grid item xs={1} marginTop={3} className="user">
@@ -22,10 +31,13 @@ const User: React.FC<UserProps> = ({
                 <div className="user__user-information">{Email}</div>
             </div>
             <div className="user__buttons">
-                {IsAdmin ? 
-                    <Button className="user__button" variant="contained" color="secondary" onClick={() => {}}> Demote </Button> :
-                    <Button className="user__button" variant="contained" color="secondary" onClick={() => {}}> Promote </Button>
-                }
+                <Button 
+                    className="user__button" 
+                    variant="contained" 
+                    color="secondary" 
+                    onClick={swapPrivilegeLevel}> 
+                    {IsAdmin ? "Demote" : "Promote"} 
+                </Button> 
                 <Button
                     variant="contained"
                     className="user__button"

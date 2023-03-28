@@ -48,7 +48,6 @@ function UsersPage() {
     const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
         dispatch(setIsLoadingUsers({ isLoadingListings: true }));
         navigate(`?page=${value}`);
-        console.log(data);
     };
 
   return (<div className="users-page">

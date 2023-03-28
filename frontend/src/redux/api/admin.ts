@@ -15,10 +15,10 @@ export const adminApi = createApi({
         }`;
       },
     }),
-    changePrivilegeLevel: builder.mutation<User, { user: number, body: string }>({
+    changePrivilegeLevel: builder.mutation<User, { user: string, body: Partial<User> }>({
       query({user, body}) {
         return {
-          url: `admin/users/${user}}`,
+          url: `admin/users/privilege/${user}`,
           credentials: 'include',
           method: 'PUT',
           body,
@@ -34,4 +34,5 @@ export const adminApi = createApi({
 export const {
   useGetUsersQuery,
   useLazyGetUsersQuery,
+  useChangePrivilegeLevelMutation,
 } = adminApi;

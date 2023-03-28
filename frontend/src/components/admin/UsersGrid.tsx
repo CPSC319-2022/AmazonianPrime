@@ -15,7 +15,7 @@ const UsersGrid: React.FC<UsersGridProps> = ({
   return (
       <div>
         <Grid container className="users__container-grid" columns={1}>
-            {(!isLoading ? users : Array(20).fill(0))?.map((user: UserType, index) => (
+            {(!isLoading ? users : Array(8).fill(0))?.map((user: UserType, index) => (
               <Grid item xs={1} className="users__container__grid-item" key={index}>
                 <User
                   user={user}
