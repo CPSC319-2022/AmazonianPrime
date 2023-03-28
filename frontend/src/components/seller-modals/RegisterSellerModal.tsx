@@ -24,7 +24,7 @@ function RegisterSellerModal() {
           <DialogContentText paddingBottom={1}>
             <div className="register__title">
               <span>Before You Start Selling, Please Add Your Banking Details!</span>
-              <Tooltip title="These banking details are different from the payment details you provided during the registration/ sign up. These details will allow other users to buy your product for you to get compensated.">
+              <Tooltip title="These banking details are different from the payment details you provided during the registration/ sign up. These details will allow other users to buy your product, and for you to get compensated.">
                 <HelpIcon className="register__tooltip" sx={{ fontSize: '20px' }} />
               </Tooltip>
             </div>

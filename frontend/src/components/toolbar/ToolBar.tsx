@@ -11,10 +11,12 @@ import SellerModal from '../seller-modals/SellerModal';
 import useSticky from '../../utils/useSticky';
 import CategoriesButton from './CategoriesButton';
 import { AccountButton } from './AccountButton';
+import useAdminPrivelege from '../../utils/useAdminPrivelege';
 
 function ToolBar() {
   const { sticky, stickyRef } = useSticky();
   const dispatch = useDispatch();
+  const { isAdminPrivelegeRequested } = useAdminPrivelege();
 
   function handleOpenSellerModal() {
     dispatch(modifyCreateListingModalVisibility(true));
@@ -39,9 +41,11 @@ function ToolBar() {
             <Grid item xs={3} container direction="row" justifyContent="center" alignItems="center">
               <div className="toolbar__buttons">
                 <CategoriesButton />
-                <Button color="secondary" className="toolbar__button" onClick={() => handleOpenSellerModal()}>
-                  Sell
-                </Button>
+                {!isAdminPrivelegeRequested && (
+                  <Button color="secondary" className="toolbar__button" onClick={() => handleOpenSellerModal()}>
+                    Sell
+                  </Button>
+                )}
                 <Button className="toolbar__button" onClick={() => navigate('/orders')}>
                   Orders
                 </Button>
