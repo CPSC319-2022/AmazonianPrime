@@ -74,7 +74,7 @@ export const AddressSettings = () => {
           data?.map((address) => (
             <div className="more-content__details">
               <span>
-                {address.StreetAddress}&nbsp;{address.Province}&nbsp;
+                {address.StreetAddress}&nbsp;{address.CityName},&nbsp;{address.Province}&nbsp;
               </span>
             </div>
           )) || []

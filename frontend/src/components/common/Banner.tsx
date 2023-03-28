@@ -1,9 +1,12 @@
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import './Banner.scss';
 import { useAppSelector } from '../../redux/store';
+import { useGetShippingAddressQuery } from '../../redux/api/user';
 
 function Banner() {
   const user = useAppSelector((state) => state.user.value);
+  const preferredShippingAddressIndex = useAppSelector((state) => state.user.preferredShippingAddressIndex);
+  const { data: shippingAddresses } = useGetShippingAddressQuery(user?.UserID || '');
 
   if (!user?.Department)
     return (
@@ -12,20 +15,18 @@ function Banner() {
       </div>
     );
 
-  // TODO: use get address endpoint to access this information later
-  const address = {
-    streetAddress: '2366 Main Mall',
-    city: 'Vancouver',
-    province: 'BC',
-    postalCode: 'V6T 1Z4',
-  };
+  let shippingContent = '';
+  if (shippingAddresses) {
+    const address = shippingAddresses[preferredShippingAddressIndex ?? 0];
+    shippingContent = `${address.StreetAddress}, ${address.CityName} ${address.Province}`;
+  }
 
   return (
     <div className="banner">
       <div className="banner__content">
         <span className="banner__address">
           <PinDropIcon sx={{ fontSize: 17, marginRight: '0.5em' }} />
-          {`${address.streetAddress}, ${address.city}, ${address.province} ${address.postalCode}`}
+          {shippingContent}
         </span>
         <span className="banner__welcome-message">Welcome, {user.FirstName}!</span>
       </div>

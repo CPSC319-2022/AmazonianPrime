@@ -13,7 +13,8 @@ import { useGetPaymentsQuery, useGetShippingAddressQuery } from '../../redux/api
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
-  const [selectedAddress, setSelectedAddress] = useState(0);
+  const preferredShippingAddressIndex = useAppSelector((state) => state.user.preferredShippingAddressIndex);
+  const [selectedAddress, setSelectedAddress] = useState(preferredShippingAddressIndex ?? 0);
   const { data: shippingAddresses } = useGetShippingAddressQuery(user?.UserID || '');
   const { data: payments } = useGetPaymentsQuery(user?.UserID || '');
   const [selectedPayment, setSelectedPayment] = useState(0);
@@ -107,7 +108,7 @@ function CartPage() {
               setSelectedAddress={setSelectedAddress}
               addresses={
                 shippingAddresses?.map((address) => {
-                  return `${address.StreetAddress} ${address.Province}`;
+                  return `${address.StreetAddress}, ${address.CityName} ${address.Province}`;
                 }) || []
               }
               selectedPayment={selectedPayment}

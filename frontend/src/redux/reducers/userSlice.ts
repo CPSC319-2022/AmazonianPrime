@@ -7,6 +7,7 @@ export interface UserState {
   value: User | null;
   paymentMethod: Payment | null;
   shippingAddress: Address | null;
+  preferredShippingAddressIndex: number;
   paymentAddress: Address | null;
 }
 
@@ -24,6 +25,7 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
     value: sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user') || '') : undefined,
     paymentMethod: null,
     shippingAddress: null,
+    preferredShippingAddressIndex: 0,
     paymentAddress: null,
   },
   reducers: {
@@ -42,6 +44,11 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
         state.paymentMethod = action.payload as Payment;
       }
     },
+    setPreferredShippingAddressIndex: (state: UserState, action: Action) => {
+      if (action?.payload) {
+        state.preferredShippingAddressIndex = action.payload as number;
+      }
+    },
     setPaymentAddress: (state: UserState, action: Action) => {
       if (action?.payload) {
         state.paymentAddress = action.payload as Address;
@@ -55,6 +62,7 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
   },
 });
 
-export const { setUser, setPayment, setPaymentAddress, setShippingAddress } = user.actions;
+export const { setUser, setPayment, setPaymentAddress, setShippingAddress, setPreferredShippingAddressIndex } =
+  user.actions;
 
 export default user.reducer;
