@@ -43,7 +43,7 @@ exports.lambdaHandler = async (event, context) => {
   const getUser = await new Promise((resolve, reject) => {
     con.query(getUserQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the user from database!");
+        reject(err);
       }
       resolve(res);
     });
@@ -63,7 +63,7 @@ exports.lambdaHandler = async (event, context) => {
   const getListing = await new Promise((resolve, reject) => {
     con.query(getListingQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the listing from database!");
+        reject(err);
       }
       resolve(res);
     });
@@ -91,20 +91,30 @@ exports.lambdaHandler = async (event, context) => {
   const deleteListingImage = await new Promise((resolve, reject) => {
     con.query(deleteListingImagesQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the listing from database!");
+        reject(err);
       }
       resolve(res);
     });
   });
 
   // TODO: Need to confirm that the Listing isn't a part of a completed order or a user's shopping cart.
+  const deleteFromCartsQuery = `DELETE FROM ShoppingCartItem WHERE ListingID = ${ListingID}`;
+
+  const deleteFromCarts = await new Promise((resolve, reject) => {
+    con.query(deleteFromCartsQuery, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
 
   const deleteListingQuery = `DELETE FROM Listing WHERE ListingID = ${ListingID}`;
 
   const deleteListing = await new Promise((resolve, reject) => {
     con.query(deleteListingQuery, function (err, res) {
       if (err) {
-        reject("Couldn't get the listing from database!");
+        reject(err);
       }
       resolve(res);
     });
