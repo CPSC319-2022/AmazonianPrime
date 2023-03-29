@@ -274,7 +274,11 @@ function CartPage() {
               {getSummaryHeading('Estimated GST/HST', '$0.00')}
               {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
               <span className="cart__order-summary-border"></span>
-              {getSummaryHeading('Order Total', `$${costToString(subtotal)}`, true)}
+              {getSummaryHeading(
+                'Order Total',
+                `$${costToString(Number((Math.round(Number(subtotal) * 100) / 100).toFixed(2)))}`,
+                true,
+              )}
               {placeOrderButton()}
             </div>
           )}
