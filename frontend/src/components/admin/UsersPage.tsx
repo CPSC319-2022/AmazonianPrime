@@ -82,13 +82,6 @@ function UsersPage() {
   };
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
 
-  function changeTriggered() {
-    getUsersByName({
-      page: page == null || Number(page) <= 0 ? 1 : Number(page),
-      name: validatedSearchInput,
-    });
-  }
-
   return (
     <div className="users-page">
       <Breadcrumbs />
@@ -127,7 +120,7 @@ function UsersPage() {
             }}
           />
         </Grid>
-        <UsersGrid users={filteredData?.data ? filteredData.data.Data : data?.Data} changeTriggered={changeTriggered} />
+        <UsersGrid users={filteredData?.data ? filteredData.data.Data : data?.Data} />
       </Grid>
       <Pagination
         className="gallery__pagination"

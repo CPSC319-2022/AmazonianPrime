@@ -5,10 +5,9 @@ import { useAppSelector } from '../../redux/store';
 import { User as UserType } from '../../types/user';
 interface UsersGridProps {
   users: UserType[] | undefined;
-  changeTriggered: () => void;
 }
 
-const UsersGrid: React.FC<UsersGridProps> = ({ users, changeTriggered }) => {
+const UsersGrid: React.FC<UsersGridProps> = ({ users }) => {
   const currentUser = useAppSelector((state) => state.user.value);
   const isLoading = useAppSelector((state) => state.admin.isLoadingUsers);
 
@@ -22,7 +21,7 @@ const UsersGrid: React.FC<UsersGridProps> = ({ users, changeTriggered }) => {
           }
           return (
             <Grid item xs={1} className="users__container__grid-item" key={index}>
-              <User user={user} changeTriggered={changeTriggered} />
+              <User user={user} />
             </Grid>
           );
         })}

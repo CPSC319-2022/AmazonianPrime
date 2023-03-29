@@ -10,10 +10,9 @@ import { useState } from 'react';
 
 interface UserProps {
   user: UserType;
-  changeTriggered: () => void;
 }
 
-const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
+const User: React.FC<UserProps> = ({ user }) => {
   const thisUserID = useAppSelector((state) => state.user.value?.UserID);
   const [changePrivilege] = useChangePrivilegeLevelMutation();
   const [removeUser] = useRemoveUserMutation();
@@ -30,7 +29,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       setErrorToast(true);
       return;
     }
-    changeTriggered();
   }
 
   async function deleteUser() {
@@ -43,7 +41,6 @@ const User: React.FC<UserProps> = ({ user, changeTriggered }) => {
       setErrorToast(true);
       return;
     }
-    changeTriggered();
   }
 
   const [openConfirmDelete, setConfirmDelete] = useState(false);
