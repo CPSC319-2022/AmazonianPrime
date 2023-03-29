@@ -9,6 +9,13 @@
   margin-bottom: 2em;
 }
 
+.confetti-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .cart-title {
   display: flex;
   flex-direction: row;

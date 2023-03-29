@@ -14,6 +14,56 @@ export const shoppingCartApi = createApi({
       query: (userId: string) => `user/shopping-cart/${userId}`,
       providesTags: ['CartItems'],
     }),
+    checkout: builder.mutation<any, { UserID: string; AddressID: string; PaymentID: string }>({
+      query(body) {
+        return {
+          url: `checkout/test`,
+          credentials: 'include',
+          method: 'POST',
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['CartItems'],
+      async onQueryStarted({ UserID }, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(
+          shoppingCartApi.util.updateQueryData('shoppingCart', UserID, (draft) => {
+            Object.assign(draft, []);
+          }),
+        );
+      },
+    }),
+    retryCheckout: builder.mutation<
+      any,
+      { UserID: string; body: { TaskToken: string; ExecutionArn: string; PaymentID: string } }
+    >({
+      query({ body }) {
+        return {
+          url: `checkout/retry`,
+          credentials: 'include',
+          method: 'POST',
+          body: {
+            ...body,
+            ExecutionArn: body.ExecutionArn,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['CartItems'],
+      async onQueryStarted({ UserID }, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(
+          shoppingCartApi.util.updateQueryData('shoppingCart', UserID, (draft) => {
+            Object.assign(draft, []);
+          }),
+        );
+      },
+    }),
     addListingToCart: builder.mutation<
       ShoppingCartItem,
       { listing: Listing; userId: string; body: { ListingID: number; Quantity: number } }
@@ -130,6 +180,8 @@ export const shoppingCartApi = createApi({
 export const {
   useAddListingToCartMutation,
   useUpdateListingToCartMutation,
+  useCheckoutMutation,
+  useRetryCheckoutMutation,
   useShoppingCartQuery,
   useRemoveListingFromCartMutation,
 } = shoppingCartApi;
