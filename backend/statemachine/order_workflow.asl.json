@@ -145,13 +145,8 @@
     },
     "ErrorHandler": {
       "Type": "Task",
-      "Resource": "${StepFunctionErrorHandlerFunctionArn}",
-      "Next": "Send Error Prompt"
-    },
-    "Send Error Prompt": {
-      "Type": "Task",
       "InputPath": "$",
-      "Resource": "${SQSThrowErrorFunctionArn}",
+      "Resource": "${StepFunctionErrorHandlerFunctionArn}",
       "End": true
     },
     "Checkout Success": {

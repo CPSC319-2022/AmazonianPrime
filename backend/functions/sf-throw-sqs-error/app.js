@@ -14,9 +14,32 @@ const sqs = new AWS.SQS();
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  const messageBody = JSON.stringify({ message: 'There was an error with the process' });
-  const queueUrl = process.env.SQSQueueName;
-  await sqs.sendMessage({ MessageBody: messageBody, QueueUrl: queueUrl }).promise();
+  const topicArn = process.env.SNSTopicName;
+  const TransactionID = event['TransactionID'];
+    
+    // Define the message attributes
+    const messageAttributes = {
+        'TransactionID': { DataType: 'String', StringValue: TransactionID}
+    };
+    
+    // Define the message body
+    const messageBody = JSON.stringify(event);
+    
+    // Define the SNS parameters
+    const snsParams = {
+        TopicArn: topicArn,
+        Message: messageBody,
+        MessageAttributes: messageAttributes
+    };
+    
+    // Publish the message to the topic
+    try {
+        const result = await sns.publish(snsParams).promise();
+        console.log('Message sent:', result.MessageId);
+    } catch (err) {
+        console.error('Error publishing message:', err);
+    }
+
   return {
     statusCode: 200,
     body: { ...event },

@@ -20,6 +20,19 @@ const { v4: uuid } = require('uuid');
 exports.lambdaHandler = async (event, context) => {
   // Source: https://stackoverflow.com/questions/51240606/how-to-get-result-of-aws-lambda-function-running-with-step-function
   try {
+    const {UserID, AddressID, PaymentID} = JSON.parse(event.body);
+
+    if (
+      !UserID ||
+      !AddressID ||
+      !PaymentID 
+    ) {
+      return {
+        statusCode: 400,
+        body: 'Missing required fields',
+      };
+    }
+
     let transactionID = uuid();
     const topicArn = process.env.SNSTopicName;
 
@@ -73,12 +86,12 @@ exports.lambdaHandler = async (event, context) => {
       QueueUrl: queueResult.QueueUrl
     };
     await sqs.setQueueAttributes(policyParams).promise();
-    
-    const reqBody = event.body || {};
+
+    const reqBody = { "UserID": UserID, "AddressID": AddressID, "PaymentID": PaymentID, "TransactionID":  transactionID, "QueueURL": queueUrl}
 
     const executionParams = {
       stateMachineArn: process.env.StateMachineArn,
-      input: JSON.stringify({...JSON.parse(reqBody), "TransactionID": transactionID}),
+      input: JSON.stringify(reqBody),
     };
 
     const executionResult = await stepFunctions
@@ -94,10 +107,10 @@ exports.lambdaHandler = async (event, context) => {
     const receiveParams = {
         QueueUrl: queueUrl,
         MaxNumberOfMessages: 1,
-        WaitTimeSeconds: 20 // long-poll for up to 20 seconds
+        WaitTimeSeconds: 10 // long-poll for up to 20 seconds
     };
     const result = await sqs.receiveMessage(receiveParams).promise();
-    
+    let taskToken;
     if (result.Messages) {
         // Process the received message(s)
         console.log('Received message(s):', result.Messages);
@@ -108,6 +121,8 @@ exports.lambdaHandler = async (event, context) => {
             ReceiptHandle: result.Messages[0].ReceiptHandle
         };
         await sqs.deleteMessage(deleteParams).promise();
+        taskToken = JSON.parse(result.Messages[0].Body).Message;
+        
     } else {
         console.log('No messages received');
     }
@@ -117,9 +132,39 @@ exports.lambdaHandler = async (event, context) => {
     // await sns.unsubscribe({ SubscriptionArn: subscriptionArn }).promise();
     await sqs.deleteQueue({ QueueUrl: queueUrl }).promise();
 
+    if (taskToken !== undefined && taskToken !== "Payment is okay! Poll for step function output"){
+      let response = {
+        "TaskToken": taskToken,
+        "ExecutionArn": executionArn
+      }
+      return {
+        statusCode: 200,
+        body: JSON.stringify(response),
+      };
+    }
+
+    // If it reached this point, means the endpoint didn't need a Task Token (Payment is Valid)
+    let status = '';
+    while (status !== 'SUCCEEDED' && status !== 'FAILED') {
+      const describeParams = { executionArn: executionArn };
+      const describeResult = await stepFunctions
+        .describeExecution(describeParams)
+        .promise();
+      status = describeResult.status;
+    }
+
+    // Get the output of the execution
+    const describeParams = { executionArn: executionArn };
+    const describeResult = await stepFunctions
+      .describeExecution(describeParams)
+      .promise();
+    const output = JSON.parse(describeResult.output);
+
+    console.log('Step Function output:', describeResult);
+
     return {
       statusCode: 200,
-      body: JSON.stringify(JSON.parse(result.Messages[0].Body)),
+      body: JSON.stringify(output),
     };
     
   } catch (err) {

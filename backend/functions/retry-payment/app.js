@@ -18,7 +18,8 @@ exports.lambdaHandler = async (event, context) => {
 
   const {
     TaskToken,
-    PaymentID
+    PaymentID,
+    ExecutionArn
   } = JSON.parse(event.body);
 
   const result = {
@@ -40,9 +41,27 @@ exports.lambdaHandler = async (event, context) => {
       console.log(data);  
     });
   }
+  
+  let status = '';
+  while (status !== 'SUCCEEDED' && status !== 'FAILED') {
+    const describeParams = { executionArn: ExecutionArn };
+    const describeResult = await stepfunctions
+      .describeExecution(describeParams)
+      .promise();
+    status = describeResult.status;
+  }
+
+  // Get the output of the execution
+  const describeParams = { executionArn: ExecutionArn };
+  const describeResult = await stepfunctions
+    .describeExecution(describeParams)
+    .promise();
+  const output = JSON.parse(describeResult.output);
+
+  console.log('Step Function output:', describeResult);
 
   return {
     statusCode: 200,
-    body: JSON.stringify(result)
+    body: JSON.stringify(output),
   };
 };

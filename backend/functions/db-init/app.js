@@ -247,10 +247,10 @@ exports.lambdaHandler = async (event, context) => {
   console.log(createOrderTable);
 
   let createOrderItemTableQuery = `CREATE TABLE OrderItem (
-      OrderID int NOT NULL AUTO_INCREMENT,
+      OrderID int NOT NULL,
       ListingID int NOT NULL,
       OrderQuantity int NOT NULL,
-      PRIMARY KEY (OrderID),
+      PRIMARY KEY (OrderID, ListingID),
       FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
       FOREIGN KEY (ListingID) REFERENCES Listing(ListingID)
   );`;
