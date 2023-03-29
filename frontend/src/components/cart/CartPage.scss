@@ -9,6 +9,13 @@
   margin-bottom: 2em;
 }
 
+.confetti-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .cart-title {
   display: flex;
   flex-direction: row;
@@ -64,6 +71,15 @@
       text-decoration-thickness: 2px;
     }
   }
+}
+
+.expiry-date {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2em 0.5em;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 0.8em;
+  margin-left: 0.5em;
 }
 
 .cart__listing-header-summary {
