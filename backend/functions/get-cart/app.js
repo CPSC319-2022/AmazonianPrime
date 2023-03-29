@@ -34,6 +34,11 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
+  let subtotal = 0.0;
+  let pst = 0.0;
+  let gst = 0.0;
+  let total = 0.0;
+
   for (const shoppingCartItem of Items) {
     const getListingQuery = `SELECT * FROM Listing LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath FROM ListingImage WHERE S3ImagePath IN (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images ON Listing.ListingID = Images.ImageListingID JOIN Users on Listing.UserID = Users.UserID WHERE Listing.ListingID = ${shoppingCartItem.ListingID};`;
     const Listing = await new Promise((resolve, reject) => {
@@ -61,7 +66,18 @@ exports.lambdaHandler = async (event, context) => {
     };
     shoppingCartItem.Listing.ImagePreview = S3ImagePath;
     Response.TotalQuantity += shoppingCartItem.Quantity;
+    if(ListingData.ItemCondition === "New") {
+      pst += ListingData.Cost * 0.07;
+      gst += ListingData.Cost * 0.05;
+    }
+    subtotal += ListingData.Cost;
   }
+  total += subtotal + pst + gst;
+
+  Response.Subtotal = subtotal.toFixed(2);
+  Response.PSTTax = pst.toFixed(2);
+  Response.GSTTax = gst.toFixed(2);
+  Response.TotalCost = total.toFixed(2);
   Response.Items = Items;
   console.log(Response);
   return {
