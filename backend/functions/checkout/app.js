@@ -133,9 +133,13 @@ exports.lambdaHandler = async (event, context) => {
     await sqs.deleteQueue({ QueueUrl: queueUrl }).promise();
 
     if (taskToken !== undefined && taskToken !== "Payment is okay! Poll for step function output"){
+      var Now = new Date();
+      var ExpiryTime = new Date();
+      ExpiryTime.setTime(Now.getTime() + (5 * 60 * 1000));
       let response = {
         "TaskToken": taskToken,
-        "ExecutionArn": executionArn
+        "ExecutionArn": executionArn,
+        "ExpiryTime": ExpiryTime
       }
       return {
         statusCode: 200,
