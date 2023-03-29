@@ -15,9 +15,9 @@ Globals:
       AllowMethods: "'GET,POST,OPTIONS'"
       AllowHeaders: "'content-type'"
       AllowOrigin: "'*'"
-# Parameters:
-#   PipelineRole:
-#     Type: String
+Parameters:
+  PipelineRole:
+    Type: String
 
 Resources:
   FrontendBucketPolicy:
@@ -33,16 +33,16 @@ Resources:
             Resource: !Sub
               - "arn:aws:s3:::${Bucket}/*"
               - Bucket: !Ref FrontendBucket
-      #     - Effect: Allow
-      #       Principal:
-      #         AWS:
-      #           - !Ref PipelineRole
-      #       Action:
-      #         - "s3:PutObject"
-      #         - "s3:DeleteObject"
-      #       Resource: !Sub
-      #         - "arn:aws:s3:::${Bucket}/*"
-      #         - Bucket: !Ref FrontendBucket
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !Ref PipelineRole
+            Action:
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+            Resource: !Sub
+              - "arn:aws:s3:::${Bucket}/*"
+              - Bucket: !Ref FrontendBucket
       Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -89,20 +89,6 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: SNS Topic for Checkout Flows
-  # CheckoutTopicPolicy:
-  #   Type: AWS::SNS::TopicPolicy
-  #   Properties:
-  #     PolicyDocument:
-  #       Id: MyTopicPolicy
-  #       Version: 2012-10-17
-  #       Statement:
-  #         - Sid: SQSMessagePolicy
-  #           Effect: Allow
-  #           Principal: "*"
-  #           Action: sqs:SendMessage
-  #           Resource: "*"
-  #     Topics:
-  #       - !Ref CheckoutTopic
       
   OrderStateMachine:
     Type: AWS::Serverless::StateMachine
@@ -125,7 +111,6 @@ Resources:
         AppendSNSTokenFunctionArn: !GetAtt AppendSNSTokenFunction.Arn
         SNSWaitForTokenFunctionName: !Sub "${SNSWaitForTokenFunction}"
         SNSTopicArn: !Ref CheckoutTopic
-        # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref GetUserCartFunction
