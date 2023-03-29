@@ -8,6 +8,7 @@ import { ReactNode, useEffect } from 'react';
 import LoginPage from './components/login/LoginPage';
 import ProductDetailsPage from './components/product-details-page/ProductDetailsPage';
 import OrdersPage from './components/orders/OrdersPage';
+import UsersPage from './components/admin/UsersPage';
 import CartPage from './components/cart/CartPage';
 import MyListings from './components/my-listings/MyListings';
 import BrowsePage from './components/browse-page/BrowsePage';
@@ -89,6 +90,7 @@ const AppWrapper = () => {
         <Route path="/listing/:listingId" element={<ProductDetailsPage />} />
         <Route path="/browse" element={<BrowsePage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/users" element={<UsersPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/my-listings" element={<MyListings />} />
         <Route path="/manage-profile" element={<ManageProfile />} />

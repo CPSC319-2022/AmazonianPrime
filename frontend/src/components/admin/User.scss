@@ -1,0 +1,32 @@
+@import '../../variables';
+.user {
+  display: flex;
+  padding: 10px;
+  min-width: 80vh;
+  background-color: rgb(251, 244, 229);
+
+  .user__buttons {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    .user__button,
+    .user__button-deactivate {
+      margin: 5.5px;
+      max-height: 30px;
+      min-width: 125px;
+      margin-right: 15px;
+    }
+    .user__button-deactivate {
+      color: $grey;
+    }
+  }
+}
+.user__username {
+  font-size: 17px;
+  font-weight: 450;
+  margin-bottom: 4px;
+}
+
+.user__user-information {
+  font-size: 14px;
+}
