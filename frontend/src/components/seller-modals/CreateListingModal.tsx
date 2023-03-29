@@ -88,6 +88,22 @@ function CreateListingModal() {
   const dispatch = useDispatch();
 
   async function handleSubmit() {
+    const newListing = {
+      UserID: Number(user?.UserID) || 0,
+      ListingName: titleRef.current?.value,
+      Description: descriptionRef.current?.value,
+      Cost: Number(costRef.current?.value),
+      Quantity: Number(quantity.current?.value),
+      Category: category.replace('&', 'And'),
+      ItemCondition: condition,
+      Brand: brandRef.current?.value,
+      Colour: colourRef.current?.value,
+      Images:
+        (await Promise.all(images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image)))).catch(() =>
+          setError(true),
+        )) || [],
+      Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
+    };
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';
@@ -115,26 +131,11 @@ function CreateListingModal() {
 
     handleModalClose();
     setIsLoading(true);
-    const base64Array = await Promise.all(
-      images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image))),
-    ).catch(() => setError(true));
 
     if (error) {
       return;
     }
-    await createListing({
-      UserID: Number(user?.UserID) || 0,
-      ListingName: titleRef.current?.value,
-      Description: descriptionRef.current?.value,
-      Cost: Number(costRef.current?.value),
-      Quantity: Number(quantity.current?.value),
-      Category: category.replace('&', 'And'),
-      ItemCondition: condition,
-      Brand: brandRef.current?.value,
-      Colour: colourRef.current?.value,
-      Images: base64Array || [],
-      Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
-    })
+    await createListing(newListing)
       .unwrap()
       .then((resultObj) => setResult(resultObj))
       .catch(() => setError(true));
