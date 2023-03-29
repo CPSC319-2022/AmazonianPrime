@@ -37,7 +37,7 @@ const Gallery: React.FC<GalleryProps> = ({
       <div className="gallery__container">
         <Grid container className="gallery__container-grid" columns={4}>
           {(!isLoading ? listings : Array(20).fill(0))?.map((listing: ListingPreviewType | null, index) => (
-            <Grid item xs={1} className="gallery__container__grid-item" key={index}>
+            <Grid item xs={1} className="gallery__container__grid-item" key={index} width="250px">
               <ListingPreview
                 listing={listing}
                 key={index}
