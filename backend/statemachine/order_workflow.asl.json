@@ -8,7 +8,9 @@
       "Next": "Check Listing Quantity",
       "Catch": [
         {
-          "ErrorEquals": ["MissingParameterError"],
+          "ErrorEquals": [
+            "MissingParameterError"
+          ],
           "Next": "ErrorHandler"
         }
       ]
@@ -17,7 +19,7 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckQuantityFunctionArn}",
-      "Next": "Simulate Payment",
+      "Next": "Check Payment Detail",
       "Catch": [
         {
           "ErrorEquals": [
@@ -27,6 +29,77 @@
           "Next": "ErrorHandler"
         }
       ]
+    },
+    "Check Payment Detail": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${CheckPaymentFunctionArn}",
+      "Next": "Valid Payment?",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "EmptyShoppingCartError",
+            "PurchaseQuantityExceededError"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ]
+    },
+    "Valid Payment?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.body.ValidPayment",
+          "BooleanEquals": true,
+          "Next": "Send Task Token"
+        }
+      ],
+      "Default": "Parallel Wait Token"
+    },
+    "Send Task Token": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${SNSSendTokenFunctionArn}",
+      "Next": "Simulate Payment"
+    },
+    "Parallel Wait Token": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Send Wait Token",
+          "States": {
+            "Send Wait Token": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+              "Parameters": {
+                "Payload": {
+                  "input.$": "$",
+                  "taskToken.$": "$$.Task.Token"
+                },
+                "FunctionName": "${SNSWaitForTokenFunctionName}"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Pass Input",
+          "States": {
+            "Pass Input": {
+              "Type": "Pass",
+              "End": true
+            }
+          }
+        }
+      ],
+      "ResultPath": "$.results",
+      "Next": "Update Payment ID"
+    },
+    "Update Payment ID": {
+      "Type": "Task",
+      "InputPath": "$.results",
+      "Resource": "${AppendSNSTokenFunctionArn}",
+      "Next": "Simulate Payment"
     },
     "Simulate Payment": {
       "Type": "Task",
@@ -50,7 +123,9 @@
       "Resource": "${PaymentFailErrorFunctionArn}",
       "Catch": [
         {
-          "ErrorEquals": ["PaymentFailureError"],
+          "ErrorEquals": [
+            "PaymentFailureError"
+          ],
           "Next": "ErrorHandler"
         }
       ],
@@ -70,6 +145,7 @@
     },
     "ErrorHandler": {
       "Type": "Task",
+      "InputPath": "$",
       "Resource": "${StepFunctionErrorHandlerFunctionArn}",
       "End": true
     },

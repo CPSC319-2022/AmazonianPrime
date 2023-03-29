@@ -21,8 +21,9 @@ exports.lambdaHandler = async (event, context) => {
   const UserID = event['UserID'];
   const AddressID = event['AddressID'];
   const PaymentID = event['PaymentID'];
+  const TransactionID = event['TransactionID'];
 
-  if (!UserID || !AddressID || !PaymentID) {
+  if (!UserID || !AddressID || !PaymentID || !TransactionID) {
     throw new MissingParameterError(`Missing required fields`);
   }
 

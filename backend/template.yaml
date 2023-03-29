@@ -80,6 +80,16 @@ Resources:
               QueryString: true
         Enabled: true
         DefaultRootObject: index.html
+  ## -------- Checkout Step Function -------------
+  CheckoutQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: checkout-queue-status
+  CheckoutTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: SNS Topic for Checkout Flows
+      
   OrderStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
@@ -89,11 +99,18 @@ Resources:
         GetUserCartFunctionArn: !GetAtt GetUserCartFunction.Arn
         PaymentSimulationFunctionArn: !GetAtt PaymentSimulationFunction.Arn
         CheckQuantityFunctionArn: !GetAtt CheckQuantityFunction.Arn
+        CheckPaymentFunctionArn: !GetAtt CheckPaymentFunction.Arn
         CreateOrderFunctionArn: !GetAtt CreateOrderFunction.Arn
         ClearShoppingCartFunctionArn: !GetAtt ClearShoppingCartFunction.Arn
         StepFunctionErrorHandlerFunctionArn: !GetAtt StepFunctionErrorHandlerFunction.Arn
         PaymentFailErrorFunctionArn: !GetAtt PaymentFailErrorFunction.Arn
-        # APIEndpointAddress: !Sub "${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com"
+        SendTaskTokenFunctionArn: !GetAtt SendTaskTokenFunction.Arn
+        SQSThrowErrorFunctionArn: !GetAtt SQSThrowErrorFunction.Arn
+        SNSSendTokenFunctionArn: !GetAtt SNSSendTokenFunction.Arn
+        SNSWaitForTokenFunctionArn: !GetAtt SNSWaitForTokenFunction.Arn
+        AppendSNSTokenFunctionArn: !GetAtt AppendSNSTokenFunction.Arn
+        SNSWaitForTokenFunctionName: !Sub "${SNSWaitForTokenFunction}"
+        SNSTopicArn: !Ref CheckoutTopic
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref GetUserCartFunction
@@ -102,6 +119,8 @@ Resources:
         - LambdaInvokePolicy:
             FunctionName: !Ref CheckQuantityFunction
         - LambdaInvokePolicy:
+            FunctionName: !Ref CheckPaymentFunction
+        - LambdaInvokePolicy:
             FunctionName: !Ref CreateOrderFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref ClearShoppingCartFunction
@@ -109,6 +128,100 @@ Resources:
             FunctionName: !Ref StepFunctionErrorHandlerFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref PaymentFailErrorFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SendTaskTokenFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SQSThrowErrorFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SNSSendTokenFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SNSWaitForTokenFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref AppendSNSTokenFunction
+        - Statement:
+            - Sid: SNSPublishPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref CheckoutTopic
+  SendTaskTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/send-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Role: !GetAtt SendMessageLambdaRole.Arn
+      Environment:
+        Variables:
+          SQSQueueName: !Ref CheckoutQueue
+  SNSSendTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-sns-send-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          SNSTopicName: !Ref CheckoutTopic
+      Policies:
+        - Statement:
+            - Sid: SNSPublishPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref CheckoutTopic
+  SNSWaitForTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-sns-wait-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          SNSTopicName: !Ref CheckoutTopic
+      Policies:
+        - Statement:
+            - Sid: SNSPublishPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref CheckoutTopic
+  SQSThrowErrorFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/sf-throw-sqs-error/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Role: !GetAtt SendMessageLambdaRole.Arn
+      Environment:
+        Variables:
+          SNSTopicName: !Ref CheckoutTopic
+  SendMessageLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: sqs-send-message-policy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt CheckoutQueue.Arn
   GetUserCartFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
@@ -143,6 +256,30 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
       CodeUri: functions/check-quantity/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ "Ref": "lambdaSecurityGroup" }]
+        SubnetIds: [{ "Ref": "PrivateSubnet1" }, { "Ref": "PrivateSubnet2" }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  CheckPaymentFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/check-payment/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
@@ -284,6 +421,20 @@ Resources:
     Properties:
       CodeUri: functions/checkout/
       Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          StateMachineArn: !GetAtt OrderStateMachine.Arn
+          SQSQueueName: !Ref CheckoutQueue
+          SNSTopicName: !Ref CheckoutTopic
+      Architectures:
+        - x86_64
+      Events:
+        Checkout:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/checkout/test # Testing
+            Method: post
       Policies:
         - StepFunctionsExecutionPolicy:
             StateMachineName: !GetAtt OrderStateMachine.Name
@@ -293,18 +444,81 @@ Resources:
               Action:
                 - states:DescribeExecution
               Resource: "*"
+        - Statement:
+            - Sid: SQSReceiveMessagePolicy
+              Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:CreateQueue
+                - sqs:DeleteQueue
+                - sqs:SetQueueAttributes
+              Resource: "*"
+        - Statement:
+            - Sid: SNSSubscribePolicy
+              Effect: Allow
+              Action:
+                - sns:Subscribe
+                - sns:Unsubscribe
+                - sns:ListSubscriptionsByTopic
+              Resource: "*"
+  RetryPaymentFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/retry-payment/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
       Environment:
         Variables:
           StateMachineArn: !GetAtt OrderStateMachine.Arn
-      Runtime: nodejs14.x
+          SQSQueueName: !Ref CheckoutQueue
+          SNSTopicName: !Ref CheckoutTopic
       Architectures:
         - x86_64
       Events:
         Checkout:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/checkout/test # Testing
+            Path: /api/checkout/retry # Testing
             Method: post
+      Policies:
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt OrderStateMachine.Name
+        - Statement:
+            - Sid: StepFunctionsDescribeExecutionPolicy
+              Effect: Allow
+              Action:
+                - states:DescribeExecution
+                - states:SendTaskSuccess
+                - states:SendTaskFailure
+                - states:SendTaskHeartbeat
+              Resource: "*"
+        - Statement:
+            - Sid: SQSReceiveMessagePolicy
+              Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:CreateQueue
+                - sqs:DeleteQueue
+                - sqs:SetQueueAttributes
+              Resource: "*"
+        - Statement:
+            - Sid: SNSSubscribePolicy
+              Effect: Allow
+              Action:
+                - sns:Subscribe
+                - sns:Unsubscribe
+                - sns:ListSubscriptionsByTopic
+              Resource: "*"
+  AppendSNSTokenFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/append-sns-token/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
   FrontendBucket:
     Type: AWS::S3::Bucket
   ListingsFunction:
@@ -361,7 +575,7 @@ Resources:
         SignUp:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /api/signup # Ensure api is proxied with /api/*
+            Path: /api/signup # Ensure  pi is proxied with /api/*
             Method: get # TODO: change this to PUT
 
   ##  ----------------- Database Config -----------------

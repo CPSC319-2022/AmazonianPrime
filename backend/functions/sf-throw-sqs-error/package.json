@@ -8,6 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
+    "mysql": "^2.18.1",
     "uuid": "^9.0.0"
   },
   "scripts": {
