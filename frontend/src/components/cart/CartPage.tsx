@@ -67,11 +67,17 @@ function CartPage() {
   };
 
   const orderSummaryText = <span className="cart__order-summary-title">Order Summary</span>;
+  const clearStorage = () => {
+    sessionStorage.removeItem('arn');
+    sessionStorage.removeItem('taskToken');
+    sessionStorage.removeItem('cartExpiryTime');
+    window.dispatchEvent(new Event('cartExpiryTimeEvent'));
+  };
   const handleCheckoutError = (reason?: string) => {
     setIsCheckingOut(false);
+    clearStorage();
     dispatch(setFailMessage(reason ?? 'Failed to continue with the checkout. Please try again later'));
   };
-
   const handleCheckoutSuccess = () => {
     dispatch(setSuccessMessage("We've got your order! Please check for a confirmation email."));
     setDidCheckout(true);
@@ -108,10 +114,7 @@ function CartPage() {
                   handleCheckoutError();
                   return;
                 }
-                sessionStorage.removeItem('arn');
-                sessionStorage.removeItem('taskToken');
-                sessionStorage.removeItem('cartExpiryTime');
-                window.dispatchEvent(new Event('cartExpiryTimeEvent'));
+                clearStorage();
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
