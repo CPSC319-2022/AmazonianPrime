@@ -12,6 +12,9 @@ var mysql = require('mysql');
  *
  */
 exports.lambdaHandler = async (event, context) => {
+
+  try{
+
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
     'user',
@@ -66,4 +69,9 @@ exports.lambdaHandler = async (event, context) => {
     statusCode: 200,
     body: JSON.stringify(getPayment[0]),
   };
+  } catch (e) {
+    return {
+      statusCode: 500, body: JSON.stringify({error: err.toString()})
+    };
+  }
 };

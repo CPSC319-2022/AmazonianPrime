@@ -14,11 +14,17 @@ const sqs = new AWS.SQS();
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  const messageBody = JSON.stringify({ message: 'Hello, World!' });
-  const queueUrl = process.env.SQSQueueName;
-  await sqs.sendMessage({ MessageBody: messageBody, QueueUrl: queueUrl }).promise();
-  return {
-    statusCode: 200,
-    body: { ...event },
-  };
+  try {
+    const messageBody = JSON.stringify({message: 'Hello, World!'});
+    const queueUrl = process.env.SQSQueueName;
+    await sqs.sendMessage({MessageBody: messageBody, QueueUrl: queueUrl}).promise();
+    return {
+      statusCode: 200,
+      body: {...event},
+    };
+  } catch (e) {
+    return {
+      statusCode: 500, body: JSON.stringify({error: err.toString()})
+    };
+  }
 };

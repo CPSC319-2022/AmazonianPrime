@@ -14,6 +14,7 @@ const sqs = new AWS.SQS();
  *
  */
 exports.lambdaHandler = async (event, context) => {
+  try{
   const stepfunctions = new AWS.StepFunctions();
 
   const {
@@ -64,4 +65,9 @@ exports.lambdaHandler = async (event, context) => {
     statusCode: 200,
     body: JSON.stringify(output),
   };
+  } catch (e) {
+    return {
+      statusCode: 500, body: JSON.stringify({error: err.toString()})
+    };
+  }
 };

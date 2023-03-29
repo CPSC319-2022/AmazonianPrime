@@ -18,6 +18,7 @@ function parseJWT(token) {
  */
 
 exports.lambdaHandler = async (event, context) => {
+  try{
   // ------- Get user from Database -------
   const token = parseJWT(event.pathParameters.token);
 
@@ -73,4 +74,9 @@ exports.lambdaHandler = async (event, context) => {
     statusCode: 200,
     body: JSON.stringify(getUser[0]),
   };
+  } catch (e) {
+    return {
+      statusCode: 500, body: JSON.stringify({error: err.toString()})
+    };
+  }
 };
