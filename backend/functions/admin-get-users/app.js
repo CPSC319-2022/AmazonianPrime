@@ -31,7 +31,7 @@ exports.lambdaHandler = async (event, context) => {
     optNameClause += `WHERE CONCAT(FirstName, LastName) LIKE '%${parsedName}%'`;
   }
 
-  const getNumberOfUsers = `SELECT COUNT(*) FROM Users`;
+  const getNumberOfUsers = `SELECT COUNT(*) FROM Users ${optNameClause}`;
 
   const getUsersCount = await new Promise((resolve, reject) => {
     con.query(getNumberOfUsers, function (err, res) {
