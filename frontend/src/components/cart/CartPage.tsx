@@ -220,7 +220,7 @@ function CartPage() {
                           {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
                         </span>
                         <span className="expiry-date">
-                          {`Expire${isExpired ? 'd' : 's'} on`}&nbsp;{payment.ExpiryDate}
+                          {`Expire${isExpired ? 'd' : 's'} on`}&nbsp;{payment.ExpiryDate.replaceAll(' ', '')}
                         </span>
                       </div>
                       <div>
@@ -269,7 +269,7 @@ function CartPage() {
               <span className="cart__order-summary-half-border"></span>
               {getSummaryHeading(
                 `Subtotal (${cartItems?.TotalQuantity} items) Before Tax`,
-                `$${costToString(subtotal)}`,
+                `$${costToString(Number((Math.round(Number(subtotal) * 100) / 100).toFixed(2)))}`,
               )}
               {getSummaryHeading('Estimated GST/HST', '$0.00')}
               {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
