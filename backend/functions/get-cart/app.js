@@ -67,10 +67,10 @@ exports.lambdaHandler = async (event, context) => {
     shoppingCartItem.Listing.ImagePreview = S3ImagePath;
     Response.TotalQuantity += shoppingCartItem.Quantity;
     if(ListingData.ItemCondition === "New") {
-      pst += ListingData.Cost * 0.07;
-      gst += ListingData.Cost * 0.05;
+      pst += shoppingCartItem.Quantity * ListingData.Cost * 0.07;
+      gst += shoppingCartItem.Quantity * ListingData.Cost * 0.05;
     }
-    subtotal += ListingData.Cost;
+    subtotal += shoppingCartItem.Quantity * ListingData.Cost;
   }
   total += subtotal + pst + gst;
 
