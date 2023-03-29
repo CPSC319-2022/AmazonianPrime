@@ -116,7 +116,9 @@ function UsersPage() {
         count={
           filteredData?.data
             ? Math.ceil(Number(filteredData.data.TotalUsers) / 8.0)
-            : Math.ceil(Number(data?.TotalUsers) / 8.0)
+            : data
+            ? Math.ceil(Number(data.TotalUsers) / 8.0)
+            : 1
         }
         page={Number(page) ? Number(page) : 1}
         onChange={handlePageChange}
