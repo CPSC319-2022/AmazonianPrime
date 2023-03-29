@@ -20,6 +20,7 @@ import { setFailMessage, setSuccessMessage } from './redux/reducers/appSlice';
 import { ManageProfile } from './components/manage-profile/ManageProfile';
 import { modifyIsSellerRegistered, setIsSellerRegistered } from './redux/reducers/sellerModalSlice';
 import { useGetBankingQuery } from './redux/api/user';
+import PrivateAdminRoute from './PrivateAdminRoute';
 
 const AppWrapper = () => {
   const user = useAppSelector((state) => state.user.value);
@@ -90,7 +91,14 @@ const AppWrapper = () => {
         <Route path="/listing/:listingId" element={<ProductDetailsPage />} />
         <Route path="/browse" element={<BrowsePage />} />
         <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/users" element={<UsersPage />} />
+        <Route
+          path="/users"
+          element={
+            <PrivateAdminRoute>
+              <UsersPage />
+            </PrivateAdminRoute>
+          }
+        />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/my-listings" element={<MyListings />} />
         <Route path="/manage-profile" element={<ManageProfile />} />

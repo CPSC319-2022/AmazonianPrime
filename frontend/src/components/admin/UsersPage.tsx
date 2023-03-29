@@ -36,26 +36,11 @@ function UsersPage() {
   useEffect(() => {
     if (data) {
       dispatch(setUsers(data));
-      dispatch(setIsLoadingUsers({ isLoadingListings: false }));
+      dispatch(setIsLoadingUsers({ isLoadingUsers: false }));
     } else {
-      dispatch(setIsLoadingUsers({ isLoadingListings: true }));
+      dispatch(setIsLoadingUsers({ isLoadingUsers: true }));
     }
   }, [data]);
-
-  const [searchInput, setSearchInput] = useState('');
-  const [validatedSearchInput, setValidatedSearchInput] = useState('');
-
-  const departments = [
-    'Marketing',
-    'Sales',
-    'Development',
-    'UX Design',
-    'Human Resources',
-    'Legal',
-    'DevOps',
-    'IT',
-    'Security',
-  ];
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -69,7 +54,6 @@ function UsersPage() {
     const tokenizedSearchInput = value.split(' ');
     const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
     const dashSeperatedInput = firstTwoTokens.join('-');
-    setValidatedSearchInput(dashSeperatedInput);
     getUsersByName({
       page: page == null || Number(page) <= 0 ? 1 : Number(page),
       name: dashSeperatedInput,
@@ -77,7 +61,6 @@ function UsersPage() {
   }
 
   const changeHandler = (event: any) => {
-    setSearchInput(event.target?.value);
     searchForUsers(event.target?.value);
   };
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);

@@ -29,11 +29,13 @@ export const AccountButton = () => {
       if (setPrivelege) {
         setPrivelege(false);
       }
+      navigate('/');
       setToastMessage('You have successfully switched modes. You are now acting as a User.');
     } else if (category === 'Switch to Admin Privileges') {
       if (setPrivelege) {
         setPrivelege(true);
       }
+      navigate('/');
       setToastMessage('You have successfully switched modes. You are now acting as an Administrator.');
     } else {
       navigate(`${getSlugCategory(category)}?page=1`);

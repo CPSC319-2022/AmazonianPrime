@@ -14,9 +14,9 @@ const UsersGrid: React.FC<UsersGridProps> = ({ users }) => {
   return (
     <div className="users-grid__container">
       <Grid container className="users__container-grid" columns={1}>
-        {(!isLoading ? users : Array(8).fill(0))?.map((user: UserType, index) => {
+        {(!isLoading ? users : Array(8).fill(null))?.map((user: UserType | null, index) => {
           // don't show the current user
-          if (currentUser?.UserID === user.UserID) {
+          if (currentUser?.UserID === user?.UserID) {
             return null;
           }
           return (

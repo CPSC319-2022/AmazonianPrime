@@ -1,4 +1,14 @@
-import { Button, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
+import {
+  Button,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Snackbar,
+  Alert,
+  Skeleton,
+} from '@mui/material';
 import './User.scss';
 import { useChangePrivilegeLevelMutation, useRemoveUserMutation } from '../../redux/api/admin';
 import { useAppSelector } from '../../redux/store';
@@ -7,15 +17,38 @@ import CloseIcon from '@mui/icons-material/Close';
 import { CheckCircleOutline } from '@mui/icons-material/';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { useState } from 'react';
+import { UserDisplayName } from '../common/UserDisplayName';
 
 interface UserProps {
-  user: UserType;
+  user: UserType | null;
 }
 
 const User: React.FC<UserProps> = ({ user }) => {
   const thisUserID = useAppSelector((state) => state.user.value?.UserID);
   const [changePrivilege] = useChangePrivilegeLevelMutation();
   const [removeUser] = useRemoveUserMutation();
+  const [openConfirmDelete, setConfirmDelete] = useState(false);
+  const [openErrorToast, setErrorToast] = useState(false);
+  if (!user) {
+    return (
+      <div>
+        <Grid item xs={1} marginTop={3} className="user">
+          <div className="user__skeleton">
+            <div className="product-details-skeleton__user">
+              <Skeleton className="product-details-skeleton__user-icon" variant="circular" width={40} height={40} />
+              <Skeleton variant="text" sx={{ fontSize: '2em' }} width={100} />
+            </div>
+            <Skeleton variant="text" sx={{ fontSize: '1.2em' }} width={250} />
+          </div>
+          <div className="user__skeleton-buttons">
+            <Skeleton className="user__skeleton-button" variant="text" sx={{ fontSize: '2em' }} width={125} />
+            <Skeleton className="user__skeleton-button" variant="text" sx={{ fontSize: '2em' }} width={125} />
+          </div>
+        </Grid>
+      </div>
+    );
+  }
+
   const { FirstName, LastName, Department, IsAdmin, Email, UserID } = user;
 
   async function swapPrivilegeLevel() {
@@ -43,9 +76,6 @@ const User: React.FC<UserProps> = ({ user }) => {
     }
   }
 
-  const [openConfirmDelete, setConfirmDelete] = useState(false);
-  const [openErrorToast, setErrorToast] = useState(false);
-
   const handleConfirm = () => {
     deleteUser();
     setConfirmDelete(false);
@@ -64,9 +94,9 @@ const User: React.FC<UserProps> = ({ user }) => {
       <Grid item xs={1} marginTop={3} className="user">
         <div>
           <div className="user__username">
-            {FirstName} {LastName}
-            {Department ? `, ${Department}` : ''}
+            <UserDisplayName user={user} />
           </div>
+          <div className="user__user-admin-information"> {IsAdmin ? 'Administrator' : 'User'}</div>
           <div className="user__user-information">{Email}</div>
         </div>
         <div className="user__buttons">
@@ -99,7 +129,7 @@ const User: React.FC<UserProps> = ({ user }) => {
           </p>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={handleCancel} color="primary">
+          <Button variant="text" onClick={handleCancel} color="primary">
             Cancel
           </Button>
           <Button variant="contained" onClick={handleConfirm} color="secondary">
