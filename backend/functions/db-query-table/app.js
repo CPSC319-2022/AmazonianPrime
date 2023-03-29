@@ -52,6 +52,8 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(tablesList);
 
+  await dbConnection.disconnectDB(con);
+
   return {
     statusCode: 200,
     body: JSON.stringify(tablesList),

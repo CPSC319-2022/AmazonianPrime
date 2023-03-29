@@ -49,6 +49,8 @@ exports.lambdaHandler = async (event, context) => {
     }
   }
 
+  await dbConnection.disconnectDB(con);
+
   return {
     statusCode: 200,
     body: { ...event, "ValidPayment": validPayment},

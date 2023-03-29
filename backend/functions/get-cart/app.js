@@ -80,6 +80,9 @@ exports.lambdaHandler = async (event, context) => {
   Response.TotalCost = total.toFixed(2);
   Response.Items = Items;
   console.log(Response);
+
+  await dbConnection.disconnectDB(con);
+  
   return {
     statusCode: 200,
     body: JSON.stringify(Response),
