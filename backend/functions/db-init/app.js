@@ -11,6 +11,7 @@ var mysql = require('mysql');
  *
  */
 exports.lambdaHandler = async (event, context) => {
+  try{
   console.log('--- Initializing DB Tables ---');
 
   console.log('Connecting to database...');
@@ -290,4 +291,9 @@ exports.lambdaHandler = async (event, context) => {
   return {
     status: 'SUCCESS',
   };
+  } catch (e) {
+    return {
+      statusCode: 500, body: JSON.stringify({error: err.toString()})
+    };
+  }
 };

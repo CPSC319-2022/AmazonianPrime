@@ -14,6 +14,9 @@ const sqs = new AWS.SQS();
  *
  */
 exports.lambdaHandler = async (event, context) => {
+    try{
+
+
   const topicArn = process.env.SNSTopicName;
   const TransactionID = event['TransactionID'];
     
@@ -44,4 +47,9 @@ exports.lambdaHandler = async (event, context) => {
     statusCode: 200,
     body: { ...event },
   };
+    } catch (e) {
+        return {
+            statusCode: 500, body: JSON.stringify({error: err.toString()})
+        };
+    }
 };

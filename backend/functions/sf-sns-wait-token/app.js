@@ -15,6 +15,7 @@ const sns = new AWS.SNS();
  *
  */
 exports.lambdaHandler = async (event, context) => {
+    try{
   const topicArn = process.env.SNSTopicName;
   const body = event['input']['body'];
   const TransactionID = body['TransactionID'];
@@ -48,4 +49,9 @@ exports.lambdaHandler = async (event, context) => {
         statusCode: 200,
         body: { ...body },
       };
+    } catch (e) {
+        return {
+            statusCode: 500, body: JSON.stringify({error: err.toString()})
+        };
+    }
 };

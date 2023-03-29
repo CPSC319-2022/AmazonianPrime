@@ -17,6 +17,7 @@ const {
  *
  */
 exports.lambdaHandler = async (event, context) => {
+  try{
   const Items = event['Items'];
 
   if (Items.length < 1) {
@@ -40,4 +41,9 @@ exports.lambdaHandler = async (event, context) => {
     statusCode: 200,
     body: { ...event },
   };
+  } catch (e) {
+    return {
+      statusCode: 500, body: JSON.stringify({error: err.toString()})
+    };
+  }
 };
