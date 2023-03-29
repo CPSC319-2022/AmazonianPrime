@@ -19,14 +19,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetUsersQuery, useLazyGetUsersQuery } from '../../redux/api/admin';
 import { useCallback, useEffect, useState } from 'react';
 import Breadcrumbs from '../common/Breadcrumbs';
+import { useAppSelector } from '../../redux/store';
 
 function UsersPage() {
+  const paginatedUsers = useAppSelector((state) => state.admin.users);
+  const [nameQuery, setNameQuery] = useState('');
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const [getUsersByName, filteredData] = useLazyGetUsersQuery();
   const { data, isLoading } = useGetUsersQuery({
     page: page == null || Number(page) <= 0 ? 1 : Number(page),
-    name: '',
+    name: nameQuery,
   });
 
   useEffect(() => {
@@ -46,7 +49,7 @@ function UsersPage() {
   const dispatch = useDispatch();
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    dispatch(setIsLoadingUsers({ isLoadingListings: true }));
+    dispatch(setIsLoadingUsers({ isLoadingUsers: true }));
     navigate(`?page=${value}`);
   };
 
@@ -54,10 +57,13 @@ function UsersPage() {
     const tokenizedSearchInput = value.split(' ');
     const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
     const dashSeperatedInput = firstTwoTokens.join('-');
+    setNameQuery(dashSeperatedInput);
+
     getUsersByName({
       page: page == null || Number(page) <= 0 ? 1 : Number(page),
       name: dashSeperatedInput,
     });
+    navigate(`?page=1`);
   }
 
   const changeHandler = (event: any) => {
@@ -103,11 +109,17 @@ function UsersPage() {
             }}
           />
         </Grid>
-        <UsersGrid users={filteredData?.data ? filteredData.data.Data : data?.Data} />
+        <UsersGrid users={paginatedUsers?.Data} />
       </Grid>
       <Pagination
         className="gallery__pagination"
-        count={Number(data ? Math.ceil(Number(data.TotalUsers) / 8) : 1)}
+        count={
+          filteredData?.data
+            ? Math.ceil(Number(filteredData.data.TotalUsers) / 8.0)
+            : data
+            ? Math.ceil(Number(data.TotalUsers) / 8.0)
+            : 1
+        }
         page={Number(page) ? Number(page) : 1}
         onChange={handlePageChange}
       />
