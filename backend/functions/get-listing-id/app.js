@@ -58,6 +58,8 @@ exports.lambdaHandler = async (event, context) => {
   const { FirstName, LastName, Email, Department, ...ListingData } =
     getListingByID[0];
 
+  await dbConnection.disconnectDB(con);
+
   return {
     statusCode: 200,
     body: JSON.stringify({

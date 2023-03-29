@@ -82,6 +82,8 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
+  await dbConnection.disconnectDB(con);
+
   return {
     statusCode: 200,
     body: JSON.stringify(getShoppingCartItemByID[0]),

@@ -74,6 +74,8 @@ exports.lambdaHandler = async (event, context) => {
   Response.Items = Items;
   console.log(Response);
 
+  await dbConnection.disconnectDB(con);
+
   return {
     statusCode: 200,
     body: { ...Response, ...event },
