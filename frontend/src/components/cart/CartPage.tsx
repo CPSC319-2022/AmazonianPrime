@@ -219,8 +219,9 @@ function CartPage() {
                         <span className="address__grey">
                           {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
                         </span>
-                        &nbsp;{`expire${isExpired ? 'd' : 's'} on`}&nbsp;
-                        <span className="address__grey">{payment.ExpiryDate}</span>
+                        <span className="expiry-date">
+                          {`Expire${isExpired ? 'd' : 's'} on`}&nbsp;{payment.ExpiryDate}
+                        </span>
                       </div>
                       <div>
                         <span className="address-change__button-billing">Billing Address&nbsp;</span>
