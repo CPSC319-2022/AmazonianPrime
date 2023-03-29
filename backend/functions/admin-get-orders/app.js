@@ -21,8 +21,29 @@ exports.lambdaHandler = async (event, context) => {
   
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
+  const OrderID = event.queryStringParameters.orderId;
+  const UserID = event.queryStringParameters.userId;
 
-  var getOrdersQuery = `SELECT * FROM Orders LIMIT ${limit} OFFSET ${offset}`;
+  var options = [];
+
+  if (UserID != null && UserID !== undefined) {
+    options.push(`UserID = ${UserID}`);
+  }
+  if (OrderID != null && OrderID !== undefined) {
+    options.push(`OrderID = ${OrderID}`);
+  }
+
+  let whereClause;
+
+  if (options.length > 0) {
+    whereClause = options.reduce((a, b) => {
+      return a + ' AND ' + b;
+    });
+  }
+
+  var getOrdersQuery = `SELECT * FROM Orders ${
+    whereClause !== undefined ? `WHERE ${whereClause} ` : ''
+  }LIMIT ${limit} OFFSET ${offset}`;
 
   const Orders = await new Promise((resolve, reject) => {
     con.query(getOrdersQuery, function (err, res) {
