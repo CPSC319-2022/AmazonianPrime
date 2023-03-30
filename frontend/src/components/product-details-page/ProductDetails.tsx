@@ -59,7 +59,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
     setSelectQuantity(value);
   };
 
-  if (!listing || !listing.IsActiveListing) {
+  if (!listing || !listing?.IsActiveListing) {
     // TODO: add no results page
     if (isLoading) {
       return <ProductDetailsSkeleton />;
