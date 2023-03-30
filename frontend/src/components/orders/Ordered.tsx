@@ -1,15 +1,13 @@
 import { Grid } from "@mui/material";
-import { useAppSelector } from "../../redux/store";
+import { Order } from "../../types/order";
 import './Ordered.scss';
 
-    function Ordered() {
-    // Todo: const orders = useAppSelector((state) => state.orders...);
-    // if (!orders) {
-    //   return null;
-    // }
+interface OrderedProps {
+  orders: Order[] | undefined;
+}
 
-    //dummy data
-    const dummyOrders: { src: string, name: string, sellor: string, buyer: string, deliveryMethod: string, delivered: boolean}[] = [
+export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
+  const dummyOrders: { src: string, name: string, sellor: string, buyer: string, deliveryMethod: string, delivered: boolean}[] = [
     {src: "", name: "Item 1", sellor: "Sellor1 Name", buyer: "Buyer Name", deliveryMethod: "Pickup", delivered: false},
     {src: "", name: "Item 2", sellor: "Sellor2 Name", buyer: "Buyer Name", deliveryMethod: "Delivery", delivered: false},
     {src: "", name: "Item 3", sellor: "Sellor3 Name", buyer: "Buyer Name", deliveryMethod: "Pickup", delivered: true},
@@ -22,6 +20,7 @@ import './Ordered.scss';
       return filtered;
     }, []);
 
+    //once set up should be able to delete the above and map the orders parameter
     return (
     <>
         {(filteredOrder).map(({src, name, sellor, buyer, deliveryMethod, delivered}) => (
@@ -29,7 +28,7 @@ import './Ordered.scss';
         ))}
     </>
     );
-  };
+}
 
   function Contents(order: {src:string, name:string, sellor:string, buyer:string, deliveryMethod:string, delivered:boolean}) {
     return (
@@ -49,5 +48,3 @@ import './Ordered.scss';
       </>
       );
   };
-
-export default Ordered;

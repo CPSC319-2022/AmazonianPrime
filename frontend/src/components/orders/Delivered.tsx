@@ -1,7 +1,12 @@
 import { Grid } from "@mui/material";
+import { Order } from "../../types/order";
 import './Delivered.scss';
 
-function Delivered() {
+interface DeliveredProps {
+  orders: Order[] | undefined;
+}
+
+export const Delivered: React.FC<DeliveredProps> = ({ orders }) => {
   const dummyOrders: { src: string, name: string, sellor: string, buyer: string, deliveryMethod: string, delivered: boolean}[] = [
   {src: "", name: "Item 1", sellor: "Sellor1 Name", buyer: "Buyer Name", deliveryMethod: "Pickup", delivered: false},
   {src: "", name: "Item 2", sellor: "Sellor2 Name", buyer: "Buyer Name", deliveryMethod: "Delivery", delivered: false},
@@ -43,5 +48,3 @@ function Contents(order: {src:string, name:string, sellor:string, buyer:string, 
     </>
     );
 };
-
-export default Delivered;
