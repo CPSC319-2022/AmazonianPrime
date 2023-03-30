@@ -1,0 +1,37 @@
+{
+    "Comment": "A state machine that handles the email sending workflow",
+    "StartAt": "SendOrderConfirmationEmail",
+    "States": {
+        "SendOrderConfirmationEmail": {
+            "Type": "Task",
+            "InputPath": "$.body",
+            "Resource": "${SendOrderConfirmationEmailArn}",
+            "Next": "WaitOnOrder"
+        },
+        "WaitOnOrder": {
+            "Type": "Wait",
+            "Seconds": 30,
+            "Next": "SendShippedEmail"
+        },
+        "SendShippedEmail": {
+            "Type": "Task",
+            "InputPath": "$.body",
+            "Resource": "${SendShippedEmailArn}",
+            "Next": "WaitOnShipped"
+        },
+        "WaitOnShipped": {
+            "Type": "Wait",
+            "Seconds": 30,
+            "Next": "SendPackageDeliveredEmail"
+        },
+        "SendPackageDeliveredEmail": {
+            "Type": "Task",
+            "InputPath": "$.body",
+            "Resource": "${SendPackageDeliveredEmailArn}",
+            "Next": "DeliverySuccess"
+        },
+        "DeliverySuccess": {
+            "Type": "Succeed"
+        }
+    }
+}

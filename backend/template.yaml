@@ -20,30 +20,30 @@ Parameters:
     Type: String
 
 Resources:
-  FrontendBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      PolicyDocument:
-        Id: MyPolicy
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
-            Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
-          - Effect: Allow
-            Principal:
-              AWS:
-                - !Ref PipelineRole
-            Action:
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-            Resource: !Sub
-              - "arn:aws:s3:::${Bucket}/*"
-              - Bucket: !Ref FrontendBucket
-      Bucket: !Ref FrontendBucket
+  # FrontendBucketPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     PolicyDocument:
+  #       Id: MyPolicy
+  #       Version: 2012-10-17
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal: "*"
+  #           Action: "s3:GetObject"
+  #           Resource: !Sub
+  #             - "arn:aws:s3:::${Bucket}/*"
+  #             - Bucket: !Ref FrontendBucket
+  #         - Effect: Allow
+  #           Principal:
+  #             AWS:
+  #               - !Ref PipelineRole
+  #           Action:
+  #             - "s3:PutObject"
+  #             - "s3:DeleteObject"
+  #           Resource: !Sub
+  #             - "arn:aws:s3:::${Bucket}/*"
+  #             - Bucket: !Ref FrontendBucket
+  #     Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
@@ -577,6 +577,98 @@ Resources:
           Properties:
             Path: /api/signup # Ensure  pi is proxied with /api/*
             Method: get # TODO: change this to PUT
+
+  ##  ----------------- Email Step Function -----------------
+  EmailStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Type: STANDARD #why are we using express?
+      DefinitionUri: statemachine/email_workflow.asl.json
+      DefinitionSubstitutions:
+        SendOrderConfirmationEmailArn: !GetAtt SendOrderConfirmationEmail.Arn
+        SendShippedEmailArn: !GetAtt SendShippedEmail.Arn
+        SendPackageDeliveredEmailArn: !GetAtt SendPackageDeliveredEmail.Arn
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SendOrderConfirmationEmail
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SendShippedEmail
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SendPackageDeliveredEmail
+  SendOrderConfirmationEmail:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/send-order/
+      Handler: app.lambdaHandler
+      Role: !GetAtt EmailSenderFunctionRole.Arn
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Architectures:
+        - x86_64
+  SendShippedEmail:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/send-shipped/
+      Handler: app.lambdaHandler
+      Role: !GetAtt EmailSenderFunctionRole.Arn
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Architectures:
+        - x86_64
+  SendPackageDeliveredEmail:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/send-delivered/
+      Handler: app.lambdaHandler
+      Role: !GetAtt EmailSenderFunctionRole.Arn
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Architectures:
+        - x86_64
+  EmailSenderFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SESPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                  - ses:SendRawEmail
+                Resource: "*"
+        - PolicyName: EC2AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                Resource: "*"
+        - PolicyName: CloudWatchPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
 
   ##  ----------------- Database Config -----------------
   rdsEC2VPC:
