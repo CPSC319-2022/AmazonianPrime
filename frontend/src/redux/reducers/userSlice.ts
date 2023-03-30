@@ -37,6 +37,10 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
       } else {
         sessionStorage.removeItem('user');
         state.value = null;
+        state.paymentAddress = null;
+        state.shippingAddress = null;
+        state.preferredShippingAddressIndex = 0;
+        state.paymentAddress = null;
       }
     },
     setPayment: (state: UserState, action: Action) => {
