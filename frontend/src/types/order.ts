@@ -1,13 +1,11 @@
 import { ListingPreview } from "./listingPreview";
 
 export interface Order {
-    OrderID: number;
-    UserID: number;
-    ListingID?: number;
-    Listing?: ListingPreview;
-    Quantity: number;
-    DeliveryMethod: string;
-    Delivered: boolean;
+    src: string;
+    name: string[];
+    sellor: string;
+    buyer: string;
+    deliveryMethod: string;
+    delivered: boolean;
   }
 
-  

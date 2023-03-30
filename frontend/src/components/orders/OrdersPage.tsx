@@ -13,11 +13,7 @@ import { useAppSelector } from '../../redux/store';
 import NoContent from '../common/NoContent';
 
 function OrdersPage() {
-  const dummyOrders: Order[] = [
-    {OrderID: 1, UserID: 1, ListingID: 1, Listing: undefined, Quantity: 1, DeliveryMethod: "Pickup", Delivered: false},
-    {OrderID: 2, UserID: 2, ListingID: 2, Listing: undefined, Quantity: 1, DeliveryMethod: "Delivery", Delivered: false},
-    {OrderID: 3, UserID: 3, ListingID: 3, Listing: undefined, Quantity: 1, DeliveryMethod: "Pickup", Delivered: true},
-    {OrderID: 4, UserID: 4, ListingID: 4, Listing: undefined, Quantity: 1, DeliveryMethod: "Delivery", Delivered: true}];
+  const dummyOrders: Order[] = [];
 
     const user = useAppSelector((state) => state.user.value);
     const [searchParams] = useSearchParams();
@@ -73,20 +69,6 @@ function OrdersPage() {
     };
     const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
 
-    var filterOrdered = dummyOrders.reduce(function(filtered: Order[], order) {
-      if (!order.Delivered) {
-         filtered.push(order);
-      } 
-      return filtered;
-    }, []);
-
-    var filterDelivered = dummyOrders.reduce(function(filtered: Order[],  order) {
-      if (order.Delivered) {
-         filtered.push(order);
-      } 
-      return filtered;
-    }, []);
-
   return (<div className="orders-page">
     <div className="orders">
       Orders
@@ -125,8 +107,6 @@ function OrdersPage() {
           }}
         />
       </Grid>
-      <Ordered orders={filterOrdered}/>
-      <Delivered orders={filterDelivered}/>
     </Grid>
     
   </div>
