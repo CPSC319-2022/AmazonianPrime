@@ -1,6 +1,7 @@
 import { useAppSelector } from '../../redux/store';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './CartPage.scss';
+// @ts-ignore
+import ConfettiExplosion, { ConfettiProps } from 'react-confetti-explosion';
 import { Button, Grid, Skeleton } from '@mui/material';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { AddressChange } from './AddressChange';
@@ -11,10 +12,20 @@ import { CartItem } from './CartItem';
 import Breadcrumbs from '../common/Breadcrumbs';
 import { useState } from 'react';
 import { useGetPaymentsQuery, useGetShippingAddressQuery } from '../../redux/api/user';
+import { useCheckoutMutation, useRetryCheckoutMutation } from '../../redux/api/shoppingCart';
+import { useDispatch } from 'react-redux';
+import { setFailMessage, setQueueMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
+import { LoadingButton } from '@mui/lab';
+import moment from 'moment';
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
-  const [selectedAddress, setSelectedAddress] = useState(0);
+  const [checkout] = useCheckoutMutation();
+  const [retryCheckout] = useRetryCheckoutMutation();
+  const [didCheckout, setDidCheckout] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const preferredShippingAddressIndex = useAppSelector((state) => state.user.preferredShippingAddressIndex);
+  const [selectedAddress, setSelectedAddress] = useState(preferredShippingAddressIndex ?? 0);
   const { data: shippingAddresses } = useGetShippingAddressQuery(user?.UserID || '');
   const { data: payments } = useGetPaymentsQuery(user?.UserID || '');
   const [selectedPayment, setSelectedPayment] = useState(0);
@@ -22,6 +33,7 @@ function CartPage() {
   const { sticky, stickyRef } = useSticky(45);
   const cartItems = useAppSelector((state) => state.cart.items);
   const isLoading = useAppSelector((state) => state.cart.isLoading) || !cartItems;
+  const dispatch = useDispatch();
 
   const cartSummaryClass = sticky ? ' cart__order-summary-sticky' : '';
 
@@ -55,19 +67,99 @@ function CartPage() {
   };
 
   const orderSummaryText = <span className="cart__order-summary-title">Order Summary</span>;
+  const clearStorage = () => {
+    sessionStorage.removeItem('arn');
+    sessionStorage.removeItem('taskToken');
+    sessionStorage.removeItem('cartExpiryTime');
+    window.dispatchEvent(new Event('cartExpiryTimeEvent'));
+  };
+  const handleCheckoutError = (reason?: string) => {
+    setIsCheckingOut(false);
+    clearStorage();
+    dispatch(setFailMessage(reason ?? 'Failed to continue with the checkout. Please try again later'));
+  };
+  const handleCheckoutSuccess = () => {
+    dispatch(setSuccessMessage("We've got your order! Please check for a confirmation email."));
+    setDidCheckout(true);
+    setIsCheckingOut(false);
+  };
   const placeOrderButton = (disabled?: boolean) => (
-    <Button
-      onClick={() => alert('TODO')}
-      disabled={disabled || cartItems?.TotalQuantity === 0}
-      startIcon={<ShoppingCartCheckoutIcon sx={{ fontSize: '1.2em' }} />}
-      className="cart__checkout-button"
-      size="small"
-      fullWidth
-      color="secondary"
-      variant="contained"
-    >
-      Place Your Order
-    </Button>
+    <div className="confetti-button">
+      {didCheckout && <ConfettiExplosion duration={2800} />}
+      <LoadingButton
+        loading={isCheckingOut}
+        onClick={() => {
+          const cartExpiry = sessionStorage.getItem('cartExpiryTime');
+          const now = new Date();
+          const checkoutAddress = shippingAddresses && shippingAddresses[selectedAddress];
+          const checkoutPayment = payments && payments[selectedPayment];
+          setIsCheckingOut(true);
+          dispatch(setQueueMessage('Hang tight while we process your payment!'));
+          if (!checkoutAddress || !checkoutPayment) {
+            setIsCheckingOut(false);
+            return;
+          }
+          if (moment(now).isBefore(cartExpiry)) {
+            retryCheckout({
+              UserID: user?.UserID || '',
+              body: {
+                TaskToken: sessionStorage.getItem('taskToken') || '',
+                ExecutionArn: sessionStorage.getItem('arn') || '',
+                PaymentID: checkoutPayment.PaymentID,
+              },
+            })
+              .unwrap()
+              .then((result) => {
+                if (result.status === 400) {
+                  handleCheckoutError();
+                  return;
+                }
+                clearStorage();
+                handleCheckoutSuccess();
+              })
+              .catch((e: any) => {
+                handleCheckoutError();
+              });
+          } else {
+            checkout({
+              UserID: user?.UserID || '',
+              AddressID: checkoutAddress.AddressID,
+              PaymentID: checkoutPayment.PaymentID,
+            })
+              .unwrap()
+              .then((result) => {
+                if (result.TaskToken) {
+                  handleCheckoutError(
+                    'We encountered an issue with the transaction. Please modify your payment details while we hold your items.',
+                  );
+                  sessionStorage.setItem('arn', result.ExecutionArn);
+                  sessionStorage.setItem('taskToken', result.TaskToken);
+                  sessionStorage.setItem('cartExpiryTime', result.ExpiryTime);
+                  window.dispatchEvent(new Event('cartExpiryTimeEvent'));
+                  return;
+                }
+                if (result.status === 400) {
+                  handleCheckoutError();
+                  return;
+                }
+                handleCheckoutSuccess();
+              })
+              .catch((e: any) => {
+                handleCheckoutError();
+              });
+          }
+        }}
+        disabled={disabled || cartItems?.TotalQuantity === 0}
+        startIcon={<ShoppingCartCheckoutIcon sx={{ fontSize: '1.2em' }} />}
+        className="cart__checkout-button"
+        size="small"
+        fullWidth
+        color="secondary"
+        variant="contained"
+      >
+        Place Your Order
+      </LoadingButton>
+    </div>
   );
 
   const cartTotalSkeleton = (
@@ -83,14 +175,15 @@ function CartPage() {
     </div>
   );
 
+  const noContent = didCheckout ? null : <NoContent message="Looks like your Cart is empty!" fixedPosition={false} />;
+
   const renderCartItems = () => {
-    return cartItems && cartItems.TotalQuantity > 0 && !isLoading ? (
-      cartItems?.Items.map((order, index) => <CartItem key={index} order={order} />)
-    ) : (
-      <NoContent message="Looks like your Cart is empty!" fixedPosition={false} />
-    );
+    return cartItems && cartItems.TotalQuantity > 0 && !isLoading
+      ? cartItems?.Items.map((order, index) => <CartItem key={index} order={order} />)
+      : noContent;
   };
 
+  const today = new Date();
   return (
     <div>
       <Breadcrumbs />
@@ -108,7 +201,7 @@ function CartPage() {
               setSelectedAddress={setSelectedAddress}
               addresses={
                 shippingAddresses?.map((address) => {
-                  return `${address.StreetAddress} ${address.Province}`;
+                  return `${address.StreetAddress}, ${address.CityName} ${address.Province}`;
                 }) || []
               }
               selectedPayment={selectedPayment}
@@ -116,12 +209,18 @@ function CartPage() {
               payments={
                 payments?.map((payment) => {
                   const creditNumber = payment.CreditCardNum.toString();
+                  const [month, year] = payment.ExpiryDate.split('/');
+                  const expiryDate = moment({ year: Number('20' + year), month: Number(month), day: 1 });
+                  const isExpired = moment(today).isAfter(expiryDate);
                   return (
                     <>
                       <div>
                         Credit Card ending in{' '}
                         <span className="address__grey">
                           {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
+                        </span>
+                        <span className="expiry-date">
+                          {`Expire${isExpired ? 'd' : 's'} on`}&nbsp;{payment.ExpiryDate.replaceAll(' ', '')}
                         </span>
                       </div>
                       <div>
@@ -135,7 +234,7 @@ function CartPage() {
               }
             />
             <div className="cart__items-quantity">
-              3&nbsp;&nbsp;{`Review Items (${cartItems?.TotalQuantity || 0} items)`}
+              3&nbsp;&nbsp;Review Items&nbsp;{cartItems && `(${cartItems?.TotalQuantity || 0} items)`}
             </div>
           </div>
           {isLoading
@@ -170,12 +269,16 @@ function CartPage() {
               <span className="cart__order-summary-half-border"></span>
               {getSummaryHeading(
                 `Subtotal (${cartItems?.TotalQuantity} items) Before Tax`,
-                `$${costToString(subtotal)}`,
+                `$${costToString(Number((Math.round(Number(subtotal) * 100) / 100).toFixed(2)))}`,
               )}
               {getSummaryHeading('Estimated GST/HST', '$0.00')}
               {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
               <span className="cart__order-summary-border"></span>
-              {getSummaryHeading('Order Total', `$${costToString(subtotal)}`, true)}
+              {getSummaryHeading(
+                'Order Total',
+                `$${costToString(Number((Math.round(Number(subtotal) * 100) / 100).toFixed(2)))}`,
+                true,
+              )}
               {placeOrderButton()}
             </div>
           )}

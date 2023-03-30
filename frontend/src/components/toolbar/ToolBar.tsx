@@ -46,6 +46,11 @@ function ToolBar() {
                     Sell
                   </Button>
                 )}
+                {isAdminPrivelegeRequested && (
+                  <Button color="secondary" className="toolbar__button" onClick={() => navigate('/users')}>
+                    Users
+                  </Button>
+                )}
                 <Button className="toolbar__button" onClick={() => navigate('/orders')}>
                   Orders
                 </Button>
@@ -55,17 +60,20 @@ function ToolBar() {
               <SearchBar />
             </Grid>
             <Grid item xs={2} container direction="row" justifyContent="flex-end" alignItems="center">
-              <div className="cart-container">
-                <IconButton color="primary" component="label" onClick={() => navigate('/cart')}>
-                  <ShoppingCartIcon sx={{ fontSize: 30 }} />
-                </IconButton>
-                <span
-                  className="cart-quantity"
-                  style={{ width: size, height: size, fontSize: cartItems?.TotalQuantity === 0 ? '0' : '15px' }}
-                >
-                  {cartItems?.TotalQuantity || (0 > 0 && cartItems?.TotalQuantity)}
-                </span>
-              </div>
+              {!isAdminPrivelegeRequested && (
+                <div className="cart-container">
+                  <IconButton color="primary" component="label" onClick={() => navigate('/cart')}>
+                    <ShoppingCartIcon sx={{ fontSize: 30 }} />
+                  </IconButton>
+                  <span
+                    className="cart-quantity"
+                    style={{ width: size, height: size, fontSize: cartItems?.TotalQuantity === 0 ? '0' : '15px' }}
+                  >
+                    {cartItems?.TotalQuantity || (0 > 0 && cartItems?.TotalQuantity)}
+                  </span>
+                </div>
+              )}
+
               <AccountButton />
             </Grid>
           </Grid>

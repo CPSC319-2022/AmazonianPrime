@@ -15,24 +15,27 @@ export const AccountButton = () => {
   const [toastMessage, setToastMessage] = useState('');
   const { isAdmin, isAdminPrivelegeRequested, setPrivelege } = useAdminPrivelege();
   const switchAdminText = isAdmin
-    ? [isAdminPrivelegeRequested ? 'Switch to User Priveleges' : 'Switch to Admin Privelges']
+    ? [isAdminPrivelegeRequested ? 'Switch to User Privileges' : 'Switch to Admin Privileges']
     : [];
+  const userPrivilegeButtons = !isAdminPrivelegeRequested ? ['Manage Profile', 'My Listings'] : [];
 
-  const items = ['User Settings', 'Manage Profile', 'My Listings', ...switchAdminText, 'Logout'];
+  const items = ['User Settings', ...userPrivilegeButtons, ...switchAdminText, 'Logout'];
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const handleRedirect = (category: string) => {
     handleCloseMenu();
     if (category === 'Logout') {
       dispatch(setUser(null));
-    } else if (category === 'Switch to User Priveleges') {
+    } else if (category === 'Switch to User Privileges') {
       if (setPrivelege) {
         setPrivelege(false);
       }
+      navigate('/');
       setToastMessage('You have successfully switched modes. You are now acting as a User.');
-    } else if (category === 'Switch to Admin Privelges') {
+    } else if (category === 'Switch to Admin Privileges') {
       if (setPrivelege) {
         setPrivelege(true);
       }
+      navigate('/');
       setToastMessage('You have successfully switched modes. You are now acting as an Administrator.');
     } else {
       navigate(`${getSlugCategory(category)}?page=1`);

@@ -1,0 +1,58 @@
+@import '../../variables';
+.user {
+  display: flex;
+  padding: 1em;
+  min-width: 80vh;
+  background-color: rgb(251, 244, 229);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 5px;
+
+  .user__buttons {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    .user__button,
+    .user__button-deactivate {
+      margin: 5.5px;
+      max-height: 30px;
+      min-width: 125px;
+      margin-right: 15px;
+    }
+    .user__button-deactivate {
+      color: $grey;
+    }
+  }
+}
+.user__username {
+  font-size: 17px;
+  font-weight: 450;
+  margin-bottom: 4px;
+}
+
+.user__skeleton-button {
+  margin: 5.5px;
+  min-width: 125px;
+  margin-right: 15px;
+}
+
+.user__user-information,
+.user__user-admin-information {
+  font-size: 14px;
+  color: $grey;
+}
+
+.user__user-admin-information {
+  color: $primary-color;
+}
+
+.user__skeleton {
+  display: flex;
+  flex-direction: column;
+}
+.user__skeleton-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+}

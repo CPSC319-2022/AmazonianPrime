@@ -1,18 +1,18 @@
 import './ProductDetails.scss';
 import { useAppSelector } from '../../redux/store';
-import { Alert, Button, Grid, IconButton, Snackbar } from '@mui/material';
+import { Alert, Button, Grid, Snackbar } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import DetailsMetaData from './DetailsMetaData';
 import ProductDetailsSkeleton from './ProductDetailsSkeleton';
 import NoContent from '../common/NoContent';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useDeleteListingMutation } from '../../redux/api/listings';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import DeleteListingButton from '../common/DeleteListingButton';
 import { UserDisplayName } from '../common/UserDisplayName';
-import { useAddListingToCartMutation } from '../../redux/api/shoppingCart';
+import { useAddListingToCartMutation, useUpdateListingToCartMutation } from '../../redux/api/shoppingCart';
 import { costToString } from '../../utils/costToString';
 import { useNavigate } from 'react-router-dom';
+import useAdminPrivelege from '../../utils/useAdminPrivelege';
 
 interface ProductDetailsProps {
   isLoading: boolean;
@@ -23,6 +23,7 @@ interface ProductDetailsProps {
 export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => {
   const listing = useAppSelector((state) => state.listings.listingDetails);
   const navigate = useNavigate();
+  const { isAdminPrivelegeRequested } = useAdminPrivelege();
   const user = useAppSelector((state) => state.user.value);
   const [addListingToCart] = useAddListingToCartMutation();
   const itemInCart = useAppSelector((state) => state.cart.items)?.Items.find(
@@ -36,7 +37,28 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
     }
     setErrorToast(false);
   };
-  const quantityRef = useRef<any>(null);
+  const [selectQuantity, setSelectQuantity] = useState(itemInCart?.Quantity || 1);
+  const [updateListingToCart] = useUpdateListingToCartMutation();
+
+  const handleQuantityChange = (value: number) => {
+    if (itemInCart && listing) {
+      const { Images, ...rest } = listing;
+      updateListingToCart({
+        listing: {
+          ImagePreview: Images[0],
+          ...rest,
+        },
+        userId: user?.UserID || '',
+        body: {
+          ListingID: listing.ListingID,
+          Quantity: Number(value),
+          ShoppingCartItemID: itemInCart.ShoppingCartItemID,
+        },
+      });
+    }
+    setSelectQuantity(value);
+  };
+
   if (!listing) {
     // TODO: add no results page
     if (isLoading) {
@@ -51,7 +73,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
       userId: user?.UserID || '',
       body: {
         ListingID,
-        Quantity: Number(quantityRef.current.value),
+        Quantity: Number(selectQuantity),
       },
     })
       .unwrap()
@@ -89,7 +111,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           <LocalShippingIcon className="product-details__shipping-icon" />
           <p className="product-details__small-text">Offers shipping</p>
         </Grid>
-        {Number(user?.UserID) !== listing.UserID && !itemInCart ? (
+        {Number(user?.UserID) !== listing.UserID && !itemInCart && !isAdminPrivelegeRequested ? (
           <Grid item xs={12} className="product-details__buttons">
             <Button
               variant="contained"
@@ -115,7 +137,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           </Grid>
         ) : null}
       </Grid>
-      {itemInCart && !errorToast && (
+      {!isAdminPrivelegeRequested && itemInCart && !errorToast && (
         <div>
           <Button
             variant="contained"
@@ -132,21 +154,29 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           </span>
         </div>
       )}
-      <DetailsMetaData quantityRef={quantityRef} />
+      <DetailsMetaData
+        selectQuantity={selectQuantity}
+        setSelectQuantity={handleQuantityChange}
+        itemInCart={itemInCart}
+      />
       <div className="product-details__description-container">
         <div className="product-details__small-header">Description</div>
         <div className="product-details__description">{Description}</div>
       </div>
-      {Number(user?.UserID) === listing.UserID ? (
+      {Number(user?.UserID) === listing.UserID || isAdminPrivelegeRequested ? (
         <DeleteListingButton
           failMessage="Failed to delete the listing. Please try again later."
           successMessage={
-            <span className="link-toast">
-              <p>Successfully deleted your listing. View your other listings&nbsp;</p>
-              <a href="/my-listings?page=1">here</a>.
-            </span>
+            isAdminPrivelegeRequested ? (
+              <span>Successfully deleted the listing. Please exit this page.</span>
+            ) : (
+              <span className="link-toast">
+                <p>Successfully deleted your listing. View your other listings&nbsp;</p>
+                <a href="/my-listings?page=1">here</a>.
+              </span>
+            )
           }
-          queueMessage="Hang tight while we delete your listing."
+          queueMessage={`Hang tight while we delete ${isAdminPrivelegeRequested ? 'the' : 'your'} listing.`}
           handleClick={() => {
             return deleteListing({ ListingID: Number(listing.ListingID), UserID: user?.UserID || '' });
           }}

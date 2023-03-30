@@ -4,4 +4,5 @@ export enum Paths {
   'MyListings' = '/my-listings',
   'Cart' = '/cart',
   'Manage Profile' = '/manage-profile',
+  'Users' = '/users',
 }

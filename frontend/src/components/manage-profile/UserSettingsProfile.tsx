@@ -9,6 +9,7 @@ import { Snackbar } from '@mui/material';
 import { useSignupMutation } from '../../redux/api/user';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/reducers/userSlice';
+import { setFailMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 
 export const UserSettingsProfile = () => {
   const [searchParams] = useSearchParams();
@@ -33,9 +34,14 @@ export const UserSettingsProfile = () => {
       return;
     }
     setLoading(true);
-    const newUser = await updateProfile(updatedUser).unwrap();
-    dispatch(setUser(newUser));
-    setLoading(false);
+    await updateProfile(updatedUser)
+      .unwrap()
+      .then((newUser) => {
+        dispatch(setUser(newUser));
+        setLoading(false);
+        dispatch(setSuccessMessage("We've updated your user profile!"));
+      })
+      .catch(() => dispatch(setFailMessage('We encountered an error saving your user profile!')));
   };
   if (Number(searchParams.get('page')) !== 1) {
     return null;

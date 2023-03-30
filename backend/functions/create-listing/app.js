@@ -136,6 +136,8 @@ exports.lambdaHandler = async (event, context) => {
     });
   }
   getListing[0]['Images'] = ImagesUrl;
+
+  await dbConnection.disconnectDB(con);
   return {
     statusCode: 200,
     body: JSON.stringify(getListing[0]),

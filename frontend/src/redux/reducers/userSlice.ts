@@ -7,6 +7,7 @@ export interface UserState {
   value: User | null;
   paymentMethod: Payment | null;
   shippingAddress: Address | null;
+  preferredShippingAddressIndex: number;
   paymentAddress: Address | null;
 }
 
@@ -24,13 +25,14 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
     value: sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user') || '') : undefined,
     paymentMethod: null,
     shippingAddress: null,
+    preferredShippingAddressIndex: 0,
     paymentAddress: null,
   },
   reducers: {
     setUser: (state: UserState, action: Action) => {
       if (action?.payload) {
         // This is temp work. IRL we should find a way to stay signed in after refresh
-        sessionStorage.setItem('user', JSON.stringify({ ...action.payload, IsAdmin: 1 }));
+        sessionStorage.setItem('user', JSON.stringify({ ...action.payload }));
         state.value = action.payload as User;
       } else {
         sessionStorage.removeItem('user');
@@ -40,6 +42,11 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
     setPayment: (state: UserState, action: Action) => {
       if (action?.payload) {
         state.paymentMethod = action.payload as Payment;
+      }
+    },
+    setPreferredShippingAddressIndex: (state: UserState, action: Action) => {
+      if (action?.payload) {
+        state.preferredShippingAddressIndex = action.payload as number;
       }
     },
     setPaymentAddress: (state: UserState, action: Action) => {
@@ -55,6 +62,7 @@ export const user = createSlice<UserState, SliceReducers, 'userSlice'>({
   },
 });
 
-export const { setUser, setPayment, setPaymentAddress, setShippingAddress } = user.actions;
+export const { setUser, setPayment, setPaymentAddress, setShippingAddress, setPreferredShippingAddressIndex } =
+  user.actions;
 
 export default user.reducer;

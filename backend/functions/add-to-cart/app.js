@@ -22,6 +22,7 @@ exports.lambdaHandler = async (event, context) => {
   const UserID = event.pathParameters.userid;
 
   const { ListingID, Quantity } = JSON.parse(event.body);
+  var { ShoppingCartItemID } = JSON.parse(event.body);
 
   if (!ListingID || !Quantity) {
     return {
@@ -30,10 +31,9 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const addToCartQuery = `INSERT INTO ShoppingCartItem(UserID, ListingID, Quantity) VALUES(${UserID}, ${ListingID}, ${Quantity})`;
-
-  const addToCart = await new Promise((resolve, reject) => {
-    con.query(addToCartQuery, function (err, res) {
+  const checkValidQuantityQuery = `SELECT * FROM Listing WHERE ListingID = ${ListingID}`;
+  const checkValidQuantity = await new Promise((resolve, reject) => {
+    con.query(checkValidQuantityQuery, function (err, res) {
       if (err) {
         reject(err);
       }
@@ -41,7 +41,35 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  const ShoppingCartItemID = addToCart['insertId'];
+  if(checkValidQuantity[0].Quantity < Quantity || Quantity < 1) {
+    return {
+      statusCode: 400,
+      body: 'Invalid requested item quantity (shopping cart quantity > listing quantity)',
+    };
+  }
+
+  if(ShoppingCartItemID) {
+    const updateCartQuery = `UPDATE ShoppingCartItem SET Quantity = ${Quantity} WHERE ShoppingCartItemID = "${ShoppingCartItemID}"`;
+    const updateCart = await new Promise((resolve, reject) => {
+      con.query(updateCartQuery, function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        resolve(res);
+      });
+    });
+  } else {
+    const addToCartQuery = `INSERT INTO ShoppingCartItem(UserID, ListingID, Quantity) VALUES(${UserID}, ${ListingID}, ${Quantity})`;
+    const addToCart = await new Promise((resolve, reject) => {
+      con.query(addToCartQuery, function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        resolve(res);
+      });
+    });
+    ShoppingCartItemID = addToCart['insertId'];
+  }
 
   const getShoppingCartItemByIDQuery = `SELECT * FROM ShoppingCartItem WHERE ShoppingCartItemID = "${ShoppingCartItemID}"`;
 
@@ -53,6 +81,8 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
+
+  await dbConnection.disconnectDB(con);
 
   return {
     statusCode: 200,

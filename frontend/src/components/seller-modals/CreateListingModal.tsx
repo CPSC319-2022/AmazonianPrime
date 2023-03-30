@@ -88,38 +88,7 @@ function CreateListingModal() {
   const dispatch = useDispatch();
 
   async function handleSubmit() {
-    const missingTitle = !titleRef.current?.value && 'Listing Title';
-    const missingDescription = !descriptionRef.current?.value && 'Description';
-    const missingImage = images.length < 1 && 'Image (at least 1)';
-    const missingCost =
-      (!Number(costRef.current?.value) || Number(costRef.current?.value) === 0) && 'Cost should be more than $0';
-    const errorMessage = [missingTitle, missingDescription, missingImage, missingCost].filter((msg) => msg).join(', ');
-    if (errorMessage) {
-      setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
-      return;
-    }
-    if (!descriptionRef.current?.value) {
-      setOpenErrorToast('Please provide a brief description!');
-      return;
-    }
-
-    if (quantity.current?.value.startsWith('0') || costRef.current?.value.startsWith('0')) {
-      setOpenErrorToast('Please do not input 0 Quantites or Cost!');
-      return;
-    }
-    handleModalClose();
-    setIsLoading(true);
-
-    handleModalClose();
-    setIsLoading(true);
-    const base64Array = await Promise.all(
-      images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image))),
-    ).catch(() => setError(true));
-
-    if (error) {
-      return;
-    }
-    await createListing({
+    const newListing = {
       UserID: Number(user?.UserID) || 0,
       ListingName: titleRef.current?.value,
       Description: descriptionRef.current?.value,
@@ -129,9 +98,44 @@ function CreateListingModal() {
       ItemCondition: condition,
       Brand: brandRef.current?.value,
       Colour: colourRef.current?.value,
-      Images: base64Array || [],
+      Images:
+        (await Promise.all(images.map(async (image: any) => await blobToBase64(URL.createObjectURL(image)))).catch(() =>
+          setError(true),
+        )) || [],
       Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
-    })
+    };
+    const missingTitle = !titleRef.current?.value && 'Listing Title';
+    const missingDescription = !descriptionRef.current?.value && 'Description';
+    const missingImage = images.length < 1 && 'Image (at least 1)';
+    const missingQuantity = !quantity.current?.value && 'Quantity';
+    const missingCost =
+      ((!Number(costRef.current?.value) && Number(costRef.current?.value) !== 0) || !costRef.current?.value) && 'Cost';
+    const errorMessage = [missingTitle, missingDescription, missingImage, missingQuantity, missingCost]
+      .filter((msg) => msg)
+      .join(', ');
+    if (errorMessage) {
+      setOpenErrorToast(`Missing Field(s): ${errorMessage}`);
+      return;
+    }
+    if (!descriptionRef.current?.value) {
+      setOpenErrorToast('Please provide a brief description!');
+      return;
+    }
+
+    if (Number(quantity.current?.value) === 0) {
+      setOpenErrorToast('Please input more than 0 items to sell (Quantity)!');
+      return;
+    }
+    handleModalClose();
+    setIsLoading(true);
+
+    handleModalClose();
+    setIsLoading(true);
+
+    if (error) {
+      return;
+    }
+    await createListing(newListing)
       .unwrap()
       .then((resultObj) => setResult(resultObj))
       .catch(() => setError(true));
@@ -164,10 +168,28 @@ function CreateListingModal() {
     return (
       <div>
         <div className="create-listing__optional-container">
-          <TextField inputRef={brandRef} label="Brand" className="create-listing__optional" size="small" />
-          <TextField inputRef={colourRef} label="Colour" className="create-listing__optional" size="small" />
+          <TextField
+            autoComplete="off"
+            inputRef={brandRef}
+            label="Brand"
+            className="create-listing__optional"
+            size="small"
+          />
+          <TextField
+            autoComplete="off"
+            inputRef={colourRef}
+            label="Colour"
+            className="create-listing__optional"
+            size="small"
+          />
         </div>
-        <TextField className="create-listing__optional-container" inputRef={sizeRef} label="Size" size="small" />
+        <TextField
+          autoComplete="off"
+          className="create-listing__optional-container"
+          inputRef={sizeRef}
+          label="Size"
+          size="small"
+        />
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel>Metric</InputLabel>
           <Select
@@ -275,6 +297,7 @@ function CreateListingModal() {
                   <span className="create-listing__quantity">Quantity</span>
                   <TextField
                     required
+                    autoComplete="off"
                     inputRef={quantity}
                     type="number"
                     InputProps={{ inputProps: { min: 1, max: 100 } }}
@@ -291,6 +314,7 @@ function CreateListingModal() {
                 required
                 inputRef={costRef}
                 label="$"
+                autoComplete="off"
                 InputProps={{ inputProps: { min: 1, max: 100000 } }}
                 onKeyPress={(event) => {
                   if (event?.key === 'e' || event?.key === '-' || event?.key === '+') {

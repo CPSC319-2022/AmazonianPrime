@@ -39,7 +39,7 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
   const { ImagePreview, ListingName, Cost, User, ListingID } = listing;
 
   return (
-    <div tabIndex={0} className="listing-preview">
+    <div tabIndex={0} className="listing-preview" style={{ width }}>
       <img
         onClick={() => {
           dispath(setPartialListingDetails(listing));

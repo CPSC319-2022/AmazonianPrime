@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useRemoveListingFromCartMutation } from '../../redux/api/shoppingCart';
+import { useRemoveListingFromCartMutation, useUpdateListingToCartMutation } from '../../redux/api/shoppingCart';
 import { setPartialListingDetails } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import { ListingPreview } from '../../types/listingPreview';
@@ -20,10 +20,12 @@ export const CartItem: React.FC<CartItemProps> = ({ order }) => {
   const dispatch = useDispatch();
   const user = useAppSelector((state) => state.user.value);
   const [selectQuantity, setSelectQuantity] = useState(order.Quantity);
+  const [addListingToCart] = useUpdateListingToCartMutation();
   // Weird bug - need this to keep it up to date
   useEffect(() => {
     setSelectQuantity(order.Quantity);
   }, [order.Quantity]);
+
   const navigate = useNavigate();
   const [removeItem] = useRemoveListingFromCartMutation();
   const history = useBreadcrumbHistory();
@@ -57,7 +59,18 @@ export const CartItem: React.FC<CartItemProps> = ({ order }) => {
           <QuantitySelect
             defaultValue={order.Quantity}
             controlledValue={selectQuantity}
-            setValue={setSelectQuantity}
+            setValue={(value) => {
+              addListingToCart({
+                listing: Listing,
+                userId: user?.UserID || '',
+                body: {
+                  ListingID: Listing.ListingID,
+                  Quantity: Number(value),
+                  ShoppingCartItemID: order.ShoppingCartItemID,
+                },
+              });
+              setSelectQuantity(value);
+            }}
             quantity={Listing.Quantity}
           />
         </div>
