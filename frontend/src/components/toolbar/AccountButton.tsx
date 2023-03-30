@@ -26,6 +26,7 @@ export const AccountButton = () => {
     if (category === 'Logout') {
       dispatch(setUser(null));
       sessionStorage.clear();
+      window.dispatchEvent(new Event('storageChangeEvent'));
     } else if (category === 'Switch to User Privileges') {
       if (setPrivelege) {
         setPrivelege(false);
