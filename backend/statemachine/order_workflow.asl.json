@@ -24,7 +24,8 @@
         {
           "ErrorEquals": [
             "EmptyShoppingCartError",
-            "PurchaseQuantityExceededError"
+            "PurchaseQuantityExceededError",
+            "ErrorWrapper"
           ],
           "Next": "ErrorHandler"
         }
@@ -34,7 +35,7 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckPaymentFunctionArn}",
-      "Next": "Valid Payment?",
+      "Next": "Reserve Listing",
       "Catch": [
         {
           "ErrorEquals": [
@@ -44,6 +45,10 @@
           "Next": "ErrorHandler"
         }
       ]
+    },
+    "Reserve Listing": {
+      "Type": "Pass",
+      "Next": "Valid Payment?"
     },
     "Valid Payment?": {
       "Type": "Choice",
@@ -71,6 +76,7 @@
             "Send Wait Token": {
               "Type": "Task",
               "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+              "HeartbeatSeconds": 300,
               "Parameters": {
                 "Payload": {
                   "input.$": "$",
