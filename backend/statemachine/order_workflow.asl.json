@@ -19,7 +19,7 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckQuantityFunctionArn}",
-      "Next": "Check Payment Detail",
+      "Next": "Reserve Listing",
       "Catch": [
         {
           "ErrorEquals": [
@@ -31,11 +31,17 @@
         }
       ]
     },
+    "Reserve Listing": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${ReserveListingFunctionArn}",
+      "Next": "Check Payment Detail"
+    },
     "Check Payment Detail": {
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckPaymentFunctionArn}",
-      "Next": "Reserve Listing",
+      "Next": "Valid Payment?",
       "Catch": [
         {
           "ErrorEquals": [
@@ -45,10 +51,6 @@
           "Next": "ErrorHandler"
         }
       ]
-    },
-    "Reserve Listing": {
-      "Type": "Pass",
-      "Next": "Valid Payment?"
     },
     "Valid Payment?": {
       "Type": "Choice",
