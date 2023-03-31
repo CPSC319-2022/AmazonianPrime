@@ -33,7 +33,7 @@
         },
         "WaitOnShipped": {
             "Type": "Wait",
-            "Seconds": 30,
+            "Seconds": 300,
             "Next": "UpdatePackageDelivered"
         },
         "UpdatePackageDelivered": {
