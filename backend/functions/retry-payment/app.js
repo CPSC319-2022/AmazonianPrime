@@ -1,5 +1,9 @@
 const AWS = require('aws-sdk');
 const sqs = new AWS.SQS();
+const {
+  CheckoutCancellationError,
+  jsonFriendlyErrorReplacer
+} = require('errorStates.js');
 
 /**
  *
@@ -21,6 +25,31 @@ exports.lambdaHandler = async (event, context) => {
     PaymentID,
     ExecutionArn
   } = JSON.parse(event.body);
+
+  if (PaymentID === -1){
+    // User cancelled the checkout
+    const cancelParams = {
+      cause: "User has cancelled the checkout process",
+      error: "CheckoutCancellationError",
+      taskToken: TaskToken
+    };
+
+    for (let i = 0; i < 3; i++) {
+      await new Promise(resolve => setTimeout(resolve, 400));
+      stepfunctions.sendTaskFailure(cancelParams, (err, data) => {
+        if (err) {
+            console.error(err.message);
+            return;
+        }
+        console.log(data);  
+      });
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(new CheckoutCancellationError("The user has cancelled the checkout process!"), jsonFriendlyErrorReplacer),
+    };
+  }
 
   const result = {
     NewPaymentID: PaymentID
