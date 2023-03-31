@@ -19,16 +19,23 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${CheckQuantityFunctionArn}",
-      "Next": "Check Payment Detail",
+      "Next": "Reserve Listing",
       "Catch": [
         {
           "ErrorEquals": [
             "EmptyShoppingCartError",
-            "PurchaseQuantityExceededError"
+            "PurchaseQuantityExceededError",
+            "ErrorWrapper"
           ],
           "Next": "ErrorHandler"
         }
       ]
+    },
+    "Reserve Listing": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Resource": "${ReserveListingFunctionArn}",
+      "Next": "Check Payment Detail"
     },
     "Check Payment Detail": {
       "Type": "Task",
@@ -71,6 +78,7 @@
             "Send Wait Token": {
               "Type": "Task",
               "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+              "HeartbeatSeconds": 300,
               "Parameters": {
                 "Payload": {
                   "input.$": "$",
@@ -78,6 +86,18 @@
                 },
                 "FunctionName": "${SNSWaitForTokenFunctionName}"
               },
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "Next": "Pass State"
+                }
+              ],
+              "End": true
+            },
+            "Pass State": {
+              "Type": "Pass",
               "End": true
             }
           }
@@ -105,6 +125,14 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${PaymentSimulationFunctionArn}",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "ErrorWrapper"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ],
       "Next": "Payment Approved?"
     },
     "Payment Approved?": {
@@ -120,11 +148,12 @@
     },
     "Payment Fail": {
       "Type": "Task",
+      "InputPath": "$.body",
       "Resource": "${PaymentFailErrorFunctionArn}",
       "Catch": [
         {
           "ErrorEquals": [
-            "PaymentFailureError"
+            "ErrorWrapper"
           ],
           "Next": "ErrorHandler"
         }

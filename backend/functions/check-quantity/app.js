@@ -2,6 +2,8 @@ const dbConnection = require('dbConnection.js');
 const {
   EmptyShoppingCartError,
   PurchaseQuantityExceededError,
+  ErrorWrapper,
+  jsonFriendlyErrorReplacer
 } = require('errorStates.js');
 // var mysql = require('mysql');
 
@@ -20,7 +22,12 @@ exports.lambdaHandler = async (event, context) => {
   const Items = event['Items'];
 
   if (Items.length < 1) {
-    throw new EmptyShoppingCartError(`The user's shopping cart is empty!`);
+    let error = new EmptyShoppingCartError(`The user's shopping cart is empty!`);
+    let message = {
+      body: event,
+      error: JSON.stringify(error, jsonFriendlyErrorReplacer)
+    }
+    throw new ErrorWrapper(JSON.stringify(message));
   }
 
   for (let x in Items) {
@@ -30,9 +37,15 @@ exports.lambdaHandler = async (event, context) => {
     const ListedQuantity = Item['Listing']['Quantity'];
 
     if (PurchaseQuantity > ListedQuantity) {
-      throw new PurchaseQuantityExceededError(
+      let error = new PurchaseQuantityExceededError(
         `The amount to purchase, ${ListingName}, is exceeding the available quantity`,
       );
+      event['Items'] = [];
+      let message = {
+        body: event,
+        error: JSON.stringify(error, jsonFriendlyErrorReplacer)
+      }
+      throw new ErrorWrapper(JSON.stringify(message));
     }
   }
 
