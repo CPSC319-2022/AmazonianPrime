@@ -140,6 +140,12 @@ Resources:
         - LambdaInvokePolicy:
             FunctionName: !Ref AppendSNSTokenFunction
         - Statement:
+            - Sid: AWSStepFunctionsFullAccess
+              Effect: Allow
+              Action:
+                - states:*
+              Resource: "*"
+        - Statement:
             - Sid: SNSPublishPolicy
               Effect: Allow
               Action:
@@ -750,6 +756,14 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
+                Resource: "*"
+        - PolicyName: SESFullAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ses:*
                 Resource: "*"
 
   ##  ----------------- Database Config -----------------
