@@ -20,30 +20,30 @@ Parameters:
     Type: String
 
 Resources:
-  # FrontendBucketPolicy:
-  #   Type: AWS::S3::BucketPolicy
-  #   Properties:
-  #     PolicyDocument:
-  #       Id: MyPolicy
-  #       Version: 2012-10-17
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal: "*"
-  #           Action: "s3:GetObject"
-  #           Resource: !Sub
-  #             - "arn:aws:s3:::${Bucket}/*"
-  #             - Bucket: !Ref FrontendBucket
-  #         - Effect: Allow
-  #           Principal:
-  #             AWS:
-  #               - !Ref PipelineRole
-  #           Action:
-  #             - "s3:PutObject"
-  #             - "s3:DeleteObject"
-  #           Resource: !Sub
-  #             - "arn:aws:s3:::${Bucket}/*"
-  #             - Bucket: !Ref FrontendBucket
-  #     Bucket: !Ref FrontendBucket
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Sub
+              - "arn:aws:s3:::${Bucket}/*"
+              - Bucket: !Ref FrontendBucket
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !Ref PipelineRole
+            Action:
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+            Resource: !Sub
+              - "arn:aws:s3:::${Bucket}/*"
+              - Bucket: !Ref FrontendBucket
+      Bucket: !Ref FrontendBucket
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
@@ -109,6 +109,7 @@ Resources:
         SNSSendTokenFunctionArn: !GetAtt SNSSendTokenFunction.Arn
         SNSWaitForTokenFunctionArn: !GetAtt SNSWaitForTokenFunction.Arn
         AppendSNSTokenFunctionArn: !GetAtt AppendSNSTokenFunction.Arn
+        EmailStateMachineArn: !GetAtt EmailStateMachine.Arn
         SNSWaitForTokenFunctionName: !Sub "${SNSWaitForTokenFunction}"
         SNSTopicArn: !Ref CheckoutTopic
       Policies:
@@ -588,6 +589,9 @@ Resources:
         SendOrderConfirmationEmailArn: !GetAtt SendOrderConfirmationEmail.Arn
         SendShippedEmailArn: !GetAtt SendShippedEmail.Arn
         SendPackageDeliveredEmailArn: !GetAtt SendPackageDeliveredEmail.Arn
+        UpdateShippedFunctionArn: !GetAtt UpdateShippedFunction.Arn
+        UpdateDeliveredFunctionArn: !GetAtt UpdateDeliveredFunction.Arn
+        GetUserDetailsFunctionArn: !GetAtt GetUserDetailsFunction.Arn
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref SendOrderConfirmationEmail
@@ -595,6 +599,12 @@ Resources:
             FunctionName: !Ref SendShippedEmail
         - LambdaInvokePolicy:
             FunctionName: !Ref SendPackageDeliveredEmail
+        - LambdaInvokePolicy:
+            FunctionName: !Ref UpdateShippedFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref UpdateDeliveredFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref GetUserDetailsFunction
   SendOrderConfirmationEmail:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -631,6 +641,78 @@ Resources:
           DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
       Architectures:
         - x86_64
+  UpdateShippedFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/update-shipped/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  UpdateDeliveredFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/update-delivered/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
+  GetUserDetailsFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/get-user-details/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
+        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
+      Environment:
+        Variables:
+          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
+      Policies:
+        - Statement:
+            - Sid: RDSLambdaConnectPolicy
+              Effect: Allow
+              Action:
+                - rds-db:connect
+              Resource: "*"
+      Layers:
+        - !Ref DBSharedLayer
+        - !Ref NodeDependenciesLayer
   EmailSenderFunctionRole:
     Type: AWS::IAM::Role
     Properties:

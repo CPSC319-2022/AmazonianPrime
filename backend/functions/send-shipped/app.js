@@ -13,20 +13,53 @@ const ses = new AWS.SES();
  */
 
 exports.lambdaHandler = async (event, context) => {
-  console.log([`tmartinuson@gmail.com`]);
+  const { User, OrderID, OrderDate, Order } = event['body'];
+
+  console.log(event);
+
+  const date = new Date();
+  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short', timeZone: 'America/Los_Angeles' };
+  const ShippedDate = date.toLocaleDateString('en-US', options);
+
+  const carriers = ['Canada Post', 'FedEx', 'Purolator', 'UPS'];
+  const ShippedCarrier = carriers[Math.floor(Math.random() * carriers.length)];
+
+  const TrackingNumber = Math.floor(Math.random() * 900000000000) + 100000000000;
+
   const params = {
       Source: 'amazonianprime2023@gmail.com',
       Destination: {
-          ToAddresses: [`tmartinuson@gmail.com`],
+          ToAddresses: [User.Email],
       },
       Message: {
           Subject: {
-              Data: 'Order Shipped',
+              Data: `Order #${OrderID} Shipped`,
               Charset: 'UTF-8',
           },
           Body: {
               Text: {
-                  Data: 'Order has been shipped',
+                  Data: `Dear ${User.FirstName} ${User.LastName},
+
+We are excited to let you know that your Amazonian Prime order has shipped! Here are the details of your shipment:
+
+Order Number: #${OrderID}
+Order Date: ${OrderDate}
+Shipment Date: ${ShippedDate}
+Shipping Carrier: ${ShippedCarrier}
+Tracking Number: ${TrackingNumber}
+
+Order Details:
+${Order}
+
+We have carefully packed your items and they are on their way to you. You can track your package's journey using the tracking number provided above. Please note that tracking information may take a few hours to update after the shipment has left our facility.
+
+If you have any questions or concerns about your shipment, please don't hesitate to contact us. We are always here to help.
+
+Thank you for choosing Amazonian Prime. We hope you enjoy your purchase and look forward to serving you again soon.
+
+Best regards,
+
+Amazonian Prime Customer Service`,
                   Charset: 'UTF-8',
               },
           },
@@ -37,7 +70,7 @@ exports.lambdaHandler = async (event, context) => {
       await ses.sendEmail(params).promise();
       return {
           statusCode: 200,
-          body: 'Order Email Sent',
+          body: {...event['body'], ShippedDate, ShippedCarrier, TrackingNumber},
       };
   } catch (err) {
       return {

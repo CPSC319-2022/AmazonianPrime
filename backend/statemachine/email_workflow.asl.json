@@ -1,32 +1,50 @@
 {
     "Comment": "A state machine that handles the email sending workflow",
-    "StartAt": "SendOrderConfirmationEmail",
+    "StartAt": "GetUserDetails",
     "States": {
-        "SendOrderConfirmationEmail": {
+        "GetUserDetails": {
             "Type": "Task",
             "InputPath": "$.body",
+            "Resource": "${GetUserDetailsFunctionArn}",
+            "Next": "SendOrderConfirmationEmail"
+        },
+        "SendOrderConfirmationEmail": {
+            "Type": "Task",
+            "InputPath": "$",
             "Resource": "${SendOrderConfirmationEmailArn}",
             "Next": "WaitOnOrder"
         },
         "WaitOnOrder": {
             "Type": "Wait",
             "Seconds": 30,
+            "Next": "UpdateShippedStatus"
+        },
+        "UpdateShippedStatus": {
+            "Type": "Task",
+            "InputPath": "$",
+            "Resource": "${UpdateShippedFunctionArn}",
             "Next": "SendShippedEmail"
         },
         "SendShippedEmail": {
             "Type": "Task",
-            "InputPath": "$.body",
+            "InputPath": "$",
             "Resource": "${SendShippedEmailArn}",
             "Next": "WaitOnShipped"
         },
         "WaitOnShipped": {
             "Type": "Wait",
             "Seconds": 30,
+            "Next": "UpdatePackageDelivered"
+        },
+        "UpdatePackageDelivered": {
+            "Type": "Task",
+            "InputPath": "$",
+            "Resource": "${UpdateDeliveredFunctionArn}",
             "Next": "SendPackageDeliveredEmail"
         },
         "SendPackageDeliveredEmail": {
             "Type": "Task",
-            "InputPath": "$.body",
+            "InputPath": "$",
             "Resource": "${SendPackageDeliveredEmailArn}",
             "Next": "DeliverySuccess"
         },
