@@ -141,7 +141,20 @@
       "Type": "Task",
       "InputPath": "$",
       "Resource": "${ClearShoppingCartFunctionArn}",
-      "Next": "Checkout Success"
+      "Next": "Send Emails",
+      "ResultPath": "$.body"
+    },
+    "Send Emails": {
+      "Type": "Task",
+      "InputPath": "$.body",
+      "Next": "Checkout Success",
+      "Resource":"arn:aws:states:::states:startExecution",
+      "Parameters":{  
+          "Input": {
+            "body.$": "$.body"
+          },
+          "StateMachineArn":"${EmailStateMachineArn}"
+      }
     },
     "ErrorHandler": {
       "Type": "Task",
