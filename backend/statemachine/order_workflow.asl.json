@@ -111,6 +111,14 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${PaymentSimulationFunctionArn}",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "ErrorWrapper"
+          ],
+          "Next": "ErrorHandler"
+        }
+      ],
       "Next": "Payment Approved?"
     },
     "Payment Approved?": {
@@ -126,11 +134,12 @@
     },
     "Payment Fail": {
       "Type": "Task",
+      "InputPath": "$.body",
       "Resource": "${PaymentFailErrorFunctionArn}",
       "Catch": [
         {
           "ErrorEquals": [
-            "PaymentFailureError"
+            "ErrorWrapper"
           ],
           "Next": "ErrorHandler"
         }
