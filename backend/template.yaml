@@ -2,9 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   backend
-
   Sample SAM Template for backend
-
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -109,7 +107,6 @@ Resources:
         SNSSendTokenFunctionArn: !GetAtt SNSSendTokenFunction.Arn
         SNSWaitForTokenFunctionArn: !GetAtt SNSWaitForTokenFunction.Arn
         AppendSNSTokenFunctionArn: !GetAtt AppendSNSTokenFunction.Arn
-        EmailStateMachineArn: !GetAtt EmailStateMachine.Arn
         SNSWaitForTokenFunctionName: !Sub "${SNSWaitForTokenFunction}"
         SNSTopicArn: !Ref CheckoutTopic
       Policies:
@@ -578,179 +575,6 @@ Resources:
           Properties:
             Path: /api/signup # Ensure  pi is proxied with /api/*
             Method: get # TODO: change this to PUT
-
-  ##  ----------------- Email Step Function -----------------
-  EmailStateMachine:
-    Type: AWS::Serverless::StateMachine
-    Properties:
-      Type: STANDARD #why are we using express?
-      DefinitionUri: statemachine/email_workflow.asl.json
-      DefinitionSubstitutions:
-        SendOrderConfirmationEmailArn: !GetAtt SendOrderConfirmationEmail.Arn
-        SendShippedEmailArn: !GetAtt SendShippedEmail.Arn
-        SendPackageDeliveredEmailArn: !GetAtt SendPackageDeliveredEmail.Arn
-        UpdateShippedFunctionArn: !GetAtt UpdateShippedFunction.Arn
-        UpdateDeliveredFunctionArn: !GetAtt UpdateDeliveredFunction.Arn
-        GetUserDetailsFunctionArn: !GetAtt GetUserDetailsFunction.Arn
-      Policies:
-        - LambdaInvokePolicy:
-            FunctionName: !Ref SendOrderConfirmationEmail
-        - LambdaInvokePolicy:
-            FunctionName: !Ref SendShippedEmail
-        - LambdaInvokePolicy:
-            FunctionName: !Ref SendPackageDeliveredEmail
-        - LambdaInvokePolicy:
-            FunctionName: !Ref UpdateShippedFunction
-        - LambdaInvokePolicy:
-            FunctionName: !Ref UpdateDeliveredFunction
-        - LambdaInvokePolicy:
-            FunctionName: !Ref GetUserDetailsFunction
-  SendOrderConfirmationEmail:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/send-order/
-      Handler: app.lambdaHandler
-      Role: !GetAtt EmailSenderFunctionRole.Arn
-      Runtime: nodejs14.x
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Architectures:
-        - x86_64
-  SendShippedEmail:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
-    Properties:
-      CodeUri: functions/send-shipped/
-      Handler: app.lambdaHandler
-      Role: !GetAtt EmailSenderFunctionRole.Arn
-      Runtime: nodejs14.x
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Architectures:
-        - x86_64
-  SendPackageDeliveredEmail:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
-    Properties:
-      CodeUri: functions/send-delivered/
-      Handler: app.lambdaHandler
-      Role: !GetAtt EmailSenderFunctionRole.Arn
-      Runtime: nodejs14.x
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Architectures:
-        - x86_64
-  UpdateShippedFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/update-shipped/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      VpcConfig:
-        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
-        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
-  UpdateDeliveredFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/update-delivered/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      VpcConfig:
-        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
-        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
-  GetUserDetailsFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/get-user-details/
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      VpcConfig:
-        SecurityGroupIds: [{ 'Ref': 'lambdaSecurityGroup' }]
-        SubnetIds: [{ 'Ref': 'PrivateSubnet1' }, { 'Ref': 'PrivateSubnet2' }]
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Policies:
-        - Statement:
-            - Sid: RDSLambdaConnectPolicy
-              Effect: Allow
-              Action:
-                - rds-db:connect
-              Resource: "*"
-      Layers:
-        - !Ref DBSharedLayer
-        - !Ref NodeDependenciesLayer
-  EmailSenderFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: SESPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ses:SendEmail
-                  - ses:SendRawEmail
-                Resource: "*"
-        - PolicyName: EC2AccessPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:*
-                Resource: "*"
-        - PolicyName: CloudWatchPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: "*"
 
   ##  ----------------- Database Config -----------------
   rdsEC2VPC:
@@ -1638,63 +1462,6 @@ Resources:
         - nodejs14.x
       RetentionPolicy: Delete
 
- # ---- SES Confirmation Email Sending
-  EmailSenderFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: SESPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ses:SendEmail
-                  - ses:SendRawEmail
-                Resource: "*"
-        - PolicyName: EC2AccessPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:*
-                Resource: "*"
-        - PolicyName: CloudWatchPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: "*"
-  EmailConformationFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/email-confirmation/
-      Handler: app.lambdaHandler
-      Role: !GetAtt EmailSenderFunctionRole.Arn
-      Runtime: nodejs14.x
-      Environment:
-        Variables:
-          DatabaseAddress: !GetAtt rdsDBInstance.Endpoint.Address
-      Architectures:
-        - x86_64
-      Events:
-        http:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /api/email # Ensure api is proxied with /api/*
-            Method: post
   # ---- S3 Bucket Image Upload
   ImageBucket:
     Type: AWS::S3::Bucket
