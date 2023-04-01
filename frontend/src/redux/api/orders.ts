@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Order } from '../../types/order';
+import { PaginatedOrders } from '../../types/paginatedOrders';
 import { OrderItems } from '../../types/OrderItems';
 
 const LIMIT = 8;
@@ -8,7 +8,7 @@ export const ordersApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
   tagTypes: ['Orders'],
   endpoints: (builder) => ({
-    getOrders: builder.query<Order[], { userId: string | undefined; page: number }>({
+    getOrders: builder.query<PaginatedOrders, { userId: string | undefined; page: number }>({
       query: ({ userId, page }) => {
         return `admin/orders?offset=${LIMIT * (page - 1)}&limit=${LIMIT}${userId && `&userid="${userId}"`}`;
       },

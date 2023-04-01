@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Order } from '../../types/order';
+import { PaginatedOrders } from '../../types/paginatedOrders';
 
 export interface OrdersState {
-  orders: Order[] | null;
+  orders: PaginatedOrders | null;
   isLoading: boolean;
 }
 
@@ -21,9 +21,9 @@ export const ordersInfo = createSlice<OrdersState, SliceReducers, 'ordersSlice'>
     isLoading: false,
   },
   reducers: {
-    addItemToOrders: (state: OrdersState, action: Action) => {
+    setOrders: (state: OrdersState, action: Action) => {
       if (action?.payload) {
-        // state.orders = [...state.orders, action.payload];
+        state.orders = action.payload as PaginatedOrders;
       }
     },
     setIsLoadingOrders: (state: OrdersState, action: Action) => {
@@ -31,14 +31,9 @@ export const ordersInfo = createSlice<OrdersState, SliceReducers, 'ordersSlice'>
         state.isLoading = action.payload?.isLoading;
       }
     },
-    addItemsToOrders: (state: OrdersState, action: Action) => {
-      if (action?.payload) {
-        state.orders = action.payload;
-      }
-    },
   },
 });
 
-export const { addItemOrders, setIsLoadingOrders, addItemsToOrders } = ordersInfo.actions;
+export const { setOrders, setIsLoadingOrders } = ordersInfo.actions;
 
 export default ordersInfo.reducer;
