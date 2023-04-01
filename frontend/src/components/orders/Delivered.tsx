@@ -42,22 +42,25 @@ export const Delivered: React.FC<DeliveredProps> = ({ orders }) => {
     },
   ];
 
-  var filteredOrder = dummyOrders.reduce(function (
-    filtered: {
-      src: string;
-      name: string;
-      sellor: string;
-      buyer: string;
-      deliveryMethod: string;
-      delivered: boolean;
-    }[],
-    order,
-  ) {
-    if (order.delivered) {
-      filtered.push(order);
-    }
-    return filtered;
-  }, []);
+  const filteredOrder = dummyOrders.reduce(
+    (
+      filtered: {
+        src: string;
+        name: string;
+        sellor: string;
+        buyer: string;
+        deliveryMethod: string;
+        delivered: boolean;
+      }[],
+      order,
+    ) => {
+      if (order.delivered) {
+        filtered.push(order);
+      }
+      return filtered;
+    },
+    [],
+  );
 
   return (
     <>

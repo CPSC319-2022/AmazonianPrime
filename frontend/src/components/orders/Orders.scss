@@ -1,10 +1,25 @@
+@import '../../variables';
 .orders-page__ordered__header-text {
   font-size: 17px;
   font-weight: 450;
+  display: block;
+  margin: 0;
   margin-bottom: 4px;
 }
 
-.orders-page__ordered__text {
+.order-listings {
+  margin-top: 1.5em;
+  width: 100%;
+}
+.orders-page__total-cost {
+  margin-right: 1em;
+}
+
+.orders-page__end-text {
+  font-size: 1.2em;
+}
+
+.orders-page__ordered__text.orders-page__ordered__text {
   font-size: 14px;
 }
 
@@ -15,4 +30,22 @@
 
 .accordion-summary {
   margin: 0;
+}
+
+.orders-page__container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.orders-page__status {
+  color: $secondary-color;
+  font-size: 1.1em;
+}
+
+.orders-page__end-text {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-left: auto;
 }
