@@ -15,6 +15,7 @@ import { useAddAddressMutation, useAddPaymentMutation, useGetPaymentsQuery } fro
 import { setPaymentAddress } from '../../redux/reducers/userSlice';
 import { useDispatch } from 'react-redux';
 import { setSuccessMessage } from '../../redux/reducers/appSlice';
+import { ExpiryDate } from '../common/ExpiryDate';
 
 export const PaymentSettings = () => {
   const user = useAppSelector((state) => state.user.value);
@@ -109,6 +110,7 @@ export const PaymentSettings = () => {
                   <span className="address__grey">
                     {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
                   </span>
+                  <ExpiryDate date={payment.ExpiryDate} />
                 </div>
                 <div>
                   <span className="more-content__billing">Billing Address&nbsp;</span>
