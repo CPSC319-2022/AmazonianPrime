@@ -14,10 +14,16 @@ const sqs = new AWS.SQS();
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  const { NewPaymentID } = event[0];
-  const { body } = event[1];
+  const {NewPaymentID} = event[0];
+  const {body} = event[1];
+  if (NewPaymentID === undefined){
+    return {
+      statusCode: 200,
+      body: { ...body }
+    };
+  }
 
-  const { PaymentID, ...rest } = body;
+  const {PaymentID, ...rest } = body;
 
   return {
     statusCode: 200,

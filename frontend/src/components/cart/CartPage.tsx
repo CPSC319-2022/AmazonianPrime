@@ -17,12 +17,15 @@ import { useDispatch } from 'react-redux';
 import { setFailMessage, setQueueMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 import { LoadingButton } from '@mui/lab';
 import moment from 'moment';
+import { isExpiredDate } from '../../utils/escapeDateFromSQL';
+import { ExpiryDate } from '../common/ExpiryDate';
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
   const [checkout] = useCheckoutMutation();
   const [retryCheckout] = useRetryCheckoutMutation();
   const [didCheckout, setDidCheckout] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const preferredShippingAddressIndex = useAppSelector((state) => state.user.preferredShippingAddressIndex);
   const [selectedAddress, setSelectedAddress] = useState(preferredShippingAddressIndex ?? 0);
@@ -57,11 +60,17 @@ function CartPage() {
     </div>
   );
 
-  const getSummaryHeading = (title: string, cost: any, bold?: boolean) => {
+  const getSummaryHeading = (title: string, cost?: any, bold?: boolean) => {
     return (
       <div className="cart__listing-header-summary" style={{ fontWeight: bold ? 'bold' : 'normal' }}>
         <span className="cart__listing-name">{title}</span>
-        <span className="cart__listing-cost">{Number(cost) ? costToString(cost) : cost}</span>
+        <div className="cart__listing-cost">
+          {cost ? (
+            <span>{Number(cost) ? costToString(cost) : cost}</span>
+          ) : (
+            <Skeleton variant="text" sx={{ fontSize: '1em' }} width={'3em'} />
+          )}
+        </div>
       </div>
     );
   };
@@ -81,11 +90,15 @@ function CartPage() {
   const handleCheckoutSuccess = () => {
     dispatch(setSuccessMessage("We've got your order! Please check for a confirmation email."));
     setDidCheckout(true);
+    setTimeout(() => {
+      setShowConfetti(true);
+    }, 300);
     setIsCheckingOut(false);
   };
+
   const placeOrderButton = (disabled?: boolean) => (
     <div className="confetti-button">
-      {didCheckout && <ConfettiExplosion duration={2800} />}
+      {didCheckout && showConfetti && <ConfettiExplosion duration={3200} />}
       <LoadingButton
         loading={isCheckingOut}
         onClick={() => {
@@ -170,7 +183,7 @@ function CartPage() {
       <span className="cart__order-summary-half-border"></span>
       <Skeleton variant="text" sx={{ fontSize: '1.2em' }} width={'100%'} />
       <span className="cart__order-summary-border"></span>
-      {getSummaryHeading('Order Total', <Skeleton variant="text" sx={{ fontSize: '1.2em' }} width={'3em'} />)}
+      {getSummaryHeading('Order Total', null)}
       {placeOrderButton(isLoading)}
     </div>
   );
@@ -183,7 +196,6 @@ function CartPage() {
       : noContent;
   };
 
-  const today = new Date();
   return (
     <div>
       <Breadcrumbs />
@@ -209,9 +221,6 @@ function CartPage() {
               payments={
                 payments?.map((payment) => {
                   const creditNumber = payment.CreditCardNum.toString();
-                  const [month, year] = payment.ExpiryDate.split('/');
-                  const expiryDate = moment({ year: Number('20' + year), month: Number(month), day: 1 });
-                  const isExpired = moment(today).isAfter(expiryDate);
                   return (
                     <>
                       <div>
@@ -219,9 +228,7 @@ function CartPage() {
                         <span className="address__grey">
                           {creditNumber.substring(creditNumber.length - 5, creditNumber.length)}
                         </span>
-                        <span className="expiry-date">
-                          {`Expire${isExpired ? 'd' : 's'} on`}&nbsp;{payment.ExpiryDate.replaceAll(' ', '')}
-                        </span>
+                        <ExpiryDate date={payment.ExpiryDate} />
                       </div>
                       <div>
                         <span className="address-change__button-billing">Billing Address&nbsp;</span>
@@ -269,16 +276,12 @@ function CartPage() {
               <span className="cart__order-summary-half-border"></span>
               {getSummaryHeading(
                 `Subtotal (${cartItems?.TotalQuantity} items) Before Tax`,
-                `$${costToString(Number((Math.round(Number(subtotal) * 100) / 100).toFixed(2)))}`,
+                cartItems.Subtotal && `$${costToString(cartItems.Subtotal)}`,
               )}
-              {getSummaryHeading('Estimated GST/HST', '$0.00')}
-              {getSummaryHeading('Estimated PST/RST/QST', '$0.00')}
+              {getSummaryHeading('Estimated GST/HST', cartItems.GSTTax && `$${costToString(cartItems.GSTTax)}`)}
+              {getSummaryHeading('Estimated PST/RST/QST', cartItems.PSTTax && `$${costToString(cartItems.PSTTax)}`)}
               <span className="cart__order-summary-border"></span>
-              {getSummaryHeading(
-                'Order Total',
-                `$${costToString(Number((Math.round(Number(subtotal) * 100) / 100).toFixed(2)))}`,
-                true,
-              )}
+              {getSummaryHeading('Order Total', cartItems.TotalCost && `$${costToString(cartItems.TotalCost)}`, true)}
               {placeOrderButton()}
             </div>
           )}

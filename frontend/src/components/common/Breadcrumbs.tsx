@@ -76,7 +76,7 @@ function Breadcrumbs() {
       },
     ];
   }
-  if (listingId && listing?.ListingName) {
+  if (listingId && listing?.ListingName && listing?.IsActiveListing) {
     breadCrumbs = [
       ...breadCrumbs,
       {

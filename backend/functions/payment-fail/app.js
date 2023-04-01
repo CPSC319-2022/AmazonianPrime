@@ -1,4 +1,8 @@
-const { PaymentFailureError } = require('errorStates.js');
+const {
+  PaymentFailureError,
+  ErrorWrapper,
+  jsonFriendlyErrorReplacer
+} = require('errorStates.js');
 // var mysql = require('mysql');
 
 /**
@@ -13,5 +17,10 @@ const { PaymentFailureError } = require('errorStates.js');
  *
  */
 exports.lambdaHandler = async (event, context) => {
-  throw new PaymentFailureError('The payment process was unsucessful!');
+  let error = new PaymentFailureError('The payment process was unsucessful!');
+  let message = {
+    body: event,
+    error: JSON.stringify(error, jsonFriendlyErrorReplacer)
+  }
+  throw new ErrorWrapper(JSON.stringify(message));
 };

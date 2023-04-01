@@ -16,6 +16,11 @@ const {
  * @returns {Object} object - Object containing details of the stock buying transaction
  *
  */
+
+function escapeDate(date) {
+  return escape(date).replace('%u2068', '').replace('%u2069', '').replace('%u2066', '');
+}
+
 exports.lambdaHandler = async (event, context) => {
   const con = await dbConnection.connectDB(
     process.env.DatabaseAddress,
@@ -42,9 +47,9 @@ exports.lambdaHandler = async (event, context) => {
   if (PaymentDetails[0]) {
     const dateStr = PaymentDetails[0]['ExpiryDate'];
     const [month, year] = dateStr.split('/');
-    const dateObj = new Date(`20${year}`, parseInt(month) - 1);
-    const todayDate = new Date();
-    if (todayDate < dateObj) {
+    const dateObj = new Date(Number(`20${escapeDate(year)}`), Number(escapeDate(month)) - 1);
+    const todayDate  = new Date();
+    if (todayDate < dateObj){
       validPayment = true;
     }
   }
