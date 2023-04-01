@@ -124,10 +124,26 @@ exports.lambdaHandler = async (event, context) => {
     order.Listings = listings;
   }
 
+  const getNumberOfOrders = `SELECT COUNT(*) FROM Orders ${
+    whereClause !== undefined ? `WHERE ${whereClause} ` : ''
+  };`;
+
+  const getOrdersCount = await new Promise((resolve, reject) => {
+    con.query(getNumberOfOrders, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+
   await dbConnection.disconnectDB(con);
   
   return {
     statusCode: 200,
-    body: JSON.stringify(Orders),
+    body: JSON.stringify({
+      TotalOrders: getOrdersCount[0]['COUNT(*)'],
+      Data: Orders,
+    }),
   };
 };
