@@ -78,7 +78,7 @@
             "Send Wait Token": {
               "Type": "Task",
               "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-              "HeartbeatSeconds": 300,
+              "HeartbeatSeconds": 296,
               "Parameters": {
                 "Payload": {
                   "input.$": "$",
@@ -177,12 +177,12 @@
       "Type": "Task",
       "InputPath": "$.body",
       "Next": "Checkout Success",
-      "Resource":"arn:aws:states:::states:startExecution",
-      "Parameters":{  
-          "Input": {
-            "body.$": "$.body"
-          },
-          "StateMachineArn":"${EmailStateMachineArn}"
+      "Resource": "arn:aws:states:::states:startExecution",
+      "Parameters": {
+        "Input": {
+          "body.$": "$.body"
+        },
+        "StateMachineArn": "${EmailStateMachineArn}"
       }
     },
     "ErrorHandler": {
