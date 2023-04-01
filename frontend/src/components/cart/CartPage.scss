@@ -146,3 +146,11 @@
   font-weight: bold;
   margin-top: 1em;
 }
+
+.cart__listing-low-stock {
+  font-size: 0.9em;
+  display: flex;
+  flex-direction: row;
+  margin-left: 0.5em;
+  align-items: center;
+}

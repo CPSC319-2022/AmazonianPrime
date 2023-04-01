@@ -1,7 +1,7 @@
 import { Address } from './address';
 
 export interface Payment extends Address {
-  PaymentID: string;
+  PaymentID: string | number;
   UserID: string;
   AddressID: string;
   CreditCardNum: number;
