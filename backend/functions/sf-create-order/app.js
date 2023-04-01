@@ -20,7 +20,7 @@ exports.lambdaHandler = async (event, context) => {
     'databaseAmazonianPrime',
   );
 
-  const { UserID, AddressID, PaymentID, Items } = event['body'];
+  const { UserID, AddressID, PaymentID, Items, Subtotal, PSTTax, GSTTax, TotalCost } = event['body'];
 
   const ShoppingCartItems = Items;
 
@@ -37,8 +37,8 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, PaymentID, ShippingStatus)
-                              VALUES (${UserID}, ${AddressID}, ${PaymentID}, "On it's way");`;
+  const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, PaymentID, ShippingStatus, PurchaseAmount, GSTTax, PSTTax, TotalAmount)
+                              VALUES (${UserID}, ${AddressID}, ${PaymentID}, "On it's way", ${Subtotal}, ${GSTTax}, ${PSTTax}, ${TotalCost});`;
 
   const createOrders = await new Promise((resolve, reject) => {
     con.query(createOrdersQuery, function (err, res) {

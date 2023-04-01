@@ -63,6 +63,9 @@ exports.lambdaHandler = async (event, context) => {
         };
       }
     }
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     return {
       status: 400,
       body: 'The step function encountered an error in the checkout process',
