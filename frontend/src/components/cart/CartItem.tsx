@@ -2,33 +2,33 @@ import { Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useRemoveListingFromCartMutation, useUpdateListingToCartMutation } from '../../redux/api/shoppingCart';
-import { setPartialListingDetails } from '../../redux/reducers/listingsSlice';
+import {
+  shoppingCartApi,
+  useRemoveListingFromCartMutation,
+  useUpdateListingToCartMutation,
+} from '../../redux/api/shoppingCart';
+import { setPartialListingDetails, unsetListingDetails } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import { ListingPreview } from '../../types/listingPreview';
 import { ShoppingCartItem } from '../../types/shoppingCartItem';
 import { costToString } from '../../utils/costToString';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import useBreadcrumbHistory from '../../utils/useBreadcrumbHistory';
-import { useCartLock } from '../../utils/useCartLock';
 import DeleteListingButton from '../common/DeleteListingButton';
 import { QuantitySelect } from '../common/QuantitySelect';
 import { UserDisplayName } from '../common/UserDisplayName';
+import { listingsApi } from '../../redux/api/listings';
 
 interface CartItemProps {
   order: ShoppingCartItem;
-  isCartLockedInput: boolean
+  isCartLockedInput: boolean;
 }
 export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) => {
   const { Listing } = order;
   const dispatch = useDispatch();
+  const isCartLocked = useAppSelector((state) => state.app.expiryDate) !== null;
   const user = useAppSelector((state) => state.user.value);
   const [selectQuantity, setSelectQuantity] = useState(order.Quantity);
-  const [isCartLocked, setIsCartLocked] = useState(isCartLockedInput);
-
-  useEffect(() => {
-    setIsCartLocked(isCartLockedInput)
-  }, [isCartLockedInput])
   const [addListingToCart] = useUpdateListingToCartMutation();
   // Weird bug - need this to keep it up to date
   useEffect(() => {
@@ -48,10 +48,8 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
   const listingQuantityCost = order.Quantity * Listing.Cost;
 
   const quantity = () => {
-    let shownListingQuantity = Listing.Quantity;
-    if (shownListingQuantity <= 0 && sessionStorage.getItem('cartExpiryTime')) {
-      shownListingQuantity = order.Quantity;
-    }
+    const shownListingQuantity = isCartLocked ? order.Quantity : Listing.Quantity;
+
     return shownListingQuantity === 0 ? (
       <span>Sold out</span>
     ) : (
@@ -76,11 +74,12 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
           }}
           quantity={shownListingQuantity}
         />
-                {
-          !isCartLocked && order.Quantity > Listing.Quantity ? <div className="cart__listing-low-stock">
-            <ErrorOutlineIcon color="primary"/>
-            <span>Looks like the stock has changed since you left</span></div> : null
-        }
+        {!isCartLocked && order.Quantity > Listing.Quantity ? (
+          <div className="cart__listing-low-stock">
+            <ErrorOutlineIcon color="primary" />
+            <span>Looks like the stock has changed since you left</span>
+          </div>
+        ) : null}
       </>
     );
   };
@@ -95,7 +94,13 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
       ></img>
       <div className="cart__listing-details">
         <div className="cart__listing-header">
-          <span className="cart__listing-name" onClick={() => navigateToListing(Listing)}>
+          <span
+            className="cart__listing-name"
+            onClick={() => {
+              dispatch(listingsApi.util.invalidateTags(['ListingDetails']));
+              return navigateToListing(Listing);
+            }}
+          >
             {Listing?.ListingName}&nbsp;<span className="cart__listing-name-quantity">{`x${order.Quantity}`}</span>
           </span>
           <span className="cart__listing-cost">${costToString(listingQuantityCost)}</span>

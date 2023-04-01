@@ -1,8 +1,8 @@
 import './ProductDetailsPage.scss';
-import { useAppDispatch } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useEffect } from 'react';
 import { useGetListingByIdQuery } from '../../redux/api/listings';
-import { setListingDetails } from '../../redux/reducers/listingsSlice';
+import { setIsLoadingListingDetails, setListingDetails } from '../../redux/reducers/listingsSlice';
 import { Grid } from '@mui/material';
 import ImagePreviews from './ImagePreviews';
 import ProductDetails from './ProductDetails';
@@ -13,6 +13,10 @@ function ProductDetailsPage() {
   const dispatch = useAppDispatch();
   const { listingId } = useParams();
   const { data, isLoading } = useGetListingByIdQuery(listingId || '');
+  const isLoadingDetails = useAppSelector((state) => state.listings.isLoadingListingDetails);
+  useEffect(() => {
+    dispatch(setIsLoadingListingDetails(isLoading));
+  }, [isLoading]);
   useEffect(() => {
     if (data) {
       dispatch(setListingDetails(data));
@@ -24,10 +28,10 @@ function ProductDetailsPage() {
       <Breadcrumbs />
       <Grid container className="product-details-page">
         <Grid item xs={6} className="product-details-page__item">
-          <ImagePreviews isLoading={isLoading} />
+          <ImagePreviews isLoading={isLoadingDetails} />
         </Grid>
         <Grid item xs={6} className="product-details-page__item">
-          <ProductDetails isLoading={isLoading} />
+          <ProductDetails isLoading={isLoadingDetails} />
         </Grid>
       </Grid>
     </div>

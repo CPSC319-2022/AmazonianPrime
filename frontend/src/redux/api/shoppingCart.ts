@@ -82,7 +82,6 @@ export const shoppingCartApi = createApi({
           },
         };
       },
-      invalidatesTags: ['CartItems']
     }),
     addListingToCart: builder.mutation<
       ShoppingCartItem,
@@ -211,6 +210,7 @@ export const shoppingCartApi = createApi({
 
 export const {
   useAddListingToCartMutation,
+  useLazyShoppingCartQuery,
   useUpdateListingToCartMutation,
   useCancelCartLockMutation,
   useCheckoutMutation,

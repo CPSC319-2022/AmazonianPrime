@@ -1,53 +1,37 @@
-import { Alert } from '@mui/material';
-import AccessAlarmsIcon from '@mui/icons-material/AccessAlarms';
 import { useState, useEffect } from 'react';
 import useAdminPrivelege from './useAdminPrivelege';
 import { useDispatch } from 'react-redux';
-import { shoppingCartApi } from '../redux/api/shoppingCart';
-import { listingsApi } from '../redux/api/listings';
+import { useLazyShoppingCartQuery } from '../redux/api/shoppingCart';
+import { useAppSelector } from '../redux/store';
+import { unsetCartLock } from '../redux/reducers/appSlice';
+import { useLazyGetUsersQuery } from '../redux/api/admin';
+import { setIsLoadingCart, addItemsToCart } from '../redux/reducers/shoppingCartSlice';
 
 export const useCartLock = () => {
-    let interval: any;
+  let interval: any;
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-
-  const [deadline, setDeadline] = useState(sessionStorage.getItem('cartExpiryTime'));
-  const [arn, setArn] = useState(sessionStorage.getItem('arn'));
-  const [taskToken, setTaskToken] = useState(sessionStorage.getItem('taskToken'))
+  const deadline = useAppSelector((state) => state.app.expiryDate);
   const { isAdminPrivelegeRequested } = useAdminPrivelege();
-
-  const clearCartStorage =() => {
-    clearInterval(interval)
-    sessionStorage.removeItem('arn');
-    sessionStorage.removeItem('taskToken');
-    sessionStorage.removeItem('cartExpiryTime');
-
-    setArn(null)
-    setTaskToken(null)
-    setDeadline(null)
-    dispatch(shoppingCartApi.util.invalidateTags(['CartItems']));
-    dispatch(listingsApi.util.invalidateTags(['Listings', 'UserListings', 'ListingDetails']))
-  }
-
+  const user = useAppSelector((state) => state.user.value);
+  const [trigger, { isLoading, data }] = useLazyShoppingCartQuery();
   useEffect(() => {
     if (isAdminPrivelegeRequested) {
-        clearCartStorage();
+      // clearCartStorage();
     }
   }, [isAdminPrivelegeRequested]);
 
+  useEffect(() => {
+    dispatch(setIsLoadingCart({ isLoading }));
+  }, [isLoading]);
 
-  const setCartStorage = (arnInput: string, taskTokenInput: string, cartExpiryTime: string) => {
-    sessionStorage.setItem('arn', arnInput);
-    sessionStorage.setItem('taskToken', taskTokenInput);
-    sessionStorage.setItem('cartExpiryTime', cartExpiryTime);
-
-    setArn(arnInput);
-    setTaskToken(taskTokenInput);
-    setDeadline(cartExpiryTime)
-    getTime();
-  }
+  useEffect(() => {
+    if (data) {
+      dispatch(setIsLoadingCart(false));
+      dispatch(addItemsToCart(data));
+    }
+  }, [data]);
 
   const getTime = () => {
     if (!deadline) {
@@ -56,7 +40,8 @@ export const useCartLock = () => {
     const time = Date.parse(deadline) - Date.now();
 
     if (time <= 0) {
-      clearCartStorage();
+      dispatch(unsetCartLock(null));
+      trigger(user?.UserID || '');
       return;
     }
 
@@ -80,14 +65,7 @@ export const useCartLock = () => {
   }, [deadline]);
 
   return {
-    isCartLocked: deadline !== null,
-    clearCartStorage,
-    setCartStorage,
-    arn,
-    taskToken,
-    cartExpiryTime: deadline,
     minutes,
     seconds,
-    isLoading
-}
+  };
 };

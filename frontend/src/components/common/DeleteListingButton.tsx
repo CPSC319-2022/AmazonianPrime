@@ -45,29 +45,29 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
         </Snackbar>
       )}
       <Tooltip title={tooltipContent}>
-      <Button className="pdp__delete-listing" disabled={disabled}>
-        {showIcon && <DeleteOutlineIcon sx={{ fontSize: 20 }} />}
-        <span
-          onClick={() => {
-            setQueueToast(true);
-            handleClick()
-              ?.unwrap()
-              .then(() => {
-                setQueueToast(false);
-                dispatch(setFailMessage(null));
-                dispatch(setSuccessMessage(successMessage));
-              })
-              .catch((e: any) => {
-                dispatch(setSuccessMessage(null));
-                setQueueToast(false);
-                dispatch(setFailMessage(failMessage));
-              });
-          }}
-        >
-          Remove Listing
+        <Button className="pdp__delete-listing" disabled={disabled}>
+          {showIcon && <DeleteOutlineIcon sx={{ fontSize: 20 }} />}
+          <span
+            onClick={() => {
+              setQueueToast(true);
+              handleClick()
+                ?.unwrap()
+                .then(() => {
+                  setQueueToast(false);
+                  dispatch(setFailMessage(null));
+                  dispatch(setSuccessMessage(successMessage));
+                })
+                .catch((e: any) => {
+                  dispatch(setSuccessMessage(null));
+                  setQueueToast(false);
+                  dispatch(setFailMessage(failMessage));
+                });
+            }}
+          >
+            Remove Listing
           </span>
         </Button>
-        </Tooltip>
+      </Tooltip>
     </div>
   );
 };

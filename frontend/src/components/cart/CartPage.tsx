@@ -14,15 +14,21 @@ import { useState } from 'react';
 import { useGetPaymentsQuery, useGetShippingAddressQuery } from '../../redux/api/user';
 import { useCheckoutMutation, useRetryCheckoutMutation } from '../../redux/api/shoppingCart';
 import { useDispatch } from 'react-redux';
-import { setFailMessage, setQueueMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
+import {
+  setCartLock,
+  setFailMessage,
+  setQueueMessage,
+  setSuccessMessage,
+  unsetCartLock,
+} from '../../redux/reducers/appSlice';
 import { LoadingButton } from '@mui/lab';
 import moment from 'moment';
 import { ExpiryDate } from '../common/ExpiryDate';
-import { useCartLock } from '../../utils/useCartLock';
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
-  const {arn, taskToken, cartExpiryTime, clearCartStorage, setCartStorage, isCartLocked} = useCartLock();
+  const { arn, taskToken, expiryDate: cartExpiryTime } = useAppSelector((state) => state.app);
+  const isCartLocked = cartExpiryTime !== null;
   const [checkout] = useCheckoutMutation();
   const [retryCheckout] = useRetryCheckoutMutation();
   const [didCheckout, setDidCheckout] = useState(false);
@@ -81,8 +87,7 @@ function CartPage() {
   const handleCheckoutError = (reason?: string, clearCart: boolean = true) => {
     setIsCheckingOut(false);
     if (clearCart) {
-      clearCartStorage();
-
+      dispatch(unsetCartLock(null));
     }
     dispatch(setFailMessage(reason ?? 'Failed to continue with the checkout. Please try again later'));
   };
@@ -125,7 +130,7 @@ function CartPage() {
                   handleCheckoutError();
                   return;
                 }
-                clearCartStorage();
+                dispatch(unsetCartLock(null));
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
@@ -140,16 +145,24 @@ function CartPage() {
               .unwrap()
               .then((result) => {
                 if (result.TaskToken) {
-                  setCartStorage(result.ExecutionArn, result.TaskToken, result.ExpiryTime)
+                  dispatch(
+                    setCartLock({
+                      arn: result.ExecutionArn,
+                      taskToken: result.TaskToken,
+                      expiryDate: result.ExpiryTime,
+                    }),
+                  );
                   handleCheckoutError(
                     'We encountered an issue with the transaction. Please modify your payment details while we hold your items.',
-                    false
+                    false,
                   );
                   return;
                 }
                 if (result.status === 400) {
                   handleCheckoutError(
-                    result.error?.name === "PurchaseQuantityExceededError" ? 'Looks like some items have been purchased since you were gone. Please update your Shopping Cart before proceeding.' : undefined
+                    result.error?.name === 'PurchaseQuantityExceededError'
+                      ? 'Looks like some items have been purchased since you were gone. Please update your Shopping Cart before proceeding.'
+                      : undefined,
                   );
                   return;
                 }

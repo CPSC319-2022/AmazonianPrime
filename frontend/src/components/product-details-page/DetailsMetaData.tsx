@@ -3,7 +3,6 @@ import React from 'react';
 import { useAppSelector } from '../../redux/store';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { ShoppingCartItem } from '../../types/shoppingCartItem';
-import { useCartLock } from '../../utils/useCartLock';
 import { QuantitySelect } from '../common/QuantitySelect';
 import './DetailsMetaData.scss';
 
@@ -12,7 +11,7 @@ const DetailsMetaData: React.FC<{ selectQuantity: number; setSelectQuantity: any
   setSelectQuantity,
   itemInCart,
 }) => {
-  const {isCartLocked} = useCartLock();
+  const isCartLocked = useAppSelector((state) => state.app.expiryDate) !== null;
   const listing = useAppSelector((state) => state.listings.listingDetails);
   if (!listing) {
     return null;
@@ -28,10 +27,7 @@ const DetailsMetaData: React.FC<{ selectQuantity: number; setSelectQuantity: any
     </>
   );
 
-  let shownListingQuantity = listing.Quantity;
-  if (shownListingQuantity <= 0 && isCartLocked) {
-    shownListingQuantity = itemInCart?.Quantity ?? 0
-  }
+  const shownListingQuantity = isCartLocked ? itemInCart?.Quantity || 0 : listing.Quantity;
   return (
     <div>
       <div className="product-details__small-header">Details</div>
@@ -45,23 +41,27 @@ const DetailsMetaData: React.FC<{ selectQuantity: number; setSelectQuantity: any
           <p className="product-details__details__grey-text">Quantity</p>
           <span className="product-details__details__grey-text">({shownListingQuantity} items available)</span>
         </Grid>
-        <Grid item xs={9} marginTop={1.5} className="product-details__quantity-container">
-          <FormControl
-          disabled={isCartLocked}
-          >
-          <QuantitySelect
-            quantity={shownListingQuantity}
-            controlledValue={selectQuantity}
-            setValue={setSelectQuantity}
-            defaultValue={itemInCart?.Quantity}
-          />
-          
-          </FormControl>
-          {
-          !isCartLocked && itemInCart && itemInCart?.Quantity > listing.Quantity ? <div className="cart__listing-low-stock">
-            <ErrorOutlineIcon color="primary"/>
-            <span>Looks like the stock has changed since you left</span></div> : null
-        }
+        <Grid item xs={9} marginTop={1.5}>
+          {shownListingQuantity === 0 ? (
+            <span>Sold out</span>
+          ) : (
+            <div className="product-details__quantity-container">
+              <FormControl disabled={isCartLocked}>
+                <QuantitySelect
+                  quantity={shownListingQuantity}
+                  controlledValue={selectQuantity}
+                  setValue={setSelectQuantity}
+                  defaultValue={itemInCart?.Quantity}
+                />
+              </FormControl>
+              {!isCartLocked && itemInCart && itemInCart?.Quantity > listing.Quantity ? (
+                <div className="cart__listing-low-stock">
+                  <ErrorOutlineIcon color="primary" />
+                  <span>Looks like the stock has changed since you left</span>
+                </div>
+              ) : null}
+            </div>
+          )}
         </Grid>
       </Grid>
     </div>
