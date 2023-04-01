@@ -94,6 +94,10 @@ export const shoppingCartApi = createApi({
               },
               Quantity: body.Quantity,
             });
+            draft.Subtotal = null;
+            draft.TotalCost = null;
+            draft.GSTTax = null;
+            draft.PSTTax = null;
           }),
         );
         try {
@@ -135,6 +139,10 @@ export const shoppingCartApi = createApi({
               return item;
             });
             draft.TotalQuantity = quantity;
+            draft.Subtotal = null;
+            draft.TotalCost = null;
+            draft.GSTTax = null;
+            draft.PSTTax = null;
           }),
         );
         try {
@@ -165,6 +173,10 @@ export const shoppingCartApi = createApi({
           shoppingCartApi.util.updateQueryData('shoppingCart', userId, (draft) => {
             draft.TotalQuantity = draft.TotalQuantity - quantityRemoved;
             draft.Items = draft.Items.filter((cartItem) => cartItem.ListingID !== body.ListingID);
+            draft.Subtotal = null;
+            draft.TotalCost = null;
+            draft.GSTTax = null;
+            draft.PSTTax = null;
           }),
         );
         try {

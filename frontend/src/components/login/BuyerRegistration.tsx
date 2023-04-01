@@ -116,7 +116,7 @@ function BuyerRegistration() {
       UserID: user?.UserID,
       AddressID: '',
       CreditCardNum: Number(creditCardInput),
-      ExpiryDate: expiryDateInput.current?.value,
+      ExpiryDate: expiryDateInput.current?.value.replace(/\s/g, ''),
       CVV: cvvInput,
       CardHolderName: firstNameInput + ' ' + lastNameInput,
     };
