@@ -16,7 +16,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useCallback, useEffect } from 'react';
 import { useGetOrdersQuery, useLazyGetOrdersQuery } from '../../redux/api/orders';
-import { addItemsToOrders, setIsLoadingOrders } from '../../redux/reducers/ordersSlice';
+import { setOrders, setIsLoadingOrders } from '../../redux/reducers/ordersSlice';
 import { useAppSelector } from '../../redux/store';
 import Breadcrumbs from '../common/Breadcrumbs';
 import { Order } from '../../types/order';
@@ -40,7 +40,7 @@ function OrdersPage() {
   useEffect(() => {
     if (orders) {
       dispatch(setIsLoadingOrders({ isLoadingOrders: false }));
-      dispatch(addItemsToOrders(orders));
+      dispatch(setOrders(orders));
     } else {
       dispatch(setIsLoadingOrders({ isLoadingOrders: true }));
     }
@@ -54,17 +54,8 @@ function OrdersPage() {
     navigate(`?page=${value}`);
   };
 
-  function searchForOrders(orders: Order[] | undefined, query: string) {
-    if (!query || !orders) {
-      return orders;
-    } else {
-      //dummy search query
-      return orders.filter((item) => item.OrderTimestamp.toLowerCase().includes(query.toLowerCase()));
-    }
-  }
-
   const changeHandler = (event: any) => {
-    searchForOrders(data, event.target?.value);
+    //searchForOrders(data, event.target?.value);
   };
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
 
@@ -92,7 +83,7 @@ function OrdersPage() {
               }}
             />
           </Grid>
-          <Ordered orders={data} />
+          <Ordered orders={data?.Data} />
         </Grid>
         <Pagination
           className="gallery__pagination"
