@@ -17,11 +17,12 @@ import { useDispatch } from 'react-redux';
 import { setFailMessage, setQueueMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 import { LoadingButton } from '@mui/lab';
 import moment from 'moment';
-import { isExpiredDate } from '../../utils/escapeDateFromSQL';
 import { ExpiryDate } from '../common/ExpiryDate';
+import { useCartLock } from '../../utils/useCartLock';
 
 function CartPage() {
   const user = useAppSelector((state) => state.user.value);
+  const {arn, taskToken, cartExpiryTime, clearCartStorage, setCartStorage, isCartLocked} = useCartLock();
   const [checkout] = useCheckoutMutation();
   const [retryCheckout] = useRetryCheckoutMutation();
   const [didCheckout, setDidCheckout] = useState(false);
@@ -76,15 +77,13 @@ function CartPage() {
   };
 
   const orderSummaryText = <span className="cart__order-summary-title">Order Summary</span>;
-  const clearStorage = () => {
-    sessionStorage.removeItem('arn');
-    sessionStorage.removeItem('taskToken');
-    sessionStorage.removeItem('cartExpiryTime');
-    window.dispatchEvent(new Event('cartExpiryTimeEvent'));
-  };
-  const handleCheckoutError = (reason?: string) => {
+
+  const handleCheckoutError = (reason?: string, clearCart: boolean = true) => {
     setIsCheckingOut(false);
-    clearStorage();
+    if (clearCart) {
+      clearCartStorage();
+
+    }
     dispatch(setFailMessage(reason ?? 'Failed to continue with the checkout. Please try again later'));
   };
   const handleCheckoutSuccess = () => {
@@ -102,7 +101,6 @@ function CartPage() {
       <LoadingButton
         loading={isCheckingOut}
         onClick={() => {
-          const cartExpiry = sessionStorage.getItem('cartExpiryTime');
           const now = new Date();
           const checkoutAddress = shippingAddresses && shippingAddresses[selectedAddress];
           const checkoutPayment = payments && payments[selectedPayment];
@@ -112,12 +110,12 @@ function CartPage() {
             setIsCheckingOut(false);
             return;
           }
-          if (moment(now).isBefore(cartExpiry)) {
+          if (moment(now).isBefore(cartExpiryTime)) {
             retryCheckout({
               UserID: user?.UserID || '',
               body: {
-                TaskToken: sessionStorage.getItem('taskToken') || '',
-                ExecutionArn: sessionStorage.getItem('arn') || '',
+                TaskToken: taskToken || '',
+                ExecutionArn: arn || '',
                 PaymentID: checkoutPayment.PaymentID,
               },
             })
@@ -127,7 +125,7 @@ function CartPage() {
                   handleCheckoutError();
                   return;
                 }
-                clearStorage();
+                clearCartStorage();
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
@@ -142,17 +140,17 @@ function CartPage() {
               .unwrap()
               .then((result) => {
                 if (result.TaskToken) {
+                  setCartStorage(result.ExecutionArn, result.TaskToken, result.ExpiryTime)
                   handleCheckoutError(
                     'We encountered an issue with the transaction. Please modify your payment details while we hold your items.',
+                    false
                   );
-                  sessionStorage.setItem('arn', result.ExecutionArn);
-                  sessionStorage.setItem('taskToken', result.TaskToken);
-                  sessionStorage.setItem('cartExpiryTime', result.ExpiryTime);
-                  window.dispatchEvent(new Event('cartExpiryTimeEvent'));
                   return;
                 }
                 if (result.status === 400) {
-                  handleCheckoutError();
+                  handleCheckoutError(
+                    result.error?.name === "PurchaseQuantityExceededError" ? 'Looks like some items have been purchased since you were gone. Please update your Shopping Cart before proceeding.' : undefined
+                  );
                   return;
                 }
                 handleCheckoutSuccess();
@@ -192,7 +190,7 @@ function CartPage() {
 
   const renderCartItems = () => {
     return cartItems && cartItems.TotalQuantity > 0 && !isLoading
-      ? cartItems?.Items.map((order, index) => <CartItem key={index} order={order} />)
+      ? cartItems?.Items.map((order, index) => <CartItem isCartLockedInput={isCartLocked} key={index} order={order} />)
       : noContent;
   };
 

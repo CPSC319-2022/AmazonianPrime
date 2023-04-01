@@ -1,6 +1,6 @@
 import './ProductDetails.scss';
 import { useAppSelector } from '../../redux/store';
-import { Alert, Button, Grid, Snackbar } from '@mui/material';
+import { Alert, Button, Grid, Snackbar, Tooltip } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import DetailsMetaData from './DetailsMetaData';
 import ProductDetailsSkeleton from './ProductDetailsSkeleton';
@@ -13,6 +13,7 @@ import { useAddListingToCartMutation, useUpdateListingToCartMutation } from '../
 import { costToString } from '../../utils/costToString';
 import { useNavigate } from 'react-router-dom';
 import useAdminPrivelege from '../../utils/useAdminPrivelege';
+import { useCartLock } from '../../utils/useCartLock';
 
 interface ProductDetailsProps {
   isLoading: boolean;
@@ -26,6 +27,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
   const { isAdminPrivelegeRequested } = useAdminPrivelege();
   const user = useAppSelector((state) => state.user.value);
   const [addListingToCart] = useAddListingToCartMutation();
+  const {isCartLocked} = useCartLock();
   const itemInCart = useAppSelector((state) => state.cart.items)?.Items.find(
     (value) => value.ListingID === listing?.ListingID,
   );
@@ -113,9 +115,11 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
         </Grid>
         {Number(user?.UserID) !== listing.UserID && !itemInCart && !isAdminPrivelegeRequested ? (
           <Grid item xs={12} className="product-details__buttons">
+            <Tooltip title="You may not edit your cart while we hold your items." disableHoverListener={!isCartLocked}>
             <Button
               variant="contained"
               color="secondary"
+              disabled={isCartLocked}
               onClick={() => {
                 addToCart();
               }}
@@ -123,9 +127,12 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
             >
               Add to Cart
             </Button>
+            </Tooltip>
+            <Tooltip title="You may not edit your cart while we hold your items." disableHoverListener={!isCartLocked}>
             <Button
               variant="contained"
               color="secondary"
+              disabled={isCartLocked}
               sx={{ ml: 2, paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
               onClick={() => {
                 addToCart();
@@ -134,6 +141,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
             >
               Buy Now
             </Button>
+            </Tooltip>
           </Grid>
         ) : null}
       </Grid>

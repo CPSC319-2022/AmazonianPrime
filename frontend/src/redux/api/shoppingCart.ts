@@ -14,7 +14,7 @@ export const shoppingCartApi = createApi({
       query: (userId: string) => `user/shopping-cart/${userId}`,
       providesTags: ['CartItems'],
     }),
-    checkout: builder.mutation<any, { UserID: string; AddressID: string; PaymentID: string }>({
+    checkout: builder.mutation<any, { UserID: string; AddressID: string; PaymentID: string | number }>({
       query(body) {
         return {
           url: `checkout/test`,
@@ -38,7 +38,7 @@ export const shoppingCartApi = createApi({
     }),
     retryCheckout: builder.mutation<
       any,
-      { UserID: string; body: { TaskToken: string; ExecutionArn: string; PaymentID: string } }
+      { UserID: string; body: { TaskToken: string; ExecutionArn: string; PaymentID: string | number } }
     >({
       query({ body }) {
         return {
@@ -63,6 +63,26 @@ export const shoppingCartApi = createApi({
           }),
         );
       },
+    }),
+    cancelCartLock: builder.mutation<
+      any,
+      { UserID: string; body: { TaskToken: string; ExecutionArn: string; PaymentID: string | number } }
+    >({
+      query({ body }) {
+        return {
+          url: `checkout/retry`,
+          credentials: 'include',
+          method: 'POST',
+          body: {
+            ...body,
+            ExecutionArn: body.ExecutionArn,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['CartItems']
     }),
     addListingToCart: builder.mutation<
       ShoppingCartItem,
@@ -192,6 +212,7 @@ export const shoppingCartApi = createApi({
 export const {
   useAddListingToCartMutation,
   useUpdateListingToCartMutation,
+  useCancelCartLockMutation,
   useCheckoutMutation,
   useRetryCheckoutMutation,
   useShoppingCartQuery,

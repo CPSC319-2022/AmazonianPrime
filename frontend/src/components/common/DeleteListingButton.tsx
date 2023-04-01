@@ -3,13 +3,15 @@ import { useAppSelector } from '../../redux/store';
 import { useState } from 'react';
 import { useDeleteListingMutation } from '../../redux/api/listings';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert, Button, Tooltip } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { setFailMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 
 interface DeleteListingButtonProps {
   handleClick: any;
   successMessage?: any;
+  disabled?: boolean;
+  tooltipContent?: string;
   queueMessage?: string;
   failMessage: string;
   showIcon?: boolean;
@@ -19,6 +21,8 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
   successMessage,
   handleClick,
   queueMessage,
+  tooltipContent,
+  disabled,
   failMessage,
   showIcon = true,
 }) => {
@@ -40,7 +44,8 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
           </Alert>
         </Snackbar>
       )}
-      <div className="pdp__delete-listing">
+      <Tooltip title={tooltipContent}>
+      <Button className="pdp__delete-listing" disabled={disabled}>
         {showIcon && <DeleteOutlineIcon sx={{ fontSize: 20 }} />}
         <span
           onClick={() => {
@@ -60,8 +65,9 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
           }}
         >
           Remove Listing
-        </span>
-      </div>
+          </span>
+        </Button>
+        </Tooltip>
     </div>
   );
 };
