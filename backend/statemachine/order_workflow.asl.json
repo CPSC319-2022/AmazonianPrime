@@ -78,7 +78,7 @@
             "Send Wait Token": {
               "Type": "Task",
               "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-              "HeartbeatSeconds": 296,
+              "HeartbeatSeconds": 297,
               "Parameters": {
                 "Payload": {
                   "input.$": "$",
