@@ -19,7 +19,7 @@ export const AccountButton = () => {
     : [];
   const userPrivilegeButtons = !isAdminPrivelegeRequested ? ['Manage Profile', 'My Listings'] : [];
 
-  const items = ['User Settings', ...userPrivilegeButtons, ...switchAdminText, 'Logout'];
+  const items = ['User Settings', 'Home', ...userPrivilegeButtons, ...switchAdminText, 'Logout'];
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const handleRedirect = (category: string) => {
     handleCloseMenu();
@@ -27,6 +27,8 @@ export const AccountButton = () => {
       dispatch(setUser(null));
       sessionStorage.clear();
       window.dispatchEvent(new Event('storageChangeEvent'));
+    } else if (category === 'Home') {
+      navigate('/');
     } else if (category === 'Switch to User Privileges') {
       if (setPrivelege) {
         setPrivelege(false);

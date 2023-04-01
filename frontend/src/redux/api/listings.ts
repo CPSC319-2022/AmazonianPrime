@@ -50,7 +50,7 @@ export const listingsApi = createApi({
           patchResultListings.undo();
         }
       },
-      invalidatesTags: ['UserListings'],
+      invalidatesTags: ['UserListings', 'Listings'],
     }),
     getListingsByUserId: builder.query<PaginatedListingPreviews, { page: number; listingUserId: string }>({
       query: ({ page, listingUserId }) => {

@@ -40,7 +40,7 @@ export const SellerSettingsProfile = () => {
           </div>
         )}
       </div>
-      <RegisterSeller isUpdatingExisting={true} />
+      <RegisterSeller isUpdatingExisting={data ? true : false} />
     </div>
   );
 };
