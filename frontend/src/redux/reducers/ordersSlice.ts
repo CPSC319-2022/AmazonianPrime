@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Order } from '../../types/order';
+import { OrderItems } from '../../types/OrderItems';
 
 export interface OrdersState {
-  orders: Order[] | null;
+  orders: OrderItems | null;
   isLoading: boolean;
 }
 
@@ -14,16 +14,16 @@ interface SliceReducers {
   [x: string]: (state: OrdersState, action: Action) => void;
 }
 
-export const orders = createSlice<OrdersState, SliceReducers, 'ordersSlice'>({
+export const ordersInfo = createSlice<OrdersState, SliceReducers, 'ordersSlice'>({
   name: 'ordersSlice',
   initialState: {
     orders: null,
     isLoading: false,
   },
   reducers: {
-    addOrderToOrders: (state: OrdersState, action: Action) => {
+    addItemToOrders: (state: OrdersState, action: Action) => {
       if (action?.payload) {
-        // state.items = [...state.items, action.payload];
+        // state.orders = [...state.orders, action.payload];
       }
     },
     setIsLoadingOrders: (state: OrdersState, action: Action) => {
@@ -31,12 +31,18 @@ export const orders = createSlice<OrdersState, SliceReducers, 'ordersSlice'>({
         state.isLoading = action.payload?.isLoading;
       }
     },
+    addItemsToOrders: (state: OrdersState, action: Action) => {
+      if (action?.payload) {
+        state.orders = action.payload;
+      }
+    },
   },
 });
 
 export const {
-  addOrderToOrders,
-  setIsLoadingOrders
-} = orders.actions;
+  addItemOrders,
+  setIsLoadingOrders,
+  addItemsToOrders
+} = ordersInfo.actions;
 
-export default orders.reducer;
+export default ordersInfo.reducer;

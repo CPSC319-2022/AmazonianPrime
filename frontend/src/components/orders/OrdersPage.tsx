@@ -1,31 +1,24 @@
-import { debounce, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField} from '@mui/material';
+import { debounce, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Pagination, Select, TextField} from '@mui/material';
 import './OrdersPage.scss';
 import SearchIcon from '@mui/icons-material/Search';
 import { Ordered } from './Ordered';
-import { Delivered } from './Delivered';
-import { Order } from '../../types/order';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useGetOrdersQuery, useLazyGetOrdersQuery } from '../../redux/api/orders';
 import { setIsLoadingOrders } from '../../redux/reducers/ordersSlice';
 import { useAppSelector } from '../../redux/store';
-import NoContent from '../common/NoContent';
 
 function OrdersPage() {
-  const dummyOrders: Order[] = [];
-
     const user = useAppSelector((state) => state.user.value);
     const [searchParams] = useSearchParams();
     const page = searchParams.get('page');
     const orders = useAppSelector((state) => state.orders.orders);
     const isLoading = useAppSelector((state) => state.orders.isLoading) || !orders;
-    const [getOrdersByName, filteredData] = useLazyGetOrdersQuery();
+    const [getOrdersByUserID, filteredData] = useLazyGetOrdersQuery();
     const { data: data } = useGetOrdersQuery({
       userId: user?.UserID,
-      page: page == null || Number(page) <= 0 ? 1 : Number(page),
-      category: '',
-      name: ''});
+      page: page == null || Number(page) <= 0 ? 1 : Number(page)});
 
     useEffect(() => {
       dispatch(setIsLoadingOrders({ isLoadingOrders: isLoading }));
@@ -39,9 +32,6 @@ function OrdersPage() {
       }
     }, [orders]);
 
-    const [searchInput, setSearchInput] = useState('');
-    const [validatedSearchInput, setValidatedSearchInput] = useState('');
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
@@ -54,17 +44,13 @@ function OrdersPage() {
       const tokenizedSearchInput = value.split(' ');
       const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
       const dashSeperatedInput = firstTwoTokens.join('-');
-      setValidatedSearchInput(dashSeperatedInput);
-      getOrdersByName({
+      getOrdersByUserID({
         userId: user?.UserID,
         page: page == null || Number(page) <= 0 ? 1 : Number(page),
-        category: "",
-        name: dashSeperatedInput,
       });
     }
   
     const changeHandler = (event: any) => {
-      setSearchInput(event.target?.value);
       searchForOrders(event.target?.value);
     };
     const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
@@ -91,13 +77,13 @@ function OrdersPage() {
         <TextField
           placeholder="Search…"
           size="small"
+          autoComplete="off"
+          onChange={debouncedChangeHandler}
           style={{ height: 100 }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton>
                   <SearchIcon />
-                </IconButton>
               </InputAdornment>
             ), 
             style: {
@@ -107,14 +93,23 @@ function OrdersPage() {
           }}
         />
       </Grid>
+      <Ordered orders={data}/>
     </Grid>
-    
+    <Pagination
+      className="gallery__pagination"
+      count={
+        filteredData?.data
+          ? Math.ceil(Number(filteredData.data.Items) / 8.0)
+          : data
+          ? Math.ceil(Number(data.Items) / 8.0)
+          : 1
+      }
+      page={Number(page) ? Number(page) : 1}
+      onChange={handlePageChange}
+    />
   </div>
   );
 }
 
 export default OrdersPage;
-function useLazyGetUsersQuery(): [any, any] {
-  throw new Error('Function not implemented.');
-}
 
