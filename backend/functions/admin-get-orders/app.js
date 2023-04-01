@@ -55,9 +55,10 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   for(const order of Orders) {
-    const getPaymentQuery = `SELECT * FROM PaymentDetails, Address WHERE PaymentDetails.AddressID = Address.AddressID AND PaymentDetails.UserID = ${UserID}`;
+    const PaymentID = order['PaymentID']
+    const getPaymentQuery = `SELECT * FROM PaymentDetails, Address WHERE PaymentDetails.AddressID = Address.AddressID AND PaymentDetails.PaymentID = ${PaymentID}`;
 
-    order.Payment = await new Promise((resolve, reject) => {
+    const getPayment = await new Promise((resolve, reject) => {
       con.query(getPaymentQuery, function (err, res) {
         if (err) {
           reject("Couldn't get the payment details from database!");
@@ -65,27 +66,49 @@ exports.lambdaHandler = async (event, context) => {
         resolve(res);
       });
     });
-    getShippingQuery = `SELECT * FROM ShippingAddress, Address WHERE ShippingAddress.AddressID = Address.AddressID AND ShippingAddress.UserID = order.UserID`;
+    
+    order.Payment = getPayment[0];
+    
+    const AddressID = order['AddressID']
+    
+    const getShippingQuery = `SELECT * FROM Address WHERE Address.AddressID = ${AddressID}`;
 
-    order.Shipping = await new Promise((resolve, reject) => {
-      con.query(getPaymentQuery, function (err, res) {
+    const getShipping = await new Promise((resolve, reject) => {
+      con.query(getShippingQuery, function (err, res) {
         if (err) {
           reject("Couldn't get the payment details from database!");
         }
         resolve(res);
       });
     });
+    
+    order.Shipping = getShipping[0];
+    
+    const GivenOrderID = order['OrderID']
+    
+    const getOrderItemsQuery = `SELECT * FROM OrderItem WHERE OrderItem.OrderID = ${GivenOrderID}`
+    
+    const Items = await new Promise((resolve, reject) => {
+      con.query(getOrderItemsQuery, function (err, res) {
+        if (err) {
+          reject("Couldn't get the payment details from database!");
+        }
+        resolve(res);
+      });
+    });
+    
     var listings = []
-    for (const shoppingCartItem of Items) {
+    
+    for (const orderItem of Items) {
       const getListingQuery = `SELECT *
-                               FROM Listing
+                              FROM Listing
                                       LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath
-                                                 FROM ListingImage
-                                                 WHERE S3ImagePath IN
-                                                       (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images
+                                                FROM ListingImage
+                                                WHERE S3ImagePath IN
+                                                      (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images
                                                 ON Listing.ListingID = Images.ImageListingID
                                       JOIN Users on Listing.UserID = Users.UserID
-                               WHERE Listing.ListingID = ${shoppingCartItem.ListingID};`;
+                              WHERE Listing.ListingID = ${orderItem.ListingID};`;
       const Listing = await new Promise((resolve, reject) => {
         con.query(getListingQuery, function (err, res) {
           if (err) {
@@ -94,14 +117,14 @@ exports.lambdaHandler = async (event, context) => {
           resolve(res);
         });
       });
-      listings.push(Listing);
+      listings.push(Listing[0]);
     }
+    
     order.Listings = listings;
   }
-  console.log(Orders);
 
   await dbConnection.disconnectDB(con);
-
+  
   return {
     statusCode: 200,
     body: JSON.stringify(Orders),
