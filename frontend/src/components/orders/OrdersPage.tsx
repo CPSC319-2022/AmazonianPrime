@@ -18,6 +18,7 @@ import { useCallback, useEffect } from 'react';
 import { useGetOrdersQuery, useLazyGetOrdersQuery } from '../../redux/api/orders';
 import { setIsLoadingOrders } from '../../redux/reducers/ordersSlice';
 import { useAppSelector } from '../../redux/store';
+import { Order } from '../../types/order';
 
 function OrdersPage() {
   const user = useAppSelector((state) => state.user.value);
@@ -51,18 +52,17 @@ function OrdersPage() {
     navigate(`?page=${value}`);
   };
 
-  function searchForOrders(value: string) {
-    const tokenizedSearchInput = value.split(' ');
-    const firstTwoTokens = tokenizedSearchInput.slice(0, 2);
-    const dashSeperatedInput = firstTwoTokens.join('-');
-    getOrdersByUserID({
-      userId: user?.UserID,
-      page: page == null || Number(page) <= 0 ? 1 : Number(page),
-    });
+  function searchForOrders(orders: Order[] | undefined, query: string) {
+    if (!query || !orders) {
+      return orders;
+    } else {
+      //dummy search query
+      return orders.filter((item) => item.OrderTimestamp.toLowerCase().includes(query.toLowerCase()));
+    }
   }
 
   const changeHandler = (event: any) => {
-    searchForOrders(event.target?.value);
+    searchForOrders(data, event.target?.value);
   };
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
 
@@ -79,6 +79,7 @@ function OrdersPage() {
               variant="standard"
               style={{ backgroundColor: '#ffffff', width: 100 }}
             >
+              <MenuItem value={'all'}>All Orders</MenuItem>
               <MenuItem value={'ordered'}>Ordered</MenuItem>
               <MenuItem value={'delivered'}>Delivered</MenuItem>
             </Select>

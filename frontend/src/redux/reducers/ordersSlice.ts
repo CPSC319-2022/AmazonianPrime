@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { OrderItems } from '../../types/OrderItems';
+import { Order } from '../../types/order';
 
 export interface OrdersState {
-  orders: OrderItems | null;
+  orders: Order[] | null;
   isLoading: boolean;
 }
 
