@@ -60,11 +60,12 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
     setSelectQuantity(value);
   };
 
+  // TODO: add no results page
+  if (isLoading) {
+    return <ProductDetailsSkeleton />;
+  }
+
   if (!listing || !listing?.IsActiveListing) {
-    // TODO: add no results page
-    if (isLoading) {
-      return <ProductDetailsSkeleton />;
-    }
     return <NoContent message="There was no listing found, please try again later!" />;
   }
   const { ListingName, Cost, User, Description, PostedTimestamp, ListingID } = listing;

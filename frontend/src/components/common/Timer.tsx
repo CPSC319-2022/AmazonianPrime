@@ -44,6 +44,7 @@ const Timer = () => {
   useEffect(() => {
     if (listingData) {
       dispatch(setListingDetails(listingData));
+      dispatch(setIsLoadingListingDetails(false));
     }
   }, [listingData]);
 
@@ -59,6 +60,8 @@ const Timer = () => {
   }, [isFetching, isListingLoading]);
 
   const stopTimer = () => {
+    dispatch(setIsLoadingCart({ isLoading: true }));
+    dispatch(setIsLoadingListingDetails(true));
     setMinutes(0);
     setSeconds(0);
     dispatch(unsetCartLock(null));
@@ -68,12 +71,12 @@ const Timer = () => {
     }
     dispatch(listingsApi.util.invalidateTags(['ListingDetails']));
     dispatch(shoppingCartApi.util.invalidateTags(['CartItems']));
+    setLoading(false);
   };
 
   useEffect(() => {
     if (data) {
-      dispatch(setIsLoadingCart(false));
-      dispatch(setIsLoadingListingDetails(false));
+      dispatch(setIsLoadingCart({ isLoading: false }));
       dispatch(addItemsToCart(data));
     }
   }, [data]);
@@ -140,10 +143,11 @@ const Timer = () => {
               ExecutionArn: arn || '',
               PaymentID: -1,
             },
-          }).then(() => {
-            setLoading(false);
-            stopTimer();
-          });
+          })
+            .unwrap()
+            .then(() => {
+              stopTimer();
+            });
         }}
       >
         Clear Timer

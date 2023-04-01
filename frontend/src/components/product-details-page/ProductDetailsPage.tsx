@@ -12,6 +12,7 @@ import Breadcrumbs from '../common/Breadcrumbs';
 function ProductDetailsPage() {
   const dispatch = useAppDispatch();
   const { listingId } = useParams();
+
   const { data, isLoading } = useGetListingByIdQuery(listingId || '');
   const isLoadingDetails = useAppSelector((state) => state.listings.isLoadingListingDetails);
   useEffect(() => {
@@ -20,6 +21,7 @@ function ProductDetailsPage() {
   useEffect(() => {
     if (data) {
       dispatch(setListingDetails(data));
+      dispatch(setIsLoadingListingDetails(false));
     }
   }, [data]);
 
