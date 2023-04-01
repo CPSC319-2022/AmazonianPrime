@@ -39,10 +39,6 @@ export const ordersInfo = createSlice<OrdersState, SliceReducers, 'ordersSlice'>
   },
 });
 
-export const {
-  addItemOrders,
-  setIsLoadingOrders,
-  addItemsToOrders
-} = ordersInfo.actions;
+export const { addItemOrders, setIsLoadingOrders, addItemsToOrders } = ordersInfo.actions;
 
 export default ordersInfo.reducer;

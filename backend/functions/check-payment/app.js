@@ -23,7 +23,7 @@ exports.lambdaHandler = async (event, context) => {
     'Password1234',
     'databaseAmazonianPrime',
   );
-  
+
   const PaymentID = event['PaymentID'];
 
   const getPaymentQuery = `SELECT * FROM PaymentDetails WHERE PaymentID = ${PaymentID}`;
@@ -39,12 +39,12 @@ exports.lambdaHandler = async (event, context) => {
 
   let validPayment = false;
 
-  if (PaymentDetails[0]){
-    const dateStr = PaymentDetails[0]["ExpiryDate"];
+  if (PaymentDetails[0]) {
+    const dateStr = PaymentDetails[0]['ExpiryDate'];
     const [month, year] = dateStr.split('/');
     const dateObj = new Date(`20${year}`, parseInt(month) - 1);
-    const todayDate  = new Date();
-    if (todayDate < dateObj){
+    const todayDate = new Date();
+    if (todayDate < dateObj) {
       validPayment = true;
     }
   }
@@ -53,6 +53,6 @@ exports.lambdaHandler = async (event, context) => {
 
   return {
     statusCode: 200,
-    body: { ...event, "ValidPayment": validPayment},
+    body: { ...event, ValidPayment: validPayment },
   };
 };

@@ -18,7 +18,7 @@ exports.lambdaHandler = async (event, context) => {
     'Password1234',
     'databaseAmazonianPrime',
   );
-  
+
   const offset = event.queryStringParameters.offset;
   const limit = event.queryStringParameters.limit;
   const OrderID = event.queryStringParameters.orderId;

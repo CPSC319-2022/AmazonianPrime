@@ -66,7 +66,7 @@ exports.lambdaHandler = async (event, context) => {
     };
     shoppingCartItem.Listing.ImagePreview = S3ImagePath;
     Response.TotalQuantity += shoppingCartItem.Quantity;
-    if(ListingData.ItemCondition === "New") {
+    if (ListingData.ItemCondition === 'New') {
       pst += shoppingCartItem.Quantity * ListingData.Cost * 0.07;
       gst += shoppingCartItem.Quantity * ListingData.Cost * 0.05;
     }
@@ -82,7 +82,7 @@ exports.lambdaHandler = async (event, context) => {
   console.log(Response);
 
   await dbConnection.disconnectDB(con);
-  
+
   return {
     statusCode: 200,
     body: JSON.stringify(Response),

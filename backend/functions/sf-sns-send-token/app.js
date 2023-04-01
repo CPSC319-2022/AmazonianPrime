@@ -17,32 +17,32 @@ const sns = new AWS.SNS();
 exports.lambdaHandler = async (event, context) => {
   const topicArn = process.env.SNSTopicName;
   const TransactionID = event['TransactionID'];
-    
-    // Define the message attributes
-    const messageAttributes = {
-        'TransactionID': { DataType: 'String', StringValue: TransactionID}
-    };
-    
-    // Define the message body
-    const messageBody = 'Payment is okay! Poll for step function output';
-    
-    // Define the SNS parameters
-    const snsParams = {
-        TopicArn: topicArn,
-        Message: messageBody,
-        MessageAttributes: messageAttributes
-    };
-    
-    // Publish the message to the topic
-    try {
-        const result = await sns.publish(snsParams).promise();
-        console.log('Message sent:', result.MessageId);
-    } catch (err) {
-        console.error('Error publishing message:', err);
-    }
 
-      return {
-        statusCode: 200,
-        body: { ...event },
-      };
+  // Define the message attributes
+  const messageAttributes = {
+    TransactionID: { DataType: 'String', StringValue: TransactionID },
+  };
+
+  // Define the message body
+  const messageBody = 'Payment is okay! Poll for step function output';
+
+  // Define the SNS parameters
+  const snsParams = {
+    TopicArn: topicArn,
+    Message: messageBody,
+    MessageAttributes: messageAttributes,
+  };
+
+  // Publish the message to the topic
+  try {
+    const result = await sns.publish(snsParams).promise();
+    console.log('Message sent:', result.MessageId);
+  } catch (err) {
+    console.error('Error publishing message:', err);
+  }
+
+  return {
+    statusCode: 200,
+    body: { ...event },
+  };
 };

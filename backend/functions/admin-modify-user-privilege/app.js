@@ -85,7 +85,7 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const updateUserStatusQuery = `UPDATE Users SET IsAdmin = ${IsAdmin} WHERE UserID = ${RequestUserID}`
+  const updateUserStatusQuery = `UPDATE Users SET IsAdmin = ${IsAdmin} WHERE UserID = ${RequestUserID}`;
 
   const updateUserStatus = await new Promise((resolve, reject) => {
     con.query(updateUserStatusQuery, function (err, res) {
@@ -95,7 +95,7 @@ exports.lambdaHandler = async (event, context) => {
       resolve(res);
     });
   });
-  
+
   const getAlteredUserQuery = `SELECT UserID, IsAdmin FROM Users WHERE UserID = ${RequestUserID}`;
 
   const getAlteredUser = await new Promise((resolve, reject) => {

@@ -20,32 +20,32 @@ exports.lambdaHandler = async (event, context) => {
   const TransactionID = body['TransactionID'];
   console.log(body);
   console.log(TransactionID);
-    
-    // Define the message attributes
-    const messageAttributes = {
-        'TransactionID': { DataType: 'String', StringValue: TransactionID}
-    };
-    
-    // Define the message body
-    const messageBody = event['taskToken'];
-    
-    // Define the SNS parameters
-    const snsParams = {
-        TopicArn: topicArn,
-        Message: messageBody,
-        MessageAttributes: messageAttributes
-    };
-    
-    // Publish the message to the topic
-    try {
-        const result = await sns.publish(snsParams).promise();
-        console.log('Message sent:', result.MessageId);
-    } catch (err) {
-        console.error('Error publishing message:', err);
-    }
 
-      return {
-        statusCode: 200,
-        body: { ...body },
-      };
+  // Define the message attributes
+  const messageAttributes = {
+    TransactionID: { DataType: 'String', StringValue: TransactionID },
+  };
+
+  // Define the message body
+  const messageBody = event['taskToken'];
+
+  // Define the SNS parameters
+  const snsParams = {
+    TopicArn: topicArn,
+    Message: messageBody,
+    MessageAttributes: messageAttributes,
+  };
+
+  // Publish the message to the topic
+  try {
+    const result = await sns.publish(snsParams).promise();
+    console.log('Message sent:', result.MessageId);
+  } catch (err) {
+    console.error('Error publishing message:', err);
+  }
+
+  return {
+    statusCode: 200,
+    body: { ...body },
+  };
 };

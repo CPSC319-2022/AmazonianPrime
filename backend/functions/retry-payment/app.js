@@ -16,32 +16,28 @@ const sqs = new AWS.SQS();
 exports.lambdaHandler = async (event, context) => {
   const stepfunctions = new AWS.StepFunctions();
 
-  const {
-    TaskToken,
-    PaymentID,
-    ExecutionArn
-  } = JSON.parse(event.body);
+  const { TaskToken, PaymentID, ExecutionArn } = JSON.parse(event.body);
 
   const result = {
-    NewPaymentID: PaymentID
-  }
+    NewPaymentID: PaymentID,
+  };
 
   const params = {
     output: JSON.stringify(result),
-    taskToken: TaskToken
+    taskToken: TaskToken,
   };
 
   for (let i = 0; i < 3; i++) {
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await new Promise((resolve) => setTimeout(resolve, 400));
     stepfunctions.sendTaskSuccess(params, (err, data) => {
       if (err) {
-          console.error(err.message);
-          return;
+        console.error(err.message);
+        return;
       }
-      console.log(data);  
+      console.log(data);
     });
   }
-  
+
   let status = '';
   while (status !== 'SUCCEEDED' && status !== 'FAILED') {
     const describeParams = { executionArn: ExecutionArn };
