@@ -83,6 +83,7 @@ export const {
   useGetListingByIdQuery,
   useCreateListingMutation,
   useGetListingsQuery,
+  useLazyGetListingByIdQuery,
   useGetListingsByUserIdQuery,
   useDeleteListingMutation,
 } = listingsApi;

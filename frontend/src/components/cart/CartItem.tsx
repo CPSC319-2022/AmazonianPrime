@@ -1,23 +1,32 @@
+import { Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useRemoveListingFromCartMutation, useUpdateListingToCartMutation } from '../../redux/api/shoppingCart';
-import { setPartialListingDetails } from '../../redux/reducers/listingsSlice';
+import {
+  shoppingCartApi,
+  useRemoveListingFromCartMutation,
+  useUpdateListingToCartMutation,
+} from '../../redux/api/shoppingCart';
+import { setPartialListingDetails, unsetListingDetails } from '../../redux/reducers/listingsSlice';
 import { useAppSelector } from '../../redux/store';
 import { ListingPreview } from '../../types/listingPreview';
 import { ShoppingCartItem } from '../../types/shoppingCartItem';
 import { costToString } from '../../utils/costToString';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import useBreadcrumbHistory from '../../utils/useBreadcrumbHistory';
 import DeleteListingButton from '../common/DeleteListingButton';
 import { QuantitySelect } from '../common/QuantitySelect';
 import { UserDisplayName } from '../common/UserDisplayName';
+import { listingsApi } from '../../redux/api/listings';
 
 interface CartItemProps {
   order: ShoppingCartItem;
+  isCartLockedInput: boolean;
 }
-export const CartItem: React.FC<CartItemProps> = ({ order }) => {
+export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) => {
   const { Listing } = order;
   const dispatch = useDispatch();
+  const isCartLocked = useAppSelector((state) => state.app.expiryDate) !== null;
   const user = useAppSelector((state) => state.user.value);
   const [selectQuantity, setSelectQuantity] = useState(order.Quantity);
   const [addListingToCart] = useUpdateListingToCartMutation();
@@ -37,6 +46,43 @@ export const CartItem: React.FC<CartItemProps> = ({ order }) => {
   };
 
   const listingQuantityCost = order.Quantity * Listing.Cost;
+
+  const quantity = () => {
+    const shownListingQuantity = isCartLocked ? order.Quantity : Listing.Quantity;
+
+    return shownListingQuantity === 0 ? (
+      <span>Sold out</span>
+    ) : (
+      <>
+        <span className="cart__listing-quantity">Quantity</span>
+        <QuantitySelect
+          defaultValue={order.Quantity}
+          controlledValue={selectQuantity}
+          disabled={isCartLocked}
+          tooltipContent={isCartLocked ? 'You may not edit your cart while we hold your items.' : ''}
+          setValue={(value) => {
+            addListingToCart({
+              listing: Listing,
+              userId: user?.UserID || '',
+              body: {
+                ListingID: Listing.ListingID,
+                Quantity: Number(value),
+                ShoppingCartItemID: order.ShoppingCartItemID,
+              },
+            });
+            setSelectQuantity(value);
+          }}
+          quantity={shownListingQuantity}
+        />
+        {!isCartLocked && order.Quantity > Listing.Quantity ? (
+          <div className="cart__listing-low-stock">
+            <ErrorOutlineIcon color="primary" />
+            <span>Looks like the stock has changed since you left</span>
+          </div>
+        ) : null}
+      </>
+    );
+  };
   return (
     <div className="cart__listing-container">
       <img
@@ -48,35 +94,24 @@ export const CartItem: React.FC<CartItemProps> = ({ order }) => {
       ></img>
       <div className="cart__listing-details">
         <div className="cart__listing-header">
-          <span className="cart__listing-name" onClick={() => navigateToListing(Listing)}>
+          <span
+            className="cart__listing-name"
+            onClick={() => {
+              dispatch(listingsApi.util.invalidateTags(['ListingDetails']));
+              return navigateToListing(Listing);
+            }}
+          >
             {Listing?.ListingName}&nbsp;<span className="cart__listing-name-quantity">{`x${order.Quantity}`}</span>
           </span>
           <span className="cart__listing-cost">${costToString(listingQuantityCost)}</span>
         </div>
         <div className="cart__listing-user">{Listing?.User && <UserDisplayName user={Listing?.User} />}</div>
-        <div className="cart__listing-quantity-container">
-          <span className="cart__listing-quantity">Quantity</span>
-          <QuantitySelect
-            defaultValue={order.Quantity}
-            controlledValue={selectQuantity}
-            setValue={(value) => {
-              addListingToCart({
-                listing: Listing,
-                userId: user?.UserID || '',
-                body: {
-                  ListingID: Listing.ListingID,
-                  Quantity: Number(value),
-                  ShoppingCartItemID: order.ShoppingCartItemID,
-                },
-              });
-              setSelectQuantity(value);
-            }}
-            quantity={Listing.Quantity}
-          />
-        </div>
+        <div className="cart__listing-quantity-container">{quantity()}</div>
         <div className="cart__remove">
           <DeleteListingButton
             showIcon={false}
+            disabled={isCartLocked}
+            tooltipContent={isCartLocked ? 'You may not edit your cart while we hold your items.' : ''}
             successMessage={null}
             failMessage="We ran into an issue removing an item from your cart. Please try again later"
             handleClick={() =>

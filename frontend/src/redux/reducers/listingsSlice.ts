@@ -11,6 +11,7 @@ export interface ListingsState {
   listings: PaginatedListingPreviews | null;
   listingDetails: Listing | null;
   isLoadingListings: boolean;
+  isLoadingListingDetails: boolean;
 }
 
 interface Action {
@@ -28,6 +29,7 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
     amazonExlusives: null,
     listings: null,
     listingDetails: null,
+    isLoadingListingDetails: false,
     isLoadingListings: false,
   },
   reducers: {
@@ -40,6 +42,9 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
       if (action?.payload) {
         state.isLoadingListings = action.payload.isLoadingListings;
       }
+    },
+    setIsLoadingListingDetails: (state: ListingsState, action: Action) => {
+      state.isLoadingListingDetails = action.payload;
     },
     setRecentListings: (state: ListingsState, action: Action) => {
       if (action?.payload) {
@@ -67,6 +72,9 @@ export const listings = createSlice<ListingsState, SliceReducers, 'listingSlice'
         state.listingDetails = action.payload as Listing;
       }
     },
+    unsetListingDetails: (state: ListingsState, action: Action) => {
+      state.listingDetails = null;
+    },
   },
 });
 
@@ -75,7 +83,9 @@ export const {
   setPartialListingDetails,
   setListingDetails,
   setListings,
+  setIsLoadingListingDetails,
   setIsLoadingListings,
+  unsetListingDetails,
   setAmazonExclusives,
 } = listings.actions;
 
