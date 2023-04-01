@@ -4,8 +4,7 @@ import { useState } from 'react';
 import './Orders.scss';
 import { Order } from '../../types/order';
 import { useAppSelector } from '../../redux/store';
-
-
+import { costToString } from '../../utils/costToString';
 
 interface OrderedProps {
   orders: Order[] | undefined;
@@ -36,32 +35,31 @@ export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
       </Grid>
     </div>
   );
-  if (isLoading) {
+  if (isLoading || orders === null || !orders) {
     return ordersSkeleton;
   }
 
-  if (!orders) {
-      return (
-        <>
-          <div className="no-content-fixed">
-            <img
-              className="no-content-image"
-              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVR4nO2XQUojURRF3yIEB07F1ShYAxvdR3rS8x7U16GkPr0DFcE96AayDGkFXYBcKVGQkAhRq+43/xy4wxSpe9+7L4kAAAAAAAAAAAAAgBU53o9fsz+hdVZq4qDIwTjZjY12P27dBs0GVtvE/797sRmlkZo4T43foNnwG9CHcBWlVU//xWoJIDUFVdFb9dQWQFtKFb1VT20BpBKq6H311BhAclbRfPXUGkDrqqL56qk1gOSookXVU3MAacwqWlY9tQfQjlVFy6qn9gDSWFWkHEKx1AMCyN4BIYBMAFVXVHADggDcUyg2wG+EqCC/GTJobW7AUxe6noSmhx//+flI/Wf7Z/TPIoAVA7iefN74ed1MCGDlCZx+YfIXbQIbYAygOyIAbwX9JoBPHeGbbzjCvfkc4QJ+Hmokrc3PUP1QEUAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+G1vQGPLpfUqWqi4fhA+ji0v6iuVhdDB/Av9hRjrsCXlZFqYt7ncb24AG8hNDFlnKcUUeh10q+GM18AAAAAAAAAAAAgPiJPAPM6yK//8YO8QAAAABJRU5ErkJggg=="
-            />
-            Looks like you have not made any orders yet!
-          </div>
-        </>
-      );
-    }
-
+  if (orders?.length === 0) {
     return (
       <>
-        {orders.map(({ ShippingStatus, OrderTimestamp }) => (
-          <Contents status={ShippingStatus} date={OrderTimestamp} />
-        ))}
+        <div className="no-content-fixed">
+          <img
+            className="no-content-image"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVR4nO2XQUojURRF3yIEB07F1ShYAxvdR3rS8x7U16GkPr0DFcE96AayDGkFXYBcKVGQkAhRq+43/xy4wxSpe9+7L4kAAAAAAAAAAAAAgBU53o9fsz+hdVZq4qDIwTjZjY12P27dBs0GVtvE/797sRmlkZo4T43foNnwG9CHcBWlVU//xWoJIDUFVdFb9dQWQFtKFb1VT20BpBKq6H311BhAclbRfPXUGkDrqqL56qk1gOSookXVU3MAacwqWlY9tQfQjlVFy6qn9gDSWFWkHEKx1AMCyN4BIYBMAFVXVHADggDcUyg2wG+EqCC/GTJobW7AUxe6noSmhx//+flI/Wf7Z/TPIoAVA7iefN74ed1MCGDlCZx+YfIXbQIbYAygOyIAbwX9JoBPHeGbbzjCvfkc4QJ+Hmokrc3PUP1QEUAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+G1vQGPLpfUqWqi4fhA+ji0v6iuVhdDB/Av9hRjrsCXlZFqYt7ncb24AG8hNDFlnKcUUeh10q+GM18AAAAAAAAAAAAgPiJPAPM6yK//8YO8QAAAABJRU5ErkJggg=="
+          />
+          Looks like you have not made any orders yet!
+        </div>
       </>
     );
-  
+  }
+
+  return (
+    <div className="order-listings">
+      {orders.map((order) => (
+        <Contents order={order} />
+      ))}
+    </div>
+  );
 };
 
 function JoinListings(name: string, price: number, quantity: number, addComma: boolean) {
@@ -77,7 +75,7 @@ function JoinListings(name: string, price: number, quantity: number, addComma: b
   );
 }
 
-function Contents(order: { status: string; date: string }) {
+const Contents: React.FC<{ order: Order }> = ({ order }) => {
   const listingDummy: { name: string; price: number; quantity: number }[] = [
     { name: 'Blanket', price: 10, quantity: 1 },
     { name: 'Plant', price: 10, quantity: 3 },
@@ -87,7 +85,6 @@ function Contents(order: { status: string; date: string }) {
   const srcDummy =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVR4nO2XQUojURRF3yIEB07F1ShYAxvdR3rS8x7U16GkPr0DFcE96AayDGkFXYBcKVGQkAhRq+43/xy4wxSpe9+7L4kAAAAAAAAAAAAAgBU53o9fsz+hdVZq4qDIwTjZjY12P27dBs0GVtvE/797sRmlkZo4T43foNnwG9CHcBWlVU//xWoJIDUFVdFb9dQWQFtKFb1VT20BpBKq6H311BhAclbRfPXUGkDrqqL56qk1gOSookXVU3MAacwqWlY9tQfQjlVFy6qn9gDSWFWkHEKx1AMCyN4BIYBMAFVXVHADggDcUyg2wG+EqCC/GTJobW7AUxe6noSmhx//+flI/Wf7Z/TPIoAVA7iefN74ed1MCGDlCZx+YfIXbQIbYAygOyIAbwX9JoBPHeGbbzjCvfkc4QJ+Hmokrc3PUP1QEUAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+G1vQGPLpfUqWqi4fhA+ji0v6iuVhdDB/Av9hRjrsCXlZFqYt7ncb24AG8hNDFlnKcUUeh10q+GM18AAAAAAAAAAAAgPiJPAPM6yK//8YO8QAAAABJRU5ErkJggg==';
 
-  const dateOnly = order.date.split('T')[0];
   const firstListing = listingDummy[0];
   const totalCost = listingDummy.reduce((acc, item) => acc + item.price * item.quantity, 0);
   listingDummy.shift();
@@ -98,12 +95,13 @@ function Contents(order: { status: string; date: string }) {
   };
 
   return (
-    <>
-      <Grid item xs={1.9} marginTop={5}>
-        <img src={srcDummy} height={200} width={200} />
+    <div className="orders-page__container">
+      <Grid item xs={1.9}>
+        <img src={srcDummy} height="150px" width="130px" />
       </Grid>
-      <Grid item xs={5.1} marginTop={5}>
+      <Grid item xs={5.1}>
         <div className="orders-page__ordered__header-text">
+          <span>Order ID #{order.OrderID}&nbsp;</span>
           {firstListing.name}
           <span style={{ color: 'grey' }}>
             {' '}
@@ -111,7 +109,7 @@ function Contents(order: { status: string; date: string }) {
           </span>
         </div>
         <div>
-          <Accordion expanded={expanded} square elevation={0} style={{ width: 600, marginTop: -5 }}>
+          <Accordion expanded={expanded} square elevation={0} style={{ marginTop: -5 }}>
             <AccordionSummary
               style={{ width: 150, minHeight: 0, height: 30, padding: 0, border: 0, color: 'grey' }}
               expandIcon={<ExpandMoreIcon />}
@@ -119,7 +117,7 @@ function Contents(order: { status: string; date: string }) {
             >
               {listingDummy.length} other items
             </AccordionSummary>
-            <AccordionDetails style={{ padding: 0, marginTop: -20 }}>
+            <AccordionDetails style={{ padding: 0, marginTop: 0 }}>
               <p className="orders-page__ordered__header-text">
                 {listingDummy.map((item) =>
                   JoinListings(
@@ -133,14 +131,21 @@ function Contents(order: { status: string; date: string }) {
             </AccordionDetails>
           </Accordion>
         </div>
-        <div className="orders-page__ordered__grey-text">Ordered date: {dateOnly}</div>
+        <div className="orders-page__ordered__grey-text">
+          Ordered on:{' '}
+          {new Date(order.OrderTimestamp).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </div>
       </Grid>
-      <Grid item xs={0.5} marginTop={7}>
-        <p className="orders-page__ordered__header-text">${totalCost}</p>
-      </Grid>
-      <Grid item xs={4.5} marginTop={7}>
-        <p className="orders-page__ordered__header-text">{order.status}</p>
-      </Grid>
-    </>
+      <div className="orders-page__end-text">
+        <span className="orders-page__total-cost">${costToString(totalCost)}</span>
+        <span className="orders-page__status">{order.ShippingStatus}</span>
+      </div>
+    </div>
   );
-}
+};
