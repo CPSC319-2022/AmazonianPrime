@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import './OrdersPage.scss';
 import SearchIcon from '@mui/icons-material/Search';
-import { Ordered } from './Ordered';
+import { Ordered } from './Orders';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useCallback, useEffect } from 'react';
