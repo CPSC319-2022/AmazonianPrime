@@ -109,7 +109,7 @@ exports.lambdaHandler = async (event, context) => {
                                                 ON Listing.ListingID = Images.ImageListingID
                                       JOIN Users on Listing.UserID = Users.UserID
                               WHERE Listing.ListingID = ${orderItem.ListingID};`;
-      const Listing = await new Promise((resolve, reject) => {
+      const getListing = await new Promise((resolve, reject) => {
         con.query(getListingQuery, function (err, res) {
           if (err) {
             reject(err);
@@ -117,7 +117,8 @@ exports.lambdaHandler = async (event, context) => {
           resolve(res);
         });
       });
-      listings.push(Listing[0]);
+      const {Quantity, ...rest} = getListing[0];
+      listings.push({...orderItem, ...rest});
     }
     
     order.Listings = listings;
