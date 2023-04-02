@@ -92,7 +92,7 @@ function OrdersPage() {
           <Ordered orders={orders?.Data} />
         </Grid>
         <Pagination
-          className="gallery__pagination"
+          className="orders__pagination"
           count={
             filteredData?.data?.TotalOrders
               ? Math.ceil(Number(filteredData.data.TotalOrders) / 8.0)
