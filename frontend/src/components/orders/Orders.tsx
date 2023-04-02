@@ -58,7 +58,7 @@ export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
   return (
     <div className="order-listings">
       {validOrders.map((order) => (
-        <Contents order={order} /> 
+        <Contents order={order} />
       ))}
     </div>
   );

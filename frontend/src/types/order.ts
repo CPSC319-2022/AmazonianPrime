@@ -1,12 +1,11 @@
-import { OrderListings } from "./ordersListing";
+import { OrderListings } from './ordersListing';
 
 export interface Order {
   OrderID: number;
   UserID: number;
   ShippingStatus: string;
   OrderTimestamp: string;
-  Listings: 
-  {
+  Listings: {
     OrderID: number;
     ListingID: number;
     OrderQuantity: number;
@@ -28,5 +27,5 @@ export interface Order {
     Email: string;
     Department: string;
     IsAdmin: boolean;
-  }[]
+  }[];
 }

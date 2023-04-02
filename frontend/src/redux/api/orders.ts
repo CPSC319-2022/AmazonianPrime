@@ -8,7 +8,10 @@ export const ordersApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: `/api` }),
   tagTypes: ['Orders'],
   endpoints: (builder) => ({
-    getOrders: builder.query<PaginatedOrders, { orderId: string | undefined; userId: string | undefined; page: number }>({
+    getOrders: builder.query<
+      PaginatedOrders,
+      { orderId: string | undefined; userId: string | undefined; page: number }
+    >({
       query: ({ orderId, userId, page }) => {
         return `admin/orders?offset=${LIMIT * (page - 1)}&limit=${LIMIT}
         ${orderId ? `&orderId=${orderId}` : ``}${userId ? `&userId=${userId}` : ``}`;

@@ -1,10 +1,4 @@
-import {
-  debounce,
-  Grid,
-  InputAdornment,
-  Pagination,
-  TextField,
-} from '@mui/material';
+import { debounce, Grid, InputAdornment, Pagination, TextField } from '@mui/material';
 import './OrdersPage.scss';
 import SearchIcon from '@mui/icons-material/Search';
 import { Ordered } from './Orders';
@@ -100,7 +94,11 @@ function OrdersPage() {
         <Pagination
           className="gallery__pagination"
           count={
-            filteredData?.data?.TotalOrders ? Math.ceil(Number(filteredData.data.TotalOrders) / 8.0) : data ? Math.ceil(Number(data.TotalOrders) / 8.0) : 1
+            filteredData?.data?.TotalOrders
+              ? Math.ceil(Number(filteredData.data.TotalOrders) / 8.0)
+              : data
+              ? Math.ceil(Number(data.TotalOrders) / 8.0)
+              : 1
           }
           page={Number(page) ? Number(page) : 1}
           onChange={handlePageChange}
