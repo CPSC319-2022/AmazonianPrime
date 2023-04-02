@@ -117,7 +117,7 @@ function BuyerRegistration() {
       setOpenErrorToast('Please fill all required Payment fields!');
       return;
     }
-    
+
     const paymentInfo = {
       UserID: user?.UserID,
       AddressID: '',

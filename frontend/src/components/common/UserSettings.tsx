@@ -56,7 +56,9 @@ export const UserSetting: React.FC<UserSettingProps> = ({
         </Grid>
       </div>
       <FormControl className="buyer-registration-page__department-input" size="small">
-        <InputLabel required id="demo-simple-select-label">Department</InputLabel>
+        <InputLabel required id="demo-simple-select-label">
+          Department
+        </InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
