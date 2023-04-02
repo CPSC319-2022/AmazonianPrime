@@ -19,17 +19,19 @@ import { useGetOrdersQuery, useLazyGetOrdersQuery } from '../../redux/api/orders
 import { setOrders, setIsLoadingOrders } from '../../redux/reducers/ordersSlice';
 import { useAppSelector } from '../../redux/store';
 import Breadcrumbs from '../common/Breadcrumbs';
-import { Order } from '../../types/order';
+import useAdminPrivelege from '../../utils/useAdminPrivelege';
 
 function OrdersPage() {
+  const { isAdminPrivelegeRequested } = useAdminPrivelege();
   const user = useAppSelector((state) => state.user.value);
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const orders = useAppSelector((state) => state.orders.orders);
   const isLoading = useAppSelector((state) => state.orders.isLoading);
-  const [getOrdersByUserID, filteredData] = useLazyGetOrdersQuery();
+  const [getOrdersByOrderID, filteredData] = useLazyGetOrdersQuery();
   const { data, isLoading: isDataFetching } = useGetOrdersQuery({
-    userId: user?.UserID,
+    userId: isAdminPrivelegeRequested ? undefined : user?.UserID,
+    orderId: undefined,
     page: page == null || Number(page) <= 0 ? 1 : Number(page),
   });
 
@@ -54,8 +56,20 @@ function OrdersPage() {
     navigate(`?page=${value}`);
   };
 
+  function searchForOrders(value: string) {
+    getOrdersByOrderID({
+      page: page == null || Number(page) <= 0 ? 1 : Number(page),
+      orderId: value,
+      userId: isAdminPrivelegeRequested ? undefined : user?.UserID,
+    });
+    navigate(`?page=1`);
+  }
+
   const changeHandler = (event: any) => {
-    //searchForOrders(data, event.target?.value);
+    const regex = /^-?\d+$/; // check for integers
+    if (regex.test(event.target?.value)) {
+      searchForOrders(event.target?.value);
+    }
   };
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), []);
 
@@ -66,7 +80,7 @@ function OrdersPage() {
         <Grid container rowSpacing={0}>
           <Grid item xs={12}>
             <TextField
-              placeholder="Search…"
+              placeholder="Order ID"
               size="small"
               autoComplete="off"
               onChange={debouncedChangeHandler}
@@ -83,12 +97,12 @@ function OrdersPage() {
               }}
             />
           </Grid>
-          <Ordered orders={data?.Data} />
+          <Ordered orders={orders?.Data} />
         </Grid>
         <Pagination
           className="gallery__pagination"
           count={
-            filteredData?.data ? Math.ceil(Number(filteredData.data) / 8.0) : data ? Math.ceil(Number(data) / 8.0) : 1
+            filteredData?.data?.TotalOrders ? Math.ceil(Number(filteredData.data.TotalOrders) / 8.0) : data ? Math.ceil(Number(data.TotalOrders) / 8.0) : 1
           }
           page={Number(page) ? Number(page) : 1}
           onChange={handlePageChange}
