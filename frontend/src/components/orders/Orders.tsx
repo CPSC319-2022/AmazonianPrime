@@ -79,9 +79,6 @@ function JoinListings(name: string, price: number, quantity: number, addComma: b
 
 const Contents: React.FC<{ order: Order }> = ({ order }) => {
 
-  const srcDummy =
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVR4nO2XQUojURRF3yIEB07F1ShYAxvdR3rS8x7U16GkPr0DFcE96AayDGkFXYBcKVGQkAhRq+43/xy4wxSpe9+7L4kAAAAAAAAAAAAAgBU53o9fsz+hdVZq4qDIwTjZjY12P27dBs0GVtvE/797sRmlkZo4T43foNnwG9CHcBWlVU//xWoJIDUFVdFb9dQWQFtKFb1VT20BpBKq6H311BhAclbRfPXUGkDrqqL56qk1gOSookXVU3MAacwqWlY9tQfQjlVFy6qn9gDSWFWkHEKx1AMCyN4BIYBMAFVXVHADggDcUyg2wG+EqCC/GTJobW7AUxe6noSmhx//+flI/Wf7Z/TPIoAVA7iefN74ed1MCGDlCZx+YfIXbQIbYAygOyIAbwX9JoBPHeGbbzjCvfkc4QJ+Hmokrc3PUP1QEUAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+G1vQGPLpfUqWqi4fhA+ji0v6iuVhdDB/Av9hRjrsCXlZFqYt7ncb24AG8hNDFlnKcUUeh10q+GM18AAAAAAAAAAAAgPiJPAPM6yK//8YO8QAAAABJRU5ErkJggg==';
-
   const firstListing = order.Listings[0];
   const totalCost = order.Listings.reduce((acc, item) => acc + item.Cost * item.OrderQuantity, 0);
   const listings = order.Listings.slice(1);
