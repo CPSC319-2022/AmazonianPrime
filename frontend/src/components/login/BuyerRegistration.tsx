@@ -112,6 +112,12 @@ function BuyerRegistration() {
       return;
     }
 
+    const regex = /^\d{16,19}$/; // Checks for 16-19 digit integer
+    if (!regex.test(creditCardInput)) {
+      setOpenErrorToast('Please fill all required Payment fields!');
+      return;
+    }
+
     const paymentInfo = {
       UserID: user?.UserID,
       AddressID: '',
