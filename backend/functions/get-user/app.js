@@ -1,6 +1,10 @@
 var mysql = require('mysql');
 var OAuth2Client = require('google-auth-library');
 const dbConnection = require('dbConnection.js');
+const {
+  BlockedUserError,
+  jsonFriendlyErrorReplacer
+} = require('errorStates.js');
 
 function parseJWT(token) {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -40,6 +44,25 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   if (getUser.length < 1) {
+    const blockedUserQuery = `SELECT * FROM BlockedUsers WHERE Email = "${token.email}"`;
+
+    var getBlockedUser = await new Promise((resolve, reject) => {
+      con.query(blockedUserQuery, function (err, res) {
+        if (err) {
+          reject("Couldn't access the blocked user table!");
+        }
+        resolve(res);
+      });
+    });
+
+    if (getBlockedUser.length > 0){
+      const errorPrompt = new BlockedUserError(`The user with email ${token.email} has been removed! Please try a different account`);
+      return {
+        statusCode: 400,
+        body: JSON.stringify(errorPrompt, jsonFriendlyErrorReplacer),
+      };
+    }
+
     let firstName = token.given_name;
     let lastName = token.family_name;
     let userEmail = token.email;
