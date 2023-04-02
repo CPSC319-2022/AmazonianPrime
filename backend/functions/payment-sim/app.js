@@ -69,7 +69,7 @@ exports.lambdaHandler = async (event, context) => {
   // Generate a random number between 0 - 100. Based on this number, we will decide if the payment is approved or declined.
   let random_number = Math.floor(Math.random() * 100);
   let random_payment_status = 'Declined';
-  if (random_number > 30) {
+  if (random_number > 10) {
     random_payment_status = 'Approved';
   }
   return {
