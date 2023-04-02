@@ -63,6 +63,23 @@ exports.lambdaHandler = async (event, context) => {
 
   console.log(createTableUsers);
 
+  let createBlockedUsersTableQuery = `CREATE TABLE BlockedUsers (
+                                                   BlockingID int NOT NULL AUTO_INCREMENT,
+                                                   Email varchar(255) UNIQUE NOT NULL,
+                                                   PRIMARY KEY (BlockingID)
+                              );`;
+
+  const createTableBlockedUsers = await new Promise((resolve, reject) => {
+    con.query(createBlockedUsersTableQuery, function (err, res) {
+      if (err) {
+        reject("Couldn't create users table!");
+      }
+      resolve(res);
+    });
+  });
+
+  console.log(createTableBlockedUsers);
+
   let createCountryTableQuery = `CREATE TABLE Country (
     CityName varchar(255) NOT NULL, 
     Province varchar(255) NOT NULL, 
@@ -286,6 +303,8 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   console.log(createShoppingCartItemTable);
+
+
 
   return {
     status: 'SUCCESS',
