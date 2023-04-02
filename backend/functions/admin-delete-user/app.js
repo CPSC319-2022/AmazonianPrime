@@ -108,7 +108,7 @@ exports.lambdaHandler = async (event, context) => {
   });
 
   const blockUserQuery = `INSERT INTO BlockedUsers (Email)
-                          VALUES (${getUser[0]['Email']});`;
+                          VALUES ('${getUser[0]['Email']}');`;
   const blockUser = await new Promise((resolve, reject) => {
     con.query(blockUserQuery, function (err, res) {
       if (err) {
