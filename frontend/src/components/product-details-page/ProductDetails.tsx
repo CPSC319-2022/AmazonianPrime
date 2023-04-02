@@ -1,6 +1,6 @@
 import './ProductDetails.scss';
 import { useAppSelector } from '../../redux/store';
-import { Alert, Button, Grid, Snackbar } from '@mui/material';
+import { Alert, Button, Grid, Snackbar, Tooltip } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import DetailsMetaData from './DetailsMetaData';
 import ProductDetailsSkeleton from './ProductDetailsSkeleton';
@@ -26,6 +26,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
   const { isAdminPrivelegeRequested } = useAdminPrivelege();
   const user = useAppSelector((state) => state.user.value);
   const [addListingToCart] = useAddListingToCartMutation();
+  const isCartLocked = useAppSelector((state) => state.app.expiryDate) !== null;
   const itemInCart = useAppSelector((state) => state.cart.items)?.Items.find(
     (value) => value.ListingID === listing?.ListingID,
   );
@@ -59,11 +60,12 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
     setSelectQuantity(value);
   };
 
+  // TODO: add no results page
+  if (isLoading) {
+    return <ProductDetailsSkeleton />;
+  }
+
   if (!listing || !listing?.IsActiveListing) {
-    // TODO: add no results page
-    if (isLoading) {
-      return <ProductDetailsSkeleton />;
-    }
     return <NoContent message="There was no listing found, please try again later!" />;
   }
   const { ListingName, Cost, User, Description, PostedTimestamp, ListingID } = listing;
@@ -80,6 +82,10 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
       .catch(() => setErrorToast(true));
   };
 
+  let shownListingQuantity = listing.Quantity;
+  if (shownListingQuantity <= 0 && isCartLocked) {
+    shownListingQuantity = itemInCart?.Quantity ?? 0;
+  }
   return (
     <div className="product-details">
       <Snackbar open={errorToast} autoHideDuration={6000} onClose={handleCloseToast}>
@@ -113,27 +119,33 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
         </Grid>
         {Number(user?.UserID) !== listing.UserID && !itemInCart && !isAdminPrivelegeRequested ? (
           <Grid item xs={12} className="product-details__buttons">
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                addToCart();
-              }}
-              sx={{ paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
-            >
-              Add to Cart
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ ml: 2, paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
-              onClick={() => {
-                addToCart();
-                navigate('/cart');
-              }}
-            >
-              Buy Now
-            </Button>
+            <Tooltip title="You may not edit your cart while we hold your items." disableHoverListener={!isCartLocked}>
+              <Button
+                variant="contained"
+                color="secondary"
+                disabled={isCartLocked || shownListingQuantity === 0}
+                onClick={() => {
+                  addToCart();
+                }}
+                sx={{ paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
+              >
+                Add to Cart
+              </Button>
+            </Tooltip>
+            <Tooltip title="You may not edit your cart while we hold your items." disableHoverListener={!isCartLocked}>
+              <Button
+                variant="contained"
+                color="secondary"
+                disabled={isCartLocked || shownListingQuantity === 0}
+                sx={{ ml: 2, paddingBottom: 0, paddingTop: 0, minWidth: 120, boxShadow: 0 }}
+                onClick={() => {
+                  addToCart();
+                  navigate('/cart');
+                }}
+              >
+                Buy Now
+              </Button>
+            </Tooltip>
           </Grid>
         ) : null}
       </Grid>

@@ -5,6 +5,7 @@ import { ListingPreview as ListingPreviewType } from '../../types/listingPreview
 import ListingPreview from '../listing/ListingPreview';
 import NoContent from './NoContent';
 import { useAppSelector } from '../../redux/store';
+import useAdminPrivelege from '../../utils/useAdminPrivelege';
 
 interface GalleryProps {
   listings: ListingPreviewType[] | undefined;
@@ -22,6 +23,7 @@ const Gallery: React.FC<GalleryProps> = ({
 }) => {
   const [searchParams] = useSearchParams();
   const isLoading = useAppSelector((state) => state.listings.isLoadingListings);
+  const { isAdminPrivelegeRequested } = useAdminPrivelege();
   const navigate = useNavigate();
   const page = searchParams.get('page');
   if (!page) {
@@ -43,7 +45,7 @@ const Gallery: React.FC<GalleryProps> = ({
                 key={index}
                 imageHeight="270px"
                 imageWidth="250px"
-                showRemoveListingButton={showRemoveListingButton}
+                showRemoveListingButton={showRemoveListingButton || isAdminPrivelegeRequested}
               />
             </Grid>
           ))}

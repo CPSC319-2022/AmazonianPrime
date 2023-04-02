@@ -8,3 +8,9 @@
 .product-details__details__category-value {
   margin-bottom: 0;
 }
+
+.product-details__quantity-container.product-details__quantity-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
