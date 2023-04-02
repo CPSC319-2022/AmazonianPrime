@@ -5,4 +5,5 @@ export enum Paths {
   'Cart' = '/cart',
   'Manage Profile' = '/manage-profile',
   'Users' = '/users',
+  'Orders' = '/orders',
 }

@@ -47,6 +47,13 @@ function Breadcrumbs() {
         navigate: `${Paths.Cart}`,
       },
     ];
+  } else if (window.location.pathname === Paths.Orders) {
+    breadCrumbs = [
+      {
+        link: 'Orders',
+        navigate: `${Paths.Orders}`,
+      },
+    ];
   } else if (window.location.pathname === Paths['Manage Profile']) {
     breadCrumbs = [
       {

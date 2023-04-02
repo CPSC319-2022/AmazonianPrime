@@ -41,14 +41,14 @@ exports.lambdaHandler = async (event, context) => {
     });
   });
 
-  if(checkValidQuantity[0].Quantity < Quantity || Quantity < 1) {
+  if (checkValidQuantity[0].Quantity < Quantity || Quantity < 1) {
     return {
       statusCode: 400,
       body: 'Invalid requested item quantity (shopping cart quantity > listing quantity)',
     };
   }
 
-  if(ShoppingCartItemID) {
+  if (ShoppingCartItemID) {
     const updateCartQuery = `UPDATE ShoppingCartItem SET Quantity = ${Quantity} WHERE ShoppingCartItemID = "${ShoppingCartItemID}"`;
     const updateCart = await new Promise((resolve, reject) => {
       con.query(updateCartQuery, function (err, res) {

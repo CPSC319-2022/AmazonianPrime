@@ -129,8 +129,8 @@ exports.lambdaHandler = async (event, context) => {
     };
   } catch (e) {
     return {
-      statusCode: 500, 
-      body: JSON.stringify({error: e.toString()})
+      statusCode: 500,
+      body: JSON.stringify({ error: e.toString() }),
     };
   }
 };

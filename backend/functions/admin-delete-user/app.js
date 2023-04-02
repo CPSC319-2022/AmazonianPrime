@@ -85,7 +85,7 @@ exports.lambdaHandler = async (event, context) => {
     };
   }
 
-  const updateUserListingsQuery = `UPDATE Listing SET IsActiveListing = FALSE WHERE UserID = ${RequestUserID}`
+  const updateUserListingsQuery = `UPDATE Listing SET IsActiveListing = FALSE WHERE UserID = ${RequestUserID}`;
 
   const updateUserListings = await new Promise((resolve, reject) => {
     con.query(updateUserListingsQuery, function (err, res) {

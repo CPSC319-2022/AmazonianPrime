@@ -8,9 +8,7 @@
       "Next": "Check Listing Quantity",
       "Catch": [
         {
-          "ErrorEquals": [
-            "MissingParameterError"
-          ],
+          "ErrorEquals": ["MissingParameterError"],
           "Next": "ErrorHandler"
         }
       ]
