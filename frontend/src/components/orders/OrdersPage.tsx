@@ -1,12 +1,8 @@
 import {
   debounce,
-  FormControl,
   Grid,
   InputAdornment,
-  InputLabel,
-  MenuItem,
   Pagination,
-  Select,
   TextField,
 } from '@mui/material';
 import './OrdersPage.scss';
