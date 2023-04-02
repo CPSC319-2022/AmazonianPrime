@@ -78,7 +78,6 @@ function JoinListings(name: string, price: number, quantity: number, addComma: b
 }
 
 const Contents: React.FC<{ order: Order }> = ({ order }) => {
-
   const firstListing = order.Listings[0];
   const totalCost = order.Listings.reduce((acc, item) => acc + item.Cost * item.OrderQuantity, 0);
   const listings = order.Listings.slice(1);

@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Ordered } from './Orders';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGetOrdersQuery, useLazyGetOrdersQuery } from '../../redux/api/orders';
 import { setOrders, setIsLoadingOrders } from '../../redux/reducers/ordersSlice';
 import { useAppSelector } from '../../redux/store';
@@ -21,13 +21,14 @@ function OrdersPage() {
   const { isAdminPrivelegeRequested } = useAdminPrivelege();
   const user = useAppSelector((state) => state.user.value);
   const [searchParams] = useSearchParams();
+  const [orderIdQuery, setOrderIdQuery] = useState('');
   const page = searchParams.get('page');
   const orders = useAppSelector((state) => state.orders.orders);
   const isLoading = useAppSelector((state) => state.orders.isLoading);
   const [getOrdersByOrderID, filteredData] = useLazyGetOrdersQuery();
   const { data, isLoading: isDataFetching } = useGetOrdersQuery({
     userId: isAdminPrivelegeRequested ? undefined : user?.UserID,
-    orderId: undefined,
+    orderId: orderIdQuery,
     page: page == null || Number(page) <= 0 ? 1 : Number(page),
   });
 
@@ -36,13 +37,13 @@ function OrdersPage() {
   }, [isDataFetching]);
 
   useEffect(() => {
-    if (orders) {
+    if (data) {
       dispatch(setIsLoadingOrders({ isLoadingOrders: false }));
-      dispatch(setOrders(orders));
+      dispatch(setOrders(data));
     } else {
       dispatch(setIsLoadingOrders({ isLoadingOrders: true }));
     }
-  }, [orders]);
+  }, [data]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ function OrdersPage() {
   };
 
   function searchForOrders(value: string) {
+    setOrderIdQuery(value);
     getOrdersByOrderID({
       page: page == null || Number(page) <= 0 ? 1 : Number(page),
       orderId: value,
@@ -62,7 +64,7 @@ function OrdersPage() {
   }
 
   const changeHandler = (event: any) => {
-    const regex = /^-?\d+$/; // check for integers
+    const regex = /^$|^\d+$/; // check for positive integers or empty string
     if (regex.test(event.target?.value)) {
       searchForOrders(event.target?.value);
     }
