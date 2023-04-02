@@ -53,10 +53,12 @@ export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
     );
   }
 
+  const validOrders = orders.filter((order) => order.Listings && order.Listings.length > 0);
+
   return (
     <div className="order-listings">
-      {orders.map((order) => (
-        <Contents order={order} />
+      {validOrders.map((order) => (
+        <Contents order={order} /> 
       ))}
     </div>
   );
@@ -76,18 +78,13 @@ function JoinListings(name: string, price: number, quantity: number, addComma: b
 }
 
 const Contents: React.FC<{ order: Order }> = ({ order }) => {
-  const listingDummy: { name: string; price: number; quantity: number }[] = [
-    { name: 'Blanket', price: 10, quantity: 1 },
-    { name: 'Plant', price: 10, quantity: 3 },
-    { name: 'Book', price: 12, quantity: 1 },
-  ];
 
   const srcDummy =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVR4nO2XQUojURRF3yIEB07F1ShYAxvdR3rS8x7U16GkPr0DFcE96AayDGkFXYBcKVGQkAhRq+43/xy4wxSpe9+7L4kAAAAAAAAAAAAAgBU53o9fsz+hdVZq4qDIwTjZjY12P27dBs0GVtvE/797sRmlkZo4T43foNnwG9CHcBWlVU//xWoJIDUFVdFb9dQWQFtKFb1VT20BpBKq6H311BhAclbRfPXUGkDrqqL56qk1gOSookXVU3MAacwqWlY9tQfQjlVFy6qn9gDSWFWkHEKx1AMCyN4BIYBMAFVXVHADggDcUyg2wG+EqCC/GTJobW7AUxe6noSmhx//+flI/Wf7Z/TPIoAVA7iefN74ed1MCGDlCZx+YfIXbQIbYAygOyIAbwX9JoBPHeGbbzjCvfkc4QJ+Hmokrc3PUP1QEUAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+G1vQGPLpfUqWqi4fhA+ji0v6iuVhdDB/Av9hRjrsCXlZFqYt7ncb24AG8hNDFlnKcUUeh10q+GM18AAAAAAAAAAAAgPiJPAPM6yK//8YO8QAAAABJRU5ErkJggg==';
 
-  const firstListing = listingDummy[0];
-  const totalCost = listingDummy.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  listingDummy.shift();
+  const firstListing = order.Listings[0];
+  const totalCost = order.Listings.reduce((acc, item) => acc + item.Cost * item.OrderQuantity, 0);
+  const listings = order.Listings.slice(1);
 
   const [expanded, setExpanded] = useState(false);
   const handleToggle = () => {
@@ -97,15 +94,15 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
   return (
     <div className="orders-page__container">
       <Grid item xs={1.9}>
-        <img src={srcDummy} height="150px" width="130px" />
+        <img src={firstListing.S3ImagePath} height="150px" width="130px" />
       </Grid>
       <Grid item xs={5.1}>
         <div className="orders-page__ordered__header-text">
           <span>Order ID #{order.OrderID}&nbsp;</span>
-          {firstListing.name}
+          {firstListing.ListingName}
           <span style={{ color: 'grey' }}>
             {' '}
-            (x{firstListing.quantity} ${firstListing.price}){' '}
+            (x{firstListing.OrderQuantity} ${firstListing.Cost}){' '}
           </span>
         </div>
         <div>
@@ -115,16 +112,16 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
               expandIcon={<ExpandMoreIcon />}
               onClick={handleToggle}
             >
-              {listingDummy.length} other items
+              {listings.length} other items
             </AccordionSummary>
             <AccordionDetails style={{ padding: 0, marginTop: 0 }}>
               <p className="orders-page__ordered__header-text">
-                {listingDummy.map((item) =>
+                {listings.map((item) =>
                   JoinListings(
-                    item.name,
-                    item.price,
-                    item.quantity,
-                    listingDummy.indexOf(item) !== listingDummy.length - 1,
+                    item.ListingName,
+                    item.Cost,
+                    item.OrderQuantity,
+                    listings.indexOf(item) !== listings.length - 1,
                   ),
                 )}
               </p>
