@@ -43,7 +43,7 @@ exports.lambdaHandler = async (event, context) => {
 
   var getOrdersQuery = `SELECT * FROM Orders ${
     whereClause !== undefined ? `WHERE ${whereClause} ` : ''
-  }LIMIT ${limit} OFFSET ${offset} ORDER BY OrderId DESC;`;
+  } ORDER BY OrderId DESC LIMIT ${limit} OFFSET ${offset};`;
 
   const Orders = await new Promise((resolve, reject) => {
     con.query(getOrdersQuery, function (err, res) {
