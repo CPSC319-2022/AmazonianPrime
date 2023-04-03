@@ -13,6 +13,7 @@ import Breadcrumbs from '../common/Breadcrumbs';
 import { useState } from 'react';
 import { useGetPaymentsQuery, useGetShippingAddressQuery } from '../../redux/api/user';
 import { useCheckoutMutation, useRetryCheckoutMutation } from '../../redux/api/shoppingCart';
+import { ordersApi } from '../../redux/api/orders';
 import { useDispatch } from 'react-redux';
 import {
   setCartLock,
@@ -93,6 +94,7 @@ function CartPage() {
   };
   const handleCheckoutSuccess = () => {
     dispatch(setSuccessMessage("We've got your order! Please check for a confirmation email."));
+    dispatch(ordersApi.util.invalidateTags(['Orders']));
     setDidCheckout(true);
     setTimeout(() => {
       setShowConfetti(true);

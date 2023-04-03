@@ -49,7 +49,15 @@ const RegisterSeller: React.FC<RegisterSellerProps> = ({ onCancel, isUpdatingExi
       return;
     }
     if (accountNumber && accountNumber?.current?.value?.length < 7) {
-      setOpenErrorToast('The account number must be at least 7 characters!');
+      setOpenErrorToast('The account number must be at least 7 digits!');
+      return;
+    }
+    if (institutionNumber && institutionNumber?.current?.value?.length < 3) {
+      setOpenErrorToast('The institution number must be at least 3 digits!');
+      return;
+    }
+    if (transitNumber && transitNumber?.current?.value?.length < 5) {
+      setOpenErrorToast('The transit number must be at least 5 digits!');
       return;
     }
     if (
