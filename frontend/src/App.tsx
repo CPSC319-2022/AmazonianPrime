@@ -47,6 +47,8 @@ const AppWrapper = () => {
   useEffect(() => {
     if (bankingData) {
       dispatch(setIsSellerRegistered(true));
+    } else {
+      dispatch(setIsSellerRegistered(false));
     }
   }, [bankingData]);
 

@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../../redux/reducers/userSlice';
 import useAdminPrivelege from '../../utils/useAdminPrivelege';
 import { useState } from 'react';
+import { userApi } from '../../redux/api/user';
 
 export const AccountButton = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export const AccountButton = () => {
     if (category === 'Logout') {
       dispatch(setUser(null));
       sessionStorage.clear();
+      dispatch(userApi.util.invalidateTags(['Banking']))
       window.dispatchEvent(new Event('storageChangeEvent'));
     } else if (category === 'Home') {
       navigate('/');
