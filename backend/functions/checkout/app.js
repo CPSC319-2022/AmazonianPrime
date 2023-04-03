@@ -131,8 +131,8 @@ exports.lambdaHandler = async (event, context) => {
     }
 
     // Clean up
-    // const subscriptionArn = await getSubscriptionArn(sns, queueUrl, topicArn);
-    // await sns.unsubscribe({ SubscriptionArn: subscriptionArn }).promise();
+    const subscriptionArn = await getSubscriptionArn(sns, queueArn, topicArn);
+    await sns.unsubscribe({ SubscriptionArn: subscriptionArn }).promise();
     await sqs.deleteQueue({ QueueUrl: queueUrl }).promise();
 
     if (
