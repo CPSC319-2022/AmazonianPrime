@@ -38,7 +38,7 @@ exports.lambdaHandler = async (event, context) => {
   }
 
   const createOrdersQuery = `INSERT INTO Orders (UserID, AddressID, PaymentID, ShippingStatus, PurchaseAmount, GSTTax, PSTTax, TotalAmount)
-                              VALUES (${UserID}, ${AddressID}, ${PaymentID}, "On it's way", ${Subtotal}, ${GSTTax}, ${PSTTax}, ${TotalCost});`;
+                              VALUES (${UserID}, ${AddressID}, ${PaymentID}, "Confirmed", ${Subtotal}, ${GSTTax}, ${PSTTax}, ${TotalCost});`;
 
   const createOrders = await new Promise((resolve, reject) => {
     con.query(createOrdersQuery, function (err, res) {

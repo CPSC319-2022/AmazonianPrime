@@ -8,7 +8,9 @@
       "Next": "Check Listing Quantity",
       "Catch": [
         {
-          "ErrorEquals": ["MissingParameterError"],
+          "ErrorEquals": [
+            "MissingParameterError"
+          ],
           "Next": "ErrorHandler"
         }
       ]
@@ -56,12 +58,12 @@
         {
           "Variable": "$.body.ValidPayment",
           "BooleanEquals": true,
-          "Next": "Send Task Token"
+          "Next": "Send Payment OK"
         }
       ],
       "Default": "Parallel Wait Token"
     },
-    "Send Task Token": {
+    "Send Payment OK": {
       "Type": "Task",
       "InputPath": "$.body",
       "Resource": "${SNSSendTokenFunctionArn}",
@@ -71,9 +73,9 @@
       "Type": "Parallel",
       "Branches": [
         {
-          "StartAt": "Send Wait Token",
+          "StartAt": "Wait for Task Token",
           "States": {
-            "Send Wait Token": {
+            "Wait for Task Token": {
               "Type": "Task",
               "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
               "HeartbeatSeconds": 297,
