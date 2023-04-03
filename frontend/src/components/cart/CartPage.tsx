@@ -89,7 +89,7 @@ function CartPage() {
     if (clearCart) {
       dispatch(unsetCartLock(null));
     }
-    dispatch(setFailMessage(reason ?? 'Failed to continue with the checkout. Please try again later'));
+    dispatch(setFailMessage(reason ?? 'We encountered an error in payment simulation. Please try again later'));
   };
   const handleCheckoutSuccess = () => {
     dispatch(setSuccessMessage("We've got your order! Please check for a confirmation email."));
@@ -134,7 +134,7 @@ function CartPage() {
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
-                handleCheckoutError();
+                handleCheckoutError("We had an unexpected error. Please contact an administrator.");
               });
           } else {
             checkout({
@@ -169,7 +169,7 @@ function CartPage() {
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
-                handleCheckoutError();
+                handleCheckoutError("We had an unexpected error. Please contact an administrator.");
               });
           }
         }}

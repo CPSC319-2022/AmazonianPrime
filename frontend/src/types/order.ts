@@ -1,10 +1,14 @@
+import { Address } from './address';
 import { OrderListings } from './ordersListing';
+import { Payment } from './payment';
 
 export interface Order {
   OrderID: number;
   UserID: number;
   ShippingStatus: string;
   OrderTimestamp: string;
+  Shipping: Address;
+  Payment: Payment;
   Listings: {
     OrderID: number;
     ListingID: number;

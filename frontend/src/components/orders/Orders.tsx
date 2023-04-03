@@ -12,28 +12,30 @@ interface OrderedProps {
 export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
   const isLoading = useAppSelector((state) => state.cart.isLoading);
   const ordersSkeleton = (
-    <div className="orders-page__orders__skeleton">
-      <Grid container>
-        <Grid item xs={4} marginTop={5}>
-          <Skeleton variant="rectangular" width={200} height={200} />
-        </Grid>
-        <Grid item xs={1} marginTop={5}>
-          <Skeleton variant="text" width={500} height={30} />
-          <Skeleton variant="text" width={500} height={30} />
-          <Skeleton variant="text" width={500} height={30} />
-        </Grid>
-      </Grid>
-      <Grid container>
-        <Grid item xs={4} marginTop={5}>
-          <Skeleton variant="rectangular" width={200} height={200} />
-        </Grid>
-        <Grid item xs={1} marginTop={5}>
-          <Skeleton variant="text" width={500} height={30} />
-          <Skeleton variant="text" width={500} height={30} />
-          <Skeleton variant="text" width={500} height={30} />
-        </Grid>
-      </Grid>
+    <div className="order-listings">
+      {
+        Array(8).fill(null).map(() => (
+          <div className="orders-page__container">
+          <div className="orders-page__order-image">
+            <Skeleton variant="rectangular" width={150} height={170} />
+          </div>
+          <div className="orders-page__details">
+            <Skeleton variant="text" width={300} height={30} />
+            <Skeleton variant="text" width={350} height={30} />
+            <Skeleton variant="text" width={250} height={30} />
+            </div>
+          <div className="orders-page__orders__skeleton-end">
+            <Skeleton variant="text" width={70} height={50} style={{
+              marginRight: "0.5em"
+            }}/>
+            <Skeleton variant="text" width={100} height={50} />
+          </div>
+      </div>
+        ) )
+      }
+   
     </div>
+
   );
   if (isLoading || orders === null || !orders) {
     return ordersSkeleton;
@@ -47,7 +49,7 @@ export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
             className="no-content-image"
             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVR4nO2XQUojURRF3yIEB07F1ShYAxvdR3rS8x7U16GkPr0DFcE96AayDGkFXYBcKVGQkAhRq+43/xy4wxSpe9+7L4kAAAAAAAAAAAAAgBU53o9fsz+hdVZq4qDIwTjZjY12P27dBs0GVtvE/797sRmlkZo4T43foNnwG9CHcBWlVU//xWoJIDUFVdFb9dQWQFtKFb1VT20BpBKq6H311BhAclbRfPXUGkDrqqL56qk1gOSookXVU3MAacwqWlY9tQfQjlVFy6qn9gDSWFWkHEKx1AMCyN4BIYBMAFVXVHADggDcUyg2wG+EqCC/GTJobW7AUxe6noSmhx//+flI/Wf7Z/TPIoAVA7iefN74ed1MCGDlCZx+YfIXbQIbYAygOyIAbwX9JoBPHeGbbzjCvfkc4QJ+Hmokrc3PUP1QEUAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+GDOIGZAKwT6HYAL8RooL8ZsggbkAmAPsUig3wGyEqyG+G1vQGPLpfUqWqi4fhA+ji0v6iuVhdDB/Av9hRjrsCXlZFqYt7ncb24AG8hNDFlnKcUUeh10q+GM18AAAAAAAAAAAAgPiJPAPM6yK//8YO8QAAAABJRU5ErkJggg=="
           />
-          Looks like you have not made any orders yet!
+          We couldn't find any orders. Please create a new order or modify your search!
         </div>
       </>
     );
@@ -87,12 +89,12 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
     setExpanded(!expanded);
   };
 
+  const cc = order.Payment.CreditCardNum.toString();
+
   return (
     <div className="orders-page__container">
-      <Grid item xs={1.9}>
-        <img src={firstListing.S3ImagePath} height="150px" width="130px" />
-      </Grid>
-      <Grid item xs={5.1}>
+        <img className="orders-page__order-image" src={firstListing.S3ImagePath} height="170px" width="150px" />
+        <div className="orders-page__details">
         <div className="orders-page__ordered__header-text">
           <span>Order ID #{order.OrderID}&nbsp;</span>
           {firstListing.ListingName}
@@ -102,13 +104,14 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
           </span>
         </div>
         <div>
-          <Accordion expanded={expanded} square elevation={0} style={{ marginTop: -5 }}>
+          {
+            listings.length > 0 && <Accordion expanded={expanded} square elevation={0} style={{ marginTop: -5 }}>
             <AccordionSummary
               style={{ width: 150, minHeight: 0, height: 30, padding: 0, border: 0, color: 'grey' }}
               expandIcon={<ExpandMoreIcon />}
               onClick={handleToggle}
             >
-              {listings.length} other items
+              {listings.length} other item{listings.length === 1 ? "" : "s"}
             </AccordionSummary>
             <AccordionDetails style={{ padding: 0, marginTop: 0 }}>
               <p className="orders-page__ordered__header-text">
@@ -123,9 +126,10 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
               </p>
             </AccordionDetails>
           </Accordion>
+          }
         </div>
         <div className="orders-page__ordered__grey-text">
-          Ordered on:{' '}
+          Ordered on{' '}
           {new Date(order.OrderTimestamp).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -134,7 +138,15 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
             minute: '2-digit',
           })}
         </div>
-      </Grid>
+        <div className="orders-page__ordered__grey-text">
+          Shipping to{' '}
+          {order.Shipping.StreetAddress} {order.Shipping.CityName}, {order.Shipping.Province}
+        </div>
+        <div className="orders-page__ordered__grey-text">
+          Credit card ending in&nbsp;
+          {cc.substring(cc.length - 5, cc.length)}
+        </div>
+        </div>
       <div className="orders-page__end-text">
         <span className="orders-page__total-cost">${costToString(totalCost)}</span>
         <span className="orders-page__status">{order.ShippingStatus}</span>

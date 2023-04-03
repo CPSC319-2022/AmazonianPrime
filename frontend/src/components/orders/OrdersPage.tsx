@@ -43,6 +43,9 @@ function OrdersPage() {
   const dispatch = useDispatch();
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+    if (value === Number(page)) {
+      return;
+    }
     dispatch(setIsLoadingOrders({ isLoadingOrders: true }));
     navigate(`?page=${value}`);
   };

@@ -1,15 +1,21 @@
 import './LoginPage.scss';
 import { useLazyLoginQuery } from '../../redux/api/user';
-import BuyerRegistration from './BuyerRegistration';
 import { setUser } from '../../redux/reducers/userSlice';
 import { useAppDispatch } from '../../redux/store';
 import { useEffect } from 'react';
+import { setFailMessage } from '../../redux/reducers/appSlice';
 
 declare var google: any;
 
 function LoginPage() {
+  const dispatch = useAppDispatch();
+
   function handleGoogleSignIn(response: any) {
-    triggerGetQuery(response.credential);
+    triggerGetQuery(response.credential).unwrap().catch((e) => {
+      if (e.data.name === "BlockedUserError") {
+        dispatch(setFailMessage("Oops! Looks like this user has been deactivated by an administrator."))
+      }
+    });
   }
 
   useEffect(() => {
@@ -27,7 +33,6 @@ function LoginPage() {
     });
   }, []);
 
-  const dispatch = useAppDispatch();
   const [triggerGetQuery, result, lastPromiseInfo] = useLazyLoginQuery();
   if (result.data) {
     dispatch(setUser(result.data));

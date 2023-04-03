@@ -126,6 +126,10 @@ function CreateListingModal() {
       setOpenErrorToast('Please input more than 0 items to sell (Quantity)!');
       return;
     }
+    if (Number(quantity.current?.value) >= 100) {
+      setOpenErrorToast('Please input less than 100 items to sell (Quantity)!');
+      return;
+    }
     handleModalClose();
     setIsLoading(true);
 

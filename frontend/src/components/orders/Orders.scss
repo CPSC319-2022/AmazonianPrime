@@ -11,6 +11,9 @@
   margin-top: 1.5em;
   width: 100%;
 }
+.orders-page__order-image {
+  object-fit: cover;
+}
 .orders-page__total-cost {
   margin-right: 1em;
 }
@@ -36,11 +39,26 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  margin-bottom: 1em;
+}
+
+.orders-page__details {
+  margin-left: 1em;
 }
 
 .orders-page__status {
   color: $secondary-color;
   font-size: 1.1em;
+}
+
+.orders-page__orders__skeleton {
+  display: flex;
+  flex-direction: row;
+}
+.orders-page__orders__skeleton-end.orders-page__orders__skeleton-end{ 
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
 }
 
 .orders-page__end-text {
