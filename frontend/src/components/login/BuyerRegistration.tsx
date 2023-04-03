@@ -114,7 +114,7 @@ function BuyerRegistration() {
 
     const regex = /^\d{16,19}$/; // Checks for 16-19 digit integer
     if (!regex.test(creditCardInput)) {
-      setOpenErrorToast('Please fill all required Payment fields!');
+      setOpenErrorToast('The credit card number must be between 16-19 digits!');
       return;
     }
 
