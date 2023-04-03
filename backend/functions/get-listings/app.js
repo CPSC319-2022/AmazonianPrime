@@ -57,7 +57,7 @@ exports.lambdaHandler = async (event, context) => {
 
   const getListingsQuery = `SELECT * FROM Listing LEFT JOIN (SELECT ListingID AS ImageListingID, S3ImagePath FROM ListingImage WHERE S3ImagePath IN (SELECT MAX(S3ImagePath) FROM ListingImage GROUP BY ListingID)) AS Images ON Listing.ListingID = Images.ImageListingID JOIN Users on Listing.UserID = Users.UserID ${
     whereClause !== undefined ? `WHERE ${whereClause} ` : ''
-  }LIMIT ${limit} OFFSET ${offset} ORDER BY ListingID DESC;`;
+  } ORDER BY ListingID DESC LIMIT ${limit} OFFSET ${offset};`;
 
   const getListings = await new Promise((resolve, reject) => {
     con.query(getListingsQuery, function (err, res) {
