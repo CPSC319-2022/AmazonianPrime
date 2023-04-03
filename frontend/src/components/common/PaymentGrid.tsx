@@ -65,6 +65,7 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
             <TextField
               fullWidth
               required
+              helperText="16 to 19-digit number"
               label="Card Number"
               autoComplete="off"
               defaultValue=""
