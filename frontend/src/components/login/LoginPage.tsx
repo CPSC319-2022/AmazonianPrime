@@ -11,11 +11,13 @@ function LoginPage() {
   const dispatch = useAppDispatch();
 
   function handleGoogleSignIn(response: any) {
-    triggerGetQuery(response.credential).unwrap().catch((e) => {
-      if (e.data.name === "BlockedUserError") {
-        dispatch(setFailMessage("Oops! Looks like this user has been deactivated by an administrator."))
-      }
-    });
+    triggerGetQuery(response.credential)
+      .unwrap()
+      .catch((e) => {
+        if (e.data.name === 'BlockedUserError') {
+          dispatch(setFailMessage('Oops! Looks like this user has been deactivated by an administrator.'));
+        }
+      });
   }
 
   useEffect(() => {

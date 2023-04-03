@@ -135,7 +135,13 @@
 
 .cart__listing-name-quantity {
   color: $grey;
-  font-size: 0.85em;
+  font-size: 0.75em;
+}
+
+.cart__listing-name {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .cart__order-summary-title {

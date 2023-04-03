@@ -13,29 +13,32 @@ export const Ordered: React.FC<OrderedProps> = ({ orders }) => {
   const isLoading = useAppSelector((state) => state.cart.isLoading);
   const ordersSkeleton = (
     <div className="order-listings">
-      {
-        Array(8).fill(null).map(() => (
+      {Array(8)
+        .fill(null)
+        .map(() => (
           <div className="orders-page__container">
-          <div className="orders-page__order-image">
-            <Skeleton variant="rectangular" width={150} height={170} />
-          </div>
-          <div className="orders-page__details">
-            <Skeleton variant="text" width={300} height={30} />
-            <Skeleton variant="text" width={350} height={30} />
-            <Skeleton variant="text" width={250} height={30} />
+            <div className="orders-page__order-image">
+              <Skeleton variant="rectangular" width={150} height={170} />
             </div>
-          <div className="orders-page__orders__skeleton-end">
-            <Skeleton variant="text" width={70} height={50} style={{
-              marginRight: "0.5em"
-            }}/>
-            <Skeleton variant="text" width={100} height={50} />
+            <div className="orders-page__details">
+              <Skeleton variant="text" width={300} height={30} />
+              <Skeleton variant="text" width={350} height={30} />
+              <Skeleton variant="text" width={250} height={30} />
+            </div>
+            <div className="orders-page__orders__skeleton-end">
+              <Skeleton
+                variant="text"
+                width={70}
+                height={50}
+                style={{
+                  marginRight: '0.5em',
+                }}
+              />
+              <Skeleton variant="text" width={100} height={50} />
+            </div>
           </div>
-      </div>
-        ) )
-      }
-   
+        ))}
     </div>
-
   );
   if (isLoading || orders === null || !orders) {
     return ordersSkeleton;
@@ -81,7 +84,6 @@ function JoinListings(name: string, price: number, quantity: number, addComma: b
 
 const Contents: React.FC<{ order: Order }> = ({ order }) => {
   const firstListing = order.Listings[0];
-  const totalCost = order.Listings.reduce((acc, item) => acc + item.Cost * item.OrderQuantity, 0);
   const listings = order.Listings.slice(1);
 
   const [expanded, setExpanded] = useState(false);
@@ -93,8 +95,8 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
 
   return (
     <div className="orders-page__container">
-        <img className="orders-page__order-image" src={firstListing.S3ImagePath} height="170px" width="150px" />
-        <div className="orders-page__details">
+      <img className="orders-page__order-image" src={firstListing.S3ImagePath} height="170px" width="150px" />
+      <div className="orders-page__details">
         <div className="orders-page__ordered__header-text">
           <span>Order ID #{order.OrderID}&nbsp;</span>
           {firstListing.ListingName}
@@ -104,29 +106,29 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
           </span>
         </div>
         <div>
-          {
-            listings.length > 0 && <Accordion expanded={expanded} square elevation={0} style={{ marginTop: -5 }}>
-            <AccordionSummary
-              style={{ width: 150, minHeight: 0, height: 30, padding: 0, border: 0, color: 'grey' }}
-              expandIcon={<ExpandMoreIcon />}
-              onClick={handleToggle}
-            >
-              {listings.length} other item{listings.length === 1 ? "" : "s"}
-            </AccordionSummary>
-            <AccordionDetails style={{ padding: 0, marginTop: 0 }}>
-              <p className="orders-page__ordered__header-text">
-                {listings.map((item) =>
-                  JoinListings(
-                    item.ListingName,
-                    item.Cost,
-                    item.OrderQuantity,
-                    listings.indexOf(item) !== listings.length - 1,
-                  ),
-                )}
-              </p>
-            </AccordionDetails>
-          </Accordion>
-          }
+          {listings.length > 0 && (
+            <Accordion expanded={expanded} square elevation={0} style={{ marginTop: -5 }}>
+              <AccordionSummary
+                style={{ width: 150, minHeight: 0, height: 30, padding: 0, border: 0, color: 'grey' }}
+                expandIcon={<ExpandMoreIcon />}
+                onClick={handleToggle}
+              >
+                {listings.length} other item{listings.length === 1 ? '' : 's'}
+              </AccordionSummary>
+              <AccordionDetails style={{ padding: 0, marginTop: 0 }}>
+                <p className="orders-page__ordered__header-text">
+                  {listings.map((item) =>
+                    JoinListings(
+                      item.ListingName,
+                      item.Cost,
+                      item.OrderQuantity,
+                      listings.indexOf(item) !== listings.length - 1,
+                    ),
+                  )}
+                </p>
+              </AccordionDetails>
+            </Accordion>
+          )}
         </div>
         <div className="orders-page__ordered__grey-text">
           Ordered on{' '}
@@ -139,16 +141,15 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
           })}
         </div>
         <div className="orders-page__ordered__grey-text">
-          Shipping to{' '}
-          {order.Shipping.StreetAddress} {order.Shipping.CityName}, {order.Shipping.Province}
+          Shipping to {order.Shipping.StreetAddress} {order.Shipping.CityName}, {order.Shipping.Province}
         </div>
         <div className="orders-page__ordered__grey-text">
           Credit card ending in&nbsp;
           {cc.substring(cc.length - 5, cc.length)}
         </div>
-        </div>
+      </div>
       <div className="orders-page__end-text">
-        <span className="orders-page__total-cost">${costToString(totalCost)}</span>
+        <span className="orders-page__total-cost">${costToString(order.TotalAmount || 0)}</span>
         <span className="orders-page__status">{order.ShippingStatus}</span>
       </div>
     </div>

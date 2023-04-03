@@ -5,6 +5,9 @@ import { Payment } from './payment';
 export interface Order {
   OrderID: number;
   UserID: number;
+  PSTTax: number | null;
+  TotalAmount: number | null;
+  GSTTax: number | null;
   ShippingStatus: string;
   OrderTimestamp: string;
   Shipping: Address;

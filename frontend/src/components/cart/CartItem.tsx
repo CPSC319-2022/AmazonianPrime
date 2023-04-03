@@ -101,7 +101,8 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
               return navigateToListing(Listing);
             }}
           >
-            {Listing?.ListingName}&nbsp;<span className="cart__listing-name-quantity">{`x${order.Quantity}`}</span>
+            {Listing?.ListingName}&nbsp;
+            <span className="cart__listing-name-quantity">({`x${order.Quantity} $${Listing.Cost}`})</span>
           </span>
           <span className="cart__listing-cost">${costToString(listingQuantityCost)}</span>
         </div>

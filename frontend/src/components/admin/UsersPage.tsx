@@ -101,7 +101,11 @@ function UsersPage() {
             autoComplete="off"
             onChange={debouncedChangeHandler}
             InputProps={{
-              endAdornment: <SearchIcon />,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
               style: {
                 height: '30px',
                 width: '300px',

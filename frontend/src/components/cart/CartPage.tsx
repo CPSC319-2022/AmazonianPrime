@@ -134,7 +134,7 @@ function CartPage() {
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
-                handleCheckoutError("We had an unexpected error. Please contact an administrator.");
+                handleCheckoutError('We had an unexpected error. Please contact an administrator.');
               });
           } else {
             checkout({
@@ -169,7 +169,7 @@ function CartPage() {
                 handleCheckoutSuccess();
               })
               .catch((e: any) => {
-                handleCheckoutError("We had an unexpected error. Please contact an administrator.");
+                handleCheckoutError('We had an unexpected error. Please contact an administrator.');
               });
           }
         }}
@@ -278,7 +278,7 @@ function CartPage() {
                   <div className="cart__listing-header-summary">
                     <span className="cart__listing-name">
                       {Listing?.ListingName}&nbsp;
-                      <span className="cart__listing-name-quantity">{`x${order.Quantity}`}</span>
+                      <span className="cart__listing-name-quantity">({`x${order.Quantity} $${Listing.Cost}`})</span>
                     </span>
                     <span className="cart__listing-cost">${costToString(listingQuantityCost)}</span>
                   </div>
