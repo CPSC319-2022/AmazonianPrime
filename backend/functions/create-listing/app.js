@@ -42,11 +42,13 @@ exports.lambdaHandler = async (event, context) => {
       body: 'Missing required fields',
     };
   }
+
+  const escapedDescription = Description.replace(/"/g, '\\"');
   const createListingQuery = `INSERT INTO Listing(UserID, ListingName, Description, Cost, Quantity, Category, ${
     Size !== undefined ? 'Size, ' : ''
   }${Brand !== undefined ? 'Brand, ' : ''}${
     Colour !== undefined ? 'Colour, ' : ''
-  }ItemCondition, IsActiveListing) VALUES(${UserID}, "${ListingName}", "${Description}", ${Cost}, ${Quantity}, "${Category}", ${
+  }ItemCondition, IsActiveListing) VALUES(${UserID}, "${ListingName}", "${escapedDescription}", ${Cost}, ${Quantity}, "${Category}", ${
     Size !== undefined ? `"${Size}",` : ''
   } ${Brand !== undefined ? `"${Brand}",` : ''} ${
     Colour !== undefined ? `"${Colour}",` : ''
