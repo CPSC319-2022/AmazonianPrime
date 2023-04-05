@@ -12,7 +12,7 @@ export const listingsApi = createApi({
     getRecentListings: builder.query<PaginatedListingPreviews, void>({
       query: () => {
         // return listings posted 14 days ago
-        return `listing?startDate="${moment(new Date()).subtract(14, 'd').format('YYYY-MM-DD')}"&limit=20&offset=1`;
+        return `listing?startDate="${moment(new Date()).subtract(14, 'd').format('YYYY-MM-DD')}"&limit=20&offset=0`;
       },
     }),
     getListings: builder.query<PaginatedListingPreviews, { page: number; category: string; name: string }>({
