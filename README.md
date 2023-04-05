@@ -13,7 +13,7 @@ The budget for this project will leverage the free-tier of AWS services which in
 The deliverables for this project will be a fully functional e-commerce application that is easy to use, secure, and accessible by all employees. The project team will also provide support to ensure that any bugs identified after the deployment of the application are addressed. 
 
 ## Developement Team 💻
-[Joshua Luong](https://www.linkedin.com/in/joshua-luong/), [William Suryawidjaja](https://www.linkedin.com/in/william-suryawidjaja/), [Michael He](https://www.linkedin.com/in/michael-he-221578270/), Tristan Martinuson, Mahmoud Al Khatib, & Elaine Shi.
+[Joshua Luong](https://www.linkedin.com/in/joshua-luong/), [William Suryawidjaja](https://www.linkedin.com/in/william-suryawidjaja/), [Michael He](https://www.linkedin.com/in/michael-he-221578270/), Tristan Martinuson, Mahmoud Al Khatib, & [Elaine Shi](https://www.linkedin.com/in/yiran-shi-99b209230/).
 
 ## Technical Design
 To check out more information about our technical approach/ design, read more about it in [TECHNICAL DESIGN](docs/Technical%20Design.pdf)
