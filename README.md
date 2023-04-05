@@ -16,7 +16,7 @@ The deliverables for this project will be a fully functional e-commerce applicat
 [Joshua Luong](https://www.linkedin.com/in/joshua-luong/), [William Suryawidjaja] (https://www.linkedin.com/in/william-suryawidjaja/), Michael He, Tristan Martinuson, Mahmoud Al Khatib, & Elaine Shi.
 
 ## Technical Design
-To checkout more information about our technical approach/ design, read more about it in [TECHNICAL DESIGN](docs/Technical%20Design.pdf)
+To check out more information about our technical approach/ design, read more about it in [TECHNICAL DESIGN](docs/Technical%20Design.pdf)
 
 ## User Documentation
 Follow guides outlined in [USER DOCUMENTATION](docs/User%20Documentation.pdf)
@@ -27,7 +27,7 @@ Follow the [link](https://drive.google.com/file/d/1pBvl0t7KkoXvUg51gnyoG8YrMF60c
 # Development & Installation
 
 ## Local Development
-Check `READ.ME` within `frontend`
+Refer to `READ.ME` within `frontend`
 
 ## Install Documentation
 Follow guides outlined in [INSTALL DOCUMENTATION](docs/Install%20Documentation.pdf)
