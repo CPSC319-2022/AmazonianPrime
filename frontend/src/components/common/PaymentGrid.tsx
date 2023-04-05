@@ -6,6 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useRef } from 'react';
+import moment from 'moment';
 
 interface PaymentGridProps {
   setFirstNameInput: (e: string) => void;
@@ -21,6 +22,8 @@ interface PaymentGridProps {
   setBillingCountryInput: (e: string) => void;
 }
 
+const today = new Date();
+const adapter = new AdapterDayjs({});
 const PaymentGrid: React.FC<PaymentGridProps> = ({
   setFirstNameInput,
   setLastNameInput,
@@ -95,6 +98,8 @@ const PaymentGrid: React.FC<PaymentGridProps> = ({
           <Grid item xs={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
+                minDate={adapter.date(moment(today).add(1, 'M'))}
+                defaultValue={adapter.date(moment(today).add(1, 'M'))}
                 format="MM/YY"
                 slotProps={{
                   textField: {

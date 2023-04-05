@@ -14,9 +14,11 @@ function CategoriesButton() {
   const { handleOpenMenu, handleCloseMenu, open, anchorEl } = useMenu();
   const dispatch = useDispatch();
   const category = searchParams.get('category');
+  const page = searchParams.get('page');
+  const searchQuery = searchParams.get('q')?.replace('+', ' ') || '';
   const navigate = useNavigate();
   const handleRedirect = (redirectCategory: string) => {
-    if (category === getSlugCategory(redirectCategory)) {
+    if (category === getSlugCategory(redirectCategory) && Number(page) === 1 && !searchQuery) {
       handleCloseMenu();
       return;
     }

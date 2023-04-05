@@ -4,6 +4,7 @@ import { useState } from 'react';
 import './Orders.scss';
 import { Order } from '../../types/order';
 import { useAppSelector } from '../../redux/store';
+import noListing from '../../images/no-listing.png';
 import { costToString } from '../../utils/costToString';
 
 interface OrderedProps {
@@ -95,7 +96,12 @@ const Contents: React.FC<{ order: Order }> = ({ order }) => {
 
   return (
     <div className="orders-page__container">
-      <img className="orders-page__order-image" src={firstListing.S3ImagePath} height="170px" width="150px" />
+      <img
+        className="orders-page__order-image"
+        src={firstListing.S3ImagePath ?? noListing}
+        height="170px"
+        width="150px"
+      />
       <div className="orders-page__details">
         <div className="orders-page__ordered__header-text">
           <span>Order ID #{order.OrderID}&nbsp;</span>

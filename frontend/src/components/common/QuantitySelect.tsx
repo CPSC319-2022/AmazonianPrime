@@ -11,6 +11,13 @@ interface QuantitySelectProps {
   setValue?: (value: number) => any;
   controlledValue?: number;
 }
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: 250,
+    },
+  },
+};
 export const QuantitySelect: React.FC<QuantitySelectProps> = ({
   quantity,
   selectRef,
@@ -27,6 +34,7 @@ export const QuantitySelect: React.FC<QuantitySelectProps> = ({
         disabled={disabled}
         className="product-details__details__select"
         value={controlledValue}
+        MenuProps={MenuProps}
         defaultValue={defaultValue}
         onChange={(event) => setValue(Number(event.target.value) || 1)}
         size="small"
@@ -45,6 +53,7 @@ export const QuantitySelect: React.FC<QuantitySelectProps> = ({
         className="product-details__details__select"
         defaultValue={defaultValue}
         disabled={disabled}
+        MenuProps={MenuProps}
         inputRef={selectRef}
         size="small"
         style={{ backgroundColor: '#e0e0e0' }}

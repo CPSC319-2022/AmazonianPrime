@@ -12,6 +12,7 @@ interface DeleteListingButtonProps {
   successMessage?: any;
   disabled?: boolean;
   tooltipContent?: string;
+  buttonText?: string;
   queueMessage?: string;
   failMessage: string;
   showIcon?: boolean;
@@ -23,6 +24,7 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
   queueMessage,
   tooltipContent,
   disabled,
+  buttonText,
   failMessage,
   showIcon = true,
 }) => {
@@ -64,7 +66,7 @@ const DeleteListingButton: React.FC<DeleteListingButtonProps> = ({
                 });
             }}
           >
-            Remove Listing
+            {buttonText ?? 'Remove Listing'}
           </span>
         </Button>
       </Tooltip>

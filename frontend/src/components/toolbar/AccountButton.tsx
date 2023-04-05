@@ -27,7 +27,7 @@ export const AccountButton = () => {
     if (category === 'Logout') {
       dispatch(setUser(null));
       sessionStorage.clear();
-      dispatch(userApi.util.invalidateTags(['Banking']))
+      dispatch(userApi.util.invalidateTags(['Banking']));
       window.dispatchEvent(new Event('storageChangeEvent'));
     } else if (category === 'Home') {
       navigate('/');

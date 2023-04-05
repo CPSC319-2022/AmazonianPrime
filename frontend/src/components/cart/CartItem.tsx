@@ -45,7 +45,7 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
     navigate(`/listing/${listing.ListingID}`, { state: { ...history, previousPage: window.location.pathname } });
   };
 
-  const listingQuantityCost = order.Quantity * Listing.Cost;
+  const listingQuantityCost = Number((Math.round(order.Quantity * Listing.Cost * 100) / 100).toFixed(2));
 
   const quantity = () => {
     const shownListingQuantity = isCartLocked ? order.Quantity : Listing.Quantity;
@@ -115,6 +115,7 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
             tooltipContent={isCartLocked ? 'You may not edit your cart while we hold your items.' : ''}
             successMessage={null}
             failMessage="We ran into an issue removing an item from your cart. Please try again later"
+            buttonText="Remove from cart"
             handleClick={() =>
               removeItem({
                 quantityRemoved: selectQuantity,

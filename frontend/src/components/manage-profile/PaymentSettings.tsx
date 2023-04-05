@@ -14,8 +14,9 @@ import { ShowMoreContent } from './ShowMoreContent';
 import { useAddAddressMutation, useAddPaymentMutation, useGetPaymentsQuery } from '../../redux/api/user';
 import { setPaymentAddress } from '../../redux/reducers/userSlice';
 import { useDispatch } from 'react-redux';
-import { setSuccessMessage } from '../../redux/reducers/appSlice';
+import { setFailMessage, setSuccessMessage } from '../../redux/reducers/appSlice';
 import { ExpiryDate } from '../common/ExpiryDate';
+import { isExpiredDate } from '../../utils/escapeDateFromSQL';
 
 export const PaymentSettings = () => {
   const user = useAppSelector((state) => state.user.value);
@@ -37,7 +38,6 @@ export const PaymentSettings = () => {
 
   const profileFirstNameInput = useRef<any>(null);
   const profileLastNameInput = useRef<any>(null);
-  const [openErrorToast, setOpenErrorToast] = useState('');
   const [searchParams] = useSearchParams();
   const [isShowing, setIsShowing] = useState(false);
   const dispatch = useDispatch();
@@ -59,7 +59,7 @@ export const PaymentSettings = () => {
       !billingAddressInfo.PostalCode ||
       !billingAddressInfo.Country
     ) {
-      setOpenErrorToast('Please fill all required Billing fields!');
+      dispatch(setFailMessage('Please fill all required Billing fields!'));
       return;
     }
 
@@ -73,10 +73,15 @@ export const PaymentSettings = () => {
     };
 
     if (!paymentInfo.CreditCardNum || !paymentInfo.ExpiryDate || !paymentInfo.CVV || !paymentInfo.CardHolderName) {
-      setOpenErrorToast('Please fill all required Payment fields!');
+      dispatch(setFailMessage('Please fill all required Payment fields!'));
       return;
     }
 
+    const regex = /^\d{16,19}$/; // Checks for 16-19 digit integer
+    if (!regex.test(paymentInfo.CreditCardNum.toString())) {
+      dispatch(setFailMessage('The credit card number must be between 16-19 digits!'));
+      return;
+    }
     setIsLoading(true);
 
     const billingAddress = await addAddress(billingAddressInfo).unwrap();

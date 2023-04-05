@@ -150,7 +150,7 @@ const Timer = () => {
             });
         }}
       >
-        Clear Timer
+        Cancel hold
       </LoadingButton>
     </Alert>
   ) : null;

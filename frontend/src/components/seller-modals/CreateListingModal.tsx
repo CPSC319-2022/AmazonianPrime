@@ -49,6 +49,7 @@ function CreateListingModal() {
   const [error, setError] = useState<any>(false);
   const [images, setImages] = useState<any>([]);
   const [showMore, setShowMore] = useState(false);
+  const [imageSizeErr, setImageSizeErr] = useState(null);
   const [openErrorToast, setOpenErrorToast] = useState('');
   const [metric, setMetric] = useState(metrics[0]);
   const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +88,11 @@ function CreateListingModal() {
   };
   const dispatch = useDispatch();
 
+  const areImagesTooLarge = (imagesList: any) => {
+    const size = imagesList.reduce((total: number, image: any) => (total += new Blob([image]).size / 1024 ** 2), 0);
+    return Number(size) > 7;
+  };
+
   async function handleSubmit() {
     const newListing = {
       UserID: Number(user?.UserID) || 0,
@@ -104,6 +110,10 @@ function CreateListingModal() {
         )) || [],
       Size: sizeRef.current?.value ? `${sizeRef.current?.value} ${metric === metric[0] ? '' : metric}` : undefined,
     };
+    if (areImagesTooLarge(newListing.Images)) {
+      setOpenErrorToast(`The images you provided has exceeded the maximum file size of 7MB.`);
+      return;
+    }
     const missingTitle = !titleRef.current?.value && 'Listing Title';
     const missingDescription = !descriptionRef.current?.value && 'Description';
     const missingImage = images.length < 1 && 'Image (at least 1)';

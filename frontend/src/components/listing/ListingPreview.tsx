@@ -11,6 +11,7 @@ import './ListingPreview.scss';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { ListingPreviewSkeleton } from './ListingPreviewSkeleton';
 import DeleteListingButton from '../common/DeleteListingButton';
+import { costToString } from '../../utils/costToString';
 
 interface ListingPreviewProps {
   listing: ListingPreviewType | null;
@@ -50,7 +51,7 @@ const ListingPreview: React.FC<ListingPreviewProps> = ({
         height={imageHeight ?? height}
         width={width}
       />
-      <span className="listing-preview__cost">${Cost}</span>
+      <span className="listing-preview__cost">${costToString(Cost)}</span>
       <div className="listing-preview__name">{ListingName}</div>
       {showRemoveListingButton ? (
         <DeleteListingButton
