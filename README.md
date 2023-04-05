@@ -1,7 +1,7 @@
 
 <img src="./frontend/src/components/common/logo.svg" height="150px">
 
-## About Amazonian Prime
+# About Amazonian Prime
 Working from home has become a norm for many people since the pandemic, but it has also brought negative impacts such as decreased productivity, isolation, and blurred boundaries between work and personal life. The absence of in-person interactions and face-to-face communication can lead to feelings of loneliness and disconnection from one's colleagues and workplace culture.
 
 As such, this project aims to provide a secure and user-friendly platform for employees to buy and sell items within the company. The marketplace will be accessible by all employees and will provide an opportunity for them to communicate and transact, leading to increased employee morale and improved work relationships. The ultimate goal of the project is to promote a positive and collaborative work environment for employees. 
@@ -24,7 +24,7 @@ Follow guides outlined in [USER DOCUMENTATION](docs/User%20Documentation.pdf)
 ## Live Demo
 Follow the [link](https://drive.google.com/file/d/1pBvl0t7KkoXvUg51gnyoG8YrMF60cocH/view?usp=share_link) to watch a live demo of the application working E2E! 🎉
 
-## Development & Installation
+# Development & Installation
 
 ## Local Development
 Check `READ.ME` within `frontend`
