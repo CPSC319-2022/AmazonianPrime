@@ -1,5 +1,9 @@
 const dbConnection = require('dbConnection.js');
-const { MissingParameterError } = require('errorStates.js');
+const { MissingParameterError, 
+  EmptyShoppingCartError,
+  PurchaseQuantityExceededError,
+  ErrorWrapper,
+  jsonFriendlyErrorReplacer } = require('errorStates.js');
 
 /**
  * Sample Lambda function which mocks the operation of buying a random number of shares for a stock.
@@ -88,6 +92,52 @@ exports.lambdaHandler = async (event, context) => {
   Response.TotalCost = total.toFixed(2);
   Response.Items = Items;
   console.log(Response);
+
+  if (Items.length < 1) {
+    let error = new EmptyShoppingCartError(`The user's shopping cart is empty!`);
+    let message = {
+      body: event,
+      error: JSON.stringify(error, jsonFriendlyErrorReplacer)
+    }
+    throw new ErrorWrapper(JSON.stringify(message));
+  }
+
+  for (let x in Items) {
+    const Item = Items[x];
+    const ListingName = Item['Listing']['ListingName'];
+    const PurchaseQuantity = Item['Quantity'];
+    const ListedQuantity = Item['Listing']['Quantity'];
+
+    if (PurchaseQuantity > ListedQuantity) {
+      let error = new PurchaseQuantityExceededError(
+        `The amount to purchase, ${ListingName}, is exceeding the available quantity`,
+      );
+      event['Items'] = [];
+      let message = {
+        body: event,
+        error: JSON.stringify(error, jsonFriendlyErrorReplacer)
+      }
+      throw new ErrorWrapper(JSON.stringify(message));
+    }
+  }
+
+  for(const item of Items) {
+    let quantityToAdd = item['Quantity'];
+    let ListingID = item['ListingID'];
+
+    const updateListingQuery = `UPDATE Listing SET Quantity = Quantity - ${quantityToAdd} WHERE ListingID = ${ListingID}`;
+
+    console.log(updateListingQuery);
+
+    const updateListing = await new Promise((resolve, reject) => {
+      con.query(updateListingQuery, function (err, res) {
+        if (err) {
+          reject("There was an error whilst updating the listing quantity!");
+        }
+        resolve(res);
+      });
+    });
+  };
 
   await dbConnection.disconnectDB(con);
 

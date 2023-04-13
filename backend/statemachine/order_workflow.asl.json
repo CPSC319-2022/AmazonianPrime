@@ -5,24 +5,11 @@
     "Get Cart Items": {
       "Type": "Task",
       "Resource": "${GetUserCartFunctionArn}",
-      "Next": "Check Listing Quantity",
+      "Next": "Check Payment Detail",
       "Catch": [
         {
           "ErrorEquals": [
-            "MissingParameterError"
-          ],
-          "Next": "ErrorHandler"
-        }
-      ]
-    },
-    "Check Listing Quantity": {
-      "Type": "Task",
-      "InputPath": "$.body",
-      "Resource": "${CheckQuantityFunctionArn}",
-      "Next": "Reserve Listing",
-      "Catch": [
-        {
-          "ErrorEquals": [
+            "MissingParameterError",
             "EmptyShoppingCartError",
             "PurchaseQuantityExceededError",
             "ErrorWrapper"
@@ -30,12 +17,6 @@
           "Next": "ErrorHandler"
         }
       ]
-    },
-    "Reserve Listing": {
-      "Type": "Task",
-      "InputPath": "$.body",
-      "Resource": "${ReserveListingFunctionArn}",
-      "Next": "Check Payment Detail"
     },
     "Check Payment Detail": {
       "Type": "Task",
