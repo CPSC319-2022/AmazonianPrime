@@ -27,7 +27,8 @@ const DetailsMetaData: React.FC<{ selectQuantity: number; setSelectQuantity: any
     </>
   );
 
-  const shownListingQuantity = isCartLocked ? itemInCart?.Quantity || 0 : listing.Quantity;
+  const fixedQuantity = listing.Quantity <= 0 ? 0 : listing.Quantity;
+  const shownListingQuantity = isCartLocked ? itemInCart?.Quantity || 0 : fixedQuantity;
   return (
     <div>
       <div className="product-details__small-header">Details</div>

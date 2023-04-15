@@ -1,7 +1,7 @@
 @import '../../variables';
 
 .product-details-page.product-details-page {
-  margin: 1em 7em 3em 7em;
+  margin: 1em 7em 1em 7em;
   box-sizing: border-box;
   width: unset;
 }
@@ -12,4 +12,10 @@
 
 .product-details-page__item {
   margin: 0 1em;
+}
+
+.product-details-page__suggestions {
+  width: 100%;
+  margin-top: 1em;
+  font-size: 0.97em;
 }
