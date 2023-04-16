@@ -48,7 +48,8 @@ export const CartItem: React.FC<CartItemProps> = ({ order, isCartLockedInput }) 
   const listingQuantityCost = Number((Math.round(order.Quantity * Listing.Cost * 100) / 100).toFixed(2));
 
   const quantity = () => {
-    const shownListingQuantity = isCartLocked ? order.Quantity : Listing.Quantity;
+    const fixedQuantity = Listing.Quantity <= 0 ? 0 : Listing.Quantity;
+    const shownListingQuantity = isCartLocked ? order.Quantity : fixedQuantity;
 
     return shownListingQuantity === 0 ? (
       <span>Sold out</span>

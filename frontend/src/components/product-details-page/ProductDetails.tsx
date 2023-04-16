@@ -117,7 +117,10 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ isLoading }) => 
           <LocalShippingIcon className="product-details__shipping-icon" />
           <p className="product-details__small-text">Offers shipping</p>
         </Grid>
-        {Number(user?.UserID) !== listing.UserID && !itemInCart && !isAdminPrivelegeRequested ? (
+        {Number(user?.UserID) !== listing.UserID &&
+        !itemInCart &&
+        !isAdminPrivelegeRequested &&
+        listing.Quantity > 0 ? (
           <Grid item xs={12} className="product-details__buttons">
             <Tooltip title="You may not edit your cart while we hold your items." disableHoverListener={!isCartLocked}>
               <Button
